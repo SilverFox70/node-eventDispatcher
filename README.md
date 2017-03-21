@@ -32,3 +32,6 @@ Triggering an event requires at least the _eventName_, but the whole form accept
 ```eventDispatcher.trigger(_eventName_, _args_, _context_);```
 
 Optional arguments can be passed in _args_ to the event, and _context_ defines the _this_ scope of the callback function set when subscribed.
+
+## Modules
+The examples here use the 'Request' module for making http requests and you may need to install this manually by using ```npm install request```.
