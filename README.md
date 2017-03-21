@@ -27,8 +27,8 @@ Subscribing takes the following form:
 _eventName_ is the name of the event you wish to listen for, and
 _callback_ is the function to execute when this event is called.
 
-Trigger an event requires at least the _eventName_, but the whole form accepts the following:
+Triggering an event requires at least the _eventName_, but the whole form accepts the following:
 
 ```eventDispatcher.trigger(_eventName_, _args_, _context_);```
 
-Optional arguments can be passe in _args_ to the event, and _context_ defines the _this_ scope of the callback function defined when subscribed.
+Optional arguments can be passed in _args_ to the event, and _context_ defines the _this_ scope of the callback function set when subscribed.
