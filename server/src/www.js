@@ -17,7 +17,18 @@ var www = function(){
 		});
 	};
 
+	var post = function(url, form){
+		request({
+			uri: url,
+			method: post,
+			form: form
+		}, function(error, response, body){
+			events.trigger('postComplete', body);
+		});
+	}
+
 	events.subscribe('get', get);
+	events.subscribe('post', post);
 	
 }();
 
