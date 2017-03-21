@@ -16,13 +16,13 @@ var eventDispatcher = function(){
 
     trigger : function(eventName, data, context){
       var subscribers = eventSubscribers[eventName];
-      var i , iMax = subscribers.length;
+      var i;
 
       if (typeof subscribers === 'undefined') return; // Nothing to do, abort
 
       data = (data instanceof Array) ? data : [data];
 
-      for (i = 0; i < iMax; i++){
+      for (i = 0; i < subscribers.length; i++){
         subscribers[i].apply(context, data);
       }
     },

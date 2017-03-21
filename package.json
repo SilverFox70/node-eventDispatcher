@@ -4,6 +4,7 @@
   "description": "event dispatcher system",
   "main": "main.js",
   "scripts": {
+    "main" : "node server/src/test.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
