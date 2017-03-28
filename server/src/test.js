@@ -23,16 +23,16 @@ var myAlert = function(warn){
   console.log(warn);
 }
 
-events.subscribe('messaging', sendMessage);
-events.subscribe('messaging', anotherMsg);
-events.subscribe('alert', myAlert);
-events.subscribe('getComplete', displayResponse);
+events.on('messaging', sendMessage);
+events.on('messaging', anotherMsg);
+events.on('alert', myAlert);
+events.on('getComplete', displayResponse);
 
-events.trigger('messaging', "Hello world");
-events.trigger('alert', 'My warning');
-events.trigger('messaging', "Goodbye!");
-events.trigger('alert', 'exiting now...');
-events.trigger('get', 'http://ip.jsontest.com/');
+events.emit('messaging', "Hello world");
+events.emit('alert', 'My warning');
+events.emit('messaging', "Goodbye!");
+events.emit('alert', 'exiting now...');
+events.emit('get', 'http://ip.jsontest.com/');
 
 var subscribedFunctions = events.getSubscriberFunctionsByEventName("alert");
 

@@ -13,7 +13,7 @@ var www = function(){
 			} else {
 				res = body;
 			}
-			events.trigger('getComplete', res);
+			events.emit('getComplete', res);
 		});
 	};
 
@@ -23,12 +23,12 @@ var www = function(){
 			method: post,
 			form: form
 		}, function(error, response, body){
-			events.trigger('postComplete', body);
+			events.emit('postComplete', body);
 		});
 	}
 
-	events.subscribe('get', get);
-	events.subscribe('post', post);
+	events.on('get', get);
+	events.on('post', post);
 	
 }();
 

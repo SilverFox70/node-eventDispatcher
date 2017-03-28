@@ -4,7 +4,7 @@
   "description": "event dispatcher system",
   "main": "main.js",
   "scripts": {
-    "main" : "node server/src/test.js",
+    "main": "node server/src/test.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -13,5 +13,8 @@
     "design"
   ],
   "author": "William F Brinkert",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.81.0"
+  }
 }

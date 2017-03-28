@@ -1,10 +1,10 @@
-'use strict';
 
 var eventDispatcher = function(){
+  'use strict';
   var eventSubscribers = {};
 
   return {
-    subscribe : function(eventName, callback){
+    on : function(eventName, callback){
       var subscribers = eventSubscribers[eventName];
 
       if (typeof subscribers === 'undefined'){
@@ -14,7 +14,7 @@ var eventDispatcher = function(){
       subscribers.push(callback);
     },
 
-    trigger : function(eventName, data, context){
+    emit : function(eventName, data, context){
       var subscribers = eventSubscribers[eventName];
       var i;
 
@@ -27,7 +27,7 @@ var eventDispatcher = function(){
       }
     },
 
-    unsubscribe : function(eventName, existingCallback){
+    off : function(eventName, existingCallback){
       var subscribers = eventSubscribers[eventName];
       var callbackIndex;
 
