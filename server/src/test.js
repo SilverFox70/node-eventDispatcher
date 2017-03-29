@@ -35,7 +35,7 @@ events.emit('alert', 'exiting now...');
 events.emit('get', 'http://ip.jsontest.com/');
 
 var subscribedFunctions = events.getSubscriberFunctionsByEventName("alert");
-
+console.log('Sub functions by event name:');
 subscribedFunctions.forEach(function(fun){
   console.log(fun.toString());
 });
@@ -46,7 +46,7 @@ var subscribedEvents = events.getEventNames();
 console.log(JSON.stringify(subscribedEvents, null, '  '));
 
 console.log('---------------------------------------');
-
+console.log('All subscribed functions:');
 var list = events.getAllSubscribedFunctions();
 console.log(JSON.stringify(list, null, '  '));
 
@@ -58,10 +58,10 @@ listKeys.forEach(function(key){
 });
 
 console.log('---------------------------------------');
-
+console.log("is 'messaging' a valid event: ", events.isValidEvent('messaging'));
 // console.log('unsubscribeAll:');
 console.log('unsubscribe messaging: ', events.unsubscribeAll('messaging'));
-console.log('unsubscribe bunnyhop: ', events.unsubscribeAll('bunnyhop'));
+// console.log('unsubscribe bunnyhop: ', events.unsubscribeAll('bunnyhop'));
 console.log("is 'messaging' a valid event: ", events.isValidEvent('messaging'));
 console.log("is 'foobar' a valid event: ", events.isValidEvent('foobar'));
 
