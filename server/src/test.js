@@ -57,5 +57,12 @@ listKeys.forEach(function(key){
   console.log("key: " + key + " = " + list[key]);
 });
 
+console.log('---------------------------------------');
+
+// console.log('unsubscribeAll:');
+console.log('unsubscribe messaging: ', events.unsubscribeAll('messaging'));
+console.log('unsubscribe bunnyhop: ', events.unsubscribeAll('bunnyhop'));
+console.log("is 'messaging' a valid event: ", events.isValidEvent('messaging'));
+console.log("is 'foobar' a valid event: ", events.isValidEvent('foobar'));
 
 

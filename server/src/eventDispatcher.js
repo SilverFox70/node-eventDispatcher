@@ -42,7 +42,18 @@ var eventDispatcher = function(){
     },
 
     unsubscribeAll : function(eventName){
-      delete eventSubscribers[eventName];
+      try {
+        
+        if (typeof eventSubscribers[eventName] === 'undefined'){
+          throw new ReferenceError("No such event: '" + eventName + "'' exists", 'eventDispatcher.js', 46);
+        }
+        return delete eventSubscribers[eventName];
+
+      } catch(err){
+
+        console.error(err);
+        return false;
+      }
     },
 
     getSubscriberFunctionsByEventName : function(eventName){
@@ -62,6 +73,15 @@ var eventDispatcher = function(){
         list[event] = fctns;
       });
       return list;
+    },
+
+    isValidEvent : function(eventName){
+      var subscribers = eventSubscribers[eventName];
+      if (typeof subscribers === 'undefined'){
+        return false;
+      } else {
+        return true;
+      }
     }
 
   }
