@@ -19,21 +19,30 @@ var sendMessage = function(msg){
 var anotherMsg = function(){
   console.log("Another message");
 };
+
 var myAlert = function(warn){
   console.log(warn);
+}
+
+var oneShot = function(){
+  console.log('Single shot function');
 }
 
 events.on('messaging', sendMessage);
 events.on('messaging', anotherMsg);
 events.on('alert', myAlert);
 events.on('getComplete', displayResponse);
+events.once('oneshot', oneShot);
 
 events.emit('messaging', "Hello world");
 events.emit('alert', 'My warning');
 events.emit('messaging', "Goodbye!");
 events.emit('alert', 'exiting now...');
 events.emit('get', 'http://ip.jsontest.com/');
+events.emit('oneshot');
+events.emit('oneshot');
 
+console.log('---------------------------------------');
 var subscribedFunctions = events.getSubscriberFunctionsByEventName("alert");
 console.log('Sub functions by event name:');
 subscribedFunctions.forEach(function(fun){
@@ -54,13 +63,13 @@ console.log('---------------------------------------');
 
 var listKeys = Object.keys(list);
 listKeys.forEach(function(key){
-  console.log("key: " + key + " = " + list[key]);
+  console.log("key: " + key + " : " + list[key]);
 });
 
 console.log('---------------------------------------');
 console.log("is 'messaging' a valid event: ", events.isValidEvent('messaging'));
 // console.log('unsubscribeAll:');
-console.log('unsubscribe messaging: ', events.unsubscribeAll('messaging'));
+console.log('unsubscribe messaging, anotherMsg: ', events.off('messaging', anotherMsg));
 // console.log('unsubscribe bunnyhop: ', events.unsubscribeAll('bunnyhop'));
 console.log("is 'messaging' a valid event: ", events.isValidEvent('messaging'));
 console.log("is 'foobar' a valid event: ", events.isValidEvent('foobar'));
