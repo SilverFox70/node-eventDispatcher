@@ -137,7 +137,7 @@ var eventDispatcher = function(){
             var localFunction = callback.fn.toString();
             functionsList.push(JSON.stringify({once: callback.doOnce, fn: localFunction}, null, '  '));
           } else {
-          functionsList = callback.toString();
+          functionsList.push(callback.toString());
           }
         });
 
