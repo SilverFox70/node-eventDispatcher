@@ -40,7 +40,7 @@ events.emit('messaging', "Goodbye!");
 events.emit('alert', 'exiting now...');
 events.emit('get', 'http://ip.jsontest.com/');
 events.emit('oneshot');
-events.emit('oneshot');
+// events.emit('oneshot');
 
 console.log('---------------------------------------');
 var subscribedFunctions = events.getSubscriberFunctionsByEventName("alert");
@@ -73,5 +73,6 @@ console.log('unsubscribe messaging, anotherMsg: ', events.off('messaging', anoth
 // console.log('unsubscribe bunnyhop: ', events.unsubscribeAll('bunnyhop'));
 console.log("is 'messaging' a valid event: ", events.isValidEvent('messaging'));
 console.log("is 'foobar' a valid event: ", events.isValidEvent('foobar'));
-
-
+console.log('has listeners on oneshot:', events.hasListenersOnEvent('oneshot'));
+console.log('what listeners on oneshot:', events.getSubscriberFunctionsByEventName('oneshot'));
+console.log(JSON.stringify(events.eventLog(), null, '  '));
