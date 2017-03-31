@@ -12,7 +12,8 @@ var eventDispatcher = function(){
       var timestamp = Date.now();
       eventLogs[sid] = {"timestamp" : timestamp, 
                         "action" : "on", 
-                        "eventName" : eventName, 
+                        "eventName" : eventName,
+                        "callbackName" : callback.name, 
                         "callback" : callback.toString()};
 
       if (typeof subscribers === 'undefined'){
@@ -134,10 +135,10 @@ var eventDispatcher = function(){
         var functionsList = [];
         eventSubscribers[event].forEach(function(callback){
           if (callback.doOnce){
-            var localFunction = callback.fn.toString();
+            var localFunction = callback.fn;
             functionsList.push(JSON.stringify({once: callback.doOnce, fn: localFunction}, null, '  '));
           } else {
-          functionsList.push(callback.toString());
+          functionsList.push(callback);
           }
         });
 
