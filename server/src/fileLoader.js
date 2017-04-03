@@ -39,47 +39,57 @@ var fileLoader = function(){
     return Promise.all(promises);
   };
 
+  // var getFileData = function(){
+  //   return new Promise(function(resolve, reject){
+  //     this.fileList(__dirname).then(function(filelist){
+  //       createFilesObject(filelist).then(function(rawfiles){
+  //         resolve(rawfiles);
+  //       }).catch(function(err){
+  //         console.error(err);
+  //         reject(err);
+  //       });
+  //     }).catch(function(err){
+  //       console.error(err);
+  //       reject(err);
+  //     });
+  //   });
+  // };
+
   return {
     fileList,
+    createFilesObject,
     getFileData : function(){
-      this.fileList(__dirname).then(function(filelist){
-        return createFilesObject(filelist);
-      })
+      return new Promise(function(resolve, reject){
+        this.fileList(__dirname).then(function(filelist){
+          createFilesObject(filelist).then(function(rawfiles){
+            resolve(rawfiles);
+          }).catch(function(err){
+            console.error(err);
+            reject(err);
+          });
+        }).catch(function(err){
+          console.error(err);
+          reject(err);
+        });
+      });
     }
   }
 
 }();
 
 var allfiles = fileLoader.getFileData().then(function(allfiles){
-  console.log(JSON.stringify(allfiles, null, '  '));
-});
-// --------------------------------------------------------
-// 'use-strict';
-// const fs = require('fs');
+  console.log(allfiles.toString());
+})
 
-// var fileList = function(path){
-//   return new Promise(function(resolve, reject){
-//     var jsFiles = [];
-//     fs.readdir(path, function(err, files){
-//       if (err) {
-//         console.error(err);
-//         reject(err);
-//       }
-//       files.forEach(function(file){
-//         if (file.endsWith('.js')){
-//           jsFiles.push(file);
-//         }
-//       });
-//       resolve(jsFiles);
-//     });
-//   });
-// };
 
-// console.log(__dirname);
-// fileList(__dirname).then(function(files){
+// fileLoader.fileList(__dirname).then(function(files){
 //   files.forEach(function(file){
 //     console.log(file);
 //   });
-// }).catch(function(err){
-//     console.error(err);
+//   fileLoader.createFilesObject(files).then(function(rawfiles){
+//     rawfiles.forEach(function(rawfile){
+//       console.log(rawfile);
+//     });
+//   });
 // });
+
