@@ -44,9 +44,9 @@ events.emit('oneshot');
 
 console.log('---------------------------------------');
 var subscribedFunctions = events.getSubscriberFunctionsByEventName("alert");
-console.log('Sub functions by event name:');
+console.log('Subscribed functions by event name (Alert):');
 subscribedFunctions.forEach(function(fun){
-  console.log(fun.toString());
+  console.log(fun.name + ' = ' + fun.toString());
 });
 
 console.log('---------------------------------------');
@@ -63,7 +63,10 @@ console.log('---------------------------------------');
 
 var listKeys = Object.keys(list);
 listKeys.forEach(function(key){
-  console.log("key: " + key + " : " + list[key]);
+  console.log("event name: " + key);
+  list[key].forEach(function(fn){
+    console.log(fn.name + ' = ' + fn);
+  })
 });
 
 console.log('---------------------------------------');
