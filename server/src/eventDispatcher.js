@@ -3,22 +3,80 @@ var eventDispatcher = function(){
   'use strict';
   var shortid = require('shortid');
   var eventSubscribers = {};
-  var eventLogs = {};
+
+  var eventLogger = function(){
+    var eventLogs = {};
+
+    var baseEvent = function(eventName){
+      var sid = shortid.generate();
+      var timestamp = Date.now();
+      eventLogs[sid] = {"timestamp" : timestamp,
+                           "event" : eventName};
+      return eventLogs[sid];
+    }
+
+    var onEvent = function(eventName, callback, isNew){
+      var eventLog = baseEvent(eventName); 
+      eventLog.action = "on";
+      eventLog.callbackName = callback.name;
+      eventLog.callback = callback.toString();
+      if (isNew){
+        eventLog.isNewEvent = true;
+      }
+    }
+
+    var onceEvent = function(eventName, callback, isNew){
+      var eventLog = baseEvent(eventName); 
+      eventLog.action = "once";
+      eventLog.callbackName = callback.name;
+      eventLog.callback = callback.toString();
+      if (isNew){
+        eventLog.isNewEvent = true;
+      }
+    }
+
+    var emitEvent = function(eventName, data, context){
+      var eventLog = baseEvent(eventName);
+      eventLog.action = "emit";
+      eventLog.data = data;
+      eventLog.context = context;
+    }
+
+    var offEvent = function(eventName, existingCallback){
+      var eventLog = baseEvent(eventName);
+      eventLog.action = "off";
+      eventLog.existingCallback = existingCallback;
+    }
+
+    var unsubscribeAllEvent = function(eventName){
+      var eventLog = baseEvent(eventName);
+      eventLog.action = "unsubscribeAll";
+    }
+
+    var getEventLogs = function(){
+      return eventLogs;
+    }
+
+    return {
+      onEvent,
+      onceEvent,
+      emitEvent,
+      offEvent,
+      unsubscribeAllEvent,
+      getEventLogs
+    }
+
+  }();
 
   return {
     on : function(eventName, callback){
       var subscribers = eventSubscribers[eventName];
-      var sid = shortid.generate();
-      var timestamp = Date.now();
-      eventLogs[sid] = {"timestamp" : timestamp, 
-                        "action" : "on", 
-                        "eventName" : eventName,
-                        "callbackName" : callback.name, 
-                        "callback" : callback.toString()};
 
       if (typeof subscribers === 'undefined'){
         subscribers = eventSubscribers[eventName] = [];
-        eventLogs[sid].isNewEvent = "true";
+        eventLogger.onEvent(eventName, callback, true);
+      } else {
+        eventLogger.onEvent(eventName, callback, false);
       }
 
       subscribers.push(callback);
@@ -26,17 +84,13 @@ var eventDispatcher = function(){
 
     once : function(eventName, callback){
       var subscribers = eventSubscribers[eventName];
-      var sid = shortid.generate();
-      var timestamp = Date.now();
-      eventLogs[sid] = {"timestamp" : timestamp, 
-                        "action" : "on", 
-                        "eventName" : eventName, 
-                        "callback" : callback.toString(),
-                        "doOnce" : "true"};
+      eventLogger.onceEvent(eventName, callback);
 
       if (typeof subscribers === 'undefined'){
         subscribers = eventSubscribers[eventName] = [];
-        eventLogs[sid].isNewEvent = "true";
+        eventLogger.onceEvent(eventName, callback, true);
+      } else {
+        eventLogger.onceEvent(eventName, callback, false);
       }
 
       subscribers.push({doOnce: true, fn: callback});
@@ -45,13 +99,7 @@ var eventDispatcher = function(){
     emit : function(eventName, data, context){
       var subscribers = eventSubscribers[eventName];
       var i;
-      var sid = shortid.generate();
-      var timestamp = Date.now();
-      eventLogs[sid] = { "timestamp" : timestamp, 
-                         "action" : "emit", 
-                         "event" : eventName, 
-                         "data" : data, 
-                         "context" : context};
+      eventLogger.emitEvent(eventName, data, context);
 
       eventLogs[sid].functions = [];
       if (typeof subscribers === 'undefined') return; // Nothing to do, abort
@@ -73,13 +121,7 @@ var eventDispatcher = function(){
 
     off : function(eventName, existingCallback){
       var subscribers = eventSubscribers[eventName];
-      var timestamp = Date.now();
-      var sid = shortid.generate();
-      var callbackFunction = existingCallback.doOnce ? existingCallback.fn : existingCallback;
-      eventLogs[sid] = { "timestamp" : timestamp,
-                         "action" : "off", 
-                         "event" : eventName, 
-                         "existingCallback" : callbackFunction};
+      eventLogger.offEvent(eventName, existingCallback);
 
       if (typeof subscribers === 'undefined') {
         eventLogs[sid].result = "No event: " + eventName + " was found!";
@@ -99,11 +141,7 @@ var eventDispatcher = function(){
     },
 
     unsubscribeAll : function(eventName){
-      var sid = shortid.generate();
-      var timestamp = Date.now(); 
-      eventLogs[sid] = {"timestamp" : timestamp,
-                        "action" : "unsubscribeAll", 
-                        "eventName" : eventName};
+      eventLogger.unsubscribeAllEvent(eventName);
 
       try {
 
@@ -161,7 +199,7 @@ var eventDispatcher = function(){
     },
 
     eventLog : function(){
-      return eventLogs;
+      return eventLogger.getEventLogs();
     }
 
   }
