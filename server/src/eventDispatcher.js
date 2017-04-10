@@ -40,12 +40,10 @@ var eventDispatcher = function(){
       eventLog.action = "emit";
       eventLog.data = data;
       eventLog.context = context;
-      eventLog.functions = [];
+      eventLog.functionsCalled = [];
       subscribedFunctions.forEach(function(callback){
-        console.log("####  cb : " + callback.toString());
-        eventLog.functions.push(callback.name);
-      })
-      eventLog.functions = subscribedFunctions;
+        eventLog.functionsCalled.push({"functionName" : callback.name, "functionScript" : callback.toString()});
+      });
     }
 
     var offEvent = function(eventName, existingCallback){
