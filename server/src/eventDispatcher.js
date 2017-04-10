@@ -3,6 +3,7 @@ var eventDispatcher = function(){
   'use strict';
   var shortid = require('shortid');
   var eventSubscribers = {};
+  var loggerOn = false;
 
   var eventLogger = function(){
     var eventLogs = {};
@@ -87,7 +88,7 @@ var eventDispatcher = function(){
       noSuchCallback
     }
 
-  }();
+  }(); // end eventLogger
 
   return {
     on : function(eventName, callback){
@@ -95,9 +96,9 @@ var eventDispatcher = function(){
 
       if (typeof subscribers === 'undefined'){
         subscribers = eventSubscribers[eventName] = [];
-        eventLogger.onEvent(eventName, callback, true);
+        if (loggerOn) eventLogger.onEvent(eventName, callback, true);
       } else {
-        eventLogger.onEvent(eventName, callback, false);
+        if (loggerOn) eventLogger.onEvent(eventName, callback, false);
       }
 
       subscribers.push(callback);
@@ -105,13 +106,13 @@ var eventDispatcher = function(){
 
     once : function(eventName, callback){
       var subscribers = eventSubscribers[eventName];
-      eventLogger.onceEvent(eventName, callback);
+      if (loggerOn) eventLogger.onceEvent(eventName, callback);
 
       if (typeof subscribers === 'undefined'){
         subscribers = eventSubscribers[eventName] = [];
-        eventLogger.onceEvent(eventName, callback, true);
+        if (loggerOn) eventLogger.onceEvent(eventName, callback, true);
       } else {
-        eventLogger.onceEvent(eventName, callback, false);
+        if (loggerOn) eventLogger.onceEvent(eventName, callback, false);
       }
 
       subscribers.push({doOnce: true, fn: callback});
@@ -124,8 +125,7 @@ var eventDispatcher = function(){
       
 
       if (typeof subscribers === 'undefined') {
-        console.log("+++++++++++++++ NO DEFINED SUBSCRIBERS");
-        eventLogger.emitEvent(eventName, data, context, subscribedFunctionsList);
+        if (loggerOn) eventLogger.emitEvent(eventName, data, context, subscribedFunctionsList);
         return; // Nothing to do, abort
       }
       data = (data instanceof Array) ? data : [data];
@@ -140,23 +140,23 @@ var eventDispatcher = function(){
           subscribers[i].apply(context, data);
         }
       }
-      console.log("************* DATA: sfl = " + subscribedFunctionsList);
-      eventLogger.emitEvent(eventName, data, context, subscribedFunctionsList);
+      // console.log("!--------- logger is on: " + loggerOn);
+      if (loggerOn) eventLogger.emitEvent(eventName, data, context, subscribedFunctionsList);
     },
 
     off : function(eventName, existingCallback){
       var subscribers = eventSubscribers[eventName];
-      eventLogger.offEvent(eventName, existingCallback);
+      if (loggerOn) eventLogger.offEvent(eventName, existingCallback);
 
       if (typeof subscribers === 'undefined') {
-        eventLogger.noSuchEvent(eventName);
+        if (loggerOn) eventLogger.noSuchEvent(eventName);
         return; // nothing to do
       }
       
       var callbackIndex = subscribers.indexOf(existingCallback);
 
       if (callbackIndex === -1) {
-        eventLogger.noSuchCallback(existingCallback);
+        if (loggerOn) eventLogger.noSuchCallback(existingCallback);
         return; // nothing to do
       }
 
@@ -165,12 +165,12 @@ var eventDispatcher = function(){
     },
 
     unsubscribeAll : function(eventName){
-      eventLogger.unsubscribeAllEvent(eventName);
+      if (loggerOn) eventLogger.unsubscribeAllEvent(eventName);
 
       try {
 
         if (typeof eventSubscribers[eventName] === 'undefined'){
-          eventLogger.noSuchEvent(eventName);
+          if (loggerOn) eventLogger.noSuchEvent(eventName);
           throw new ReferenceError("No such event: '" + eventName + "' exists", 'eventDispatcher.js', 46);
         }
         return delete eventSubscribers[eventName];
@@ -224,6 +224,18 @@ var eventDispatcher = function(){
 
     eventLog : function(){
       return eventLogger.getEventLogs();
+    },
+
+    eventLoggerOn : function(){
+      loggerOn = true;
+    },
+
+    eventLoggerIsOn : function(){
+      return loggerOn;
+    },
+
+    eventLoggerOff : function(){
+      loggerOn = false;
     }
 
   }
