@@ -35,22 +35,43 @@ var eventDispatcher = function(){
       }
     }
 
-    var emitEvent = function(eventName, data, context){
+    var emitEvent = function(eventName, data, context, subscribedFunctions){
       var eventLog = baseEvent(eventName);
       eventLog.action = "emit";
       eventLog.data = data;
       eventLog.context = context;
+      eventLog.functions = [];
+      subscribedFunctions.forEach(function(callback){
+        console.log("####  cb : " + callback.toString());
+        eventLog.functions.push(callback.name);
+      })
+      eventLog.functions = subscribedFunctions;
     }
 
     var offEvent = function(eventName, existingCallback){
       var eventLog = baseEvent(eventName);
       eventLog.action = "off";
+      if (existingCallback.doOnce){
+        eventLog.existingCallback = {};
+        eventLog.existingCallback.doOnce = true;
+        eventLog.existingCallback.fn = existingCallback.fn.toString();
+      }
       eventLog.existingCallback = existingCallback;
     }
 
     var unsubscribeAllEvent = function(eventName){
       var eventLog = baseEvent(eventName);
       eventLog.action = "unsubscribeAll";
+    }
+
+    var noSuchEvent = function(eventName){
+      var eventLog = baseEvent(eventName);
+      eventLog.warning = "No event: " + eventName + " was found!"
+    }
+
+    var noSuchCallback = function(callback){
+      var eventLog = baseEvent("#OFF is looking for existing callback");
+      eventLog.warning = "No callback: " + callback + " was found!";
     }
 
     var getEventLogs = function(){
@@ -63,7 +84,9 @@ var eventDispatcher = function(){
       emitEvent,
       offEvent,
       unsubscribeAllEvent,
-      getEventLogs
+      getEventLogs,
+      noSuchEvent,
+      noSuchCallback
     }
 
   }();
@@ -99,24 +122,28 @@ var eventDispatcher = function(){
     emit : function(eventName, data, context){
       var subscribers = eventSubscribers[eventName];
       var i;
-      eventLogger.emitEvent(eventName, data, context);
+      var subscribedFunctionsList = [];
+      
 
-      eventLogs[sid].functions = [];
-      if (typeof subscribers === 'undefined') return; // Nothing to do, abort
-
+      if (typeof subscribers === 'undefined') {
+        console.log("+++++++++++++++ NO DEFINED SUBSCRIBERS");
+        eventLogger.emitEvent(eventName, data, context, subscribedFunctionsList);
+        return; // Nothing to do, abort
+      }
       data = (data instanceof Array) ? data : [data];
 
       for (i = 0; i < subscribers.length; i++){
         if (subscribers[i].doOnce){
-          eventLogs[sid].doOnce = "true";
-          eventLogs[sid].functions.push(subscribers[i].fn.toString());
+          subscribedFunctionsList.push(subscribers[i].fn);
           subscribers[i].fn.apply(context, data);
           this.off(eventName, subscribers[i]);
         } else {
-          eventLogs[sid].functions.push(subscribers[i].toString());
+          subscribedFunctionsList.push(subscribers[i]);
           subscribers[i].apply(context, data);
         }
       }
+      console.log("************* DATA: sfl = " + subscribedFunctionsList);
+      eventLogger.emitEvent(eventName, data, context, subscribedFunctionsList);
     },
 
     off : function(eventName, existingCallback){
@@ -124,19 +151,18 @@ var eventDispatcher = function(){
       eventLogger.offEvent(eventName, existingCallback);
 
       if (typeof subscribers === 'undefined') {
-        eventLogs[sid].result = "No event: " + eventName + " was found!";
+        eventLogger.noSuchEvent(eventName);
         return; // nothing to do
       }
       
       var callbackIndex = subscribers.indexOf(existingCallback);
 
       if (callbackIndex === -1) {
-        eventLogs[sid].result = "No callback: " + existingCallback + " found!";
+        eventLogger.noSuchCallback(existingCallback);
         return; // nothing to do
       }
 
       subscribers.splice(callbackIndex, 1);
-      eventLogs[sid].result = callbackFunction + " was deregistered";
 
     },
 
@@ -146,7 +172,7 @@ var eventDispatcher = function(){
       try {
 
         if (typeof eventSubscribers[eventName] === 'undefined'){
-          eventLogs[sid].result = "No such event: '" + eventName + "' exists to unsubscribe from.";
+          eventLogger.noSuchEvent(eventName);
           throw new ReferenceError("No such event: '" + eventName + "' exists", 'eventDispatcher.js', 46);
         }
         return delete eventSubscribers[eventName];
