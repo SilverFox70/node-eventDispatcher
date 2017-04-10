@@ -7,6 +7,10 @@ var util = require('util');
 
 var events = eventSystem.eventDispatcher;
 
+events.eventLoggerOff();
+
+console.log("eventLogger status: ", events.eventLoggerIsOn());
+
 var displayResponse = function(res){
 	var response = res;
 	console.log("from GET: " + response);
