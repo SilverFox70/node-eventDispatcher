@@ -29,9 +29,7 @@ events.emit('alert', 'Sending an alert!');
 
 Subscribing takes the following form: 
 
-```JavaScript
-eventDispatcher.on(eventName, callback);
-```
+`eventDispatcher.on(eventName, callback);`
 
 eventName is the name of the event you wish to listen for, and
 callback is the function to execute when this event is called.
