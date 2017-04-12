@@ -12,7 +12,7 @@ Clone or fork this repository to you local machine. Navigate to the root and run
 In any script, simply ```require('./eventDispatcher');```. This will give you the ability to subscribe to events, set callbacks for events, and send events (triggers) to the dispatcher.
 
 For example:
-```bash
+```JavaScript
 var eventSystem = require('./eventDispatcher');
 var events = eventSystem.eventDispatcher;
 
