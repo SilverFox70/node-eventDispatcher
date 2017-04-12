@@ -11,6 +11,7 @@ Clone or fork this repository to you local machine. Navigate to the root and run
 ## eventDispatcher
 In any script, simply ```require('./eventDispatcher');```. This will give you the ability to subscribe to events, set callbacks for events, and send events (triggers) to the dispatcher.
 
+
 For example:
 ```JavaScript
 var eventSystem = require('./eventDispatcher');
@@ -28,24 +29,26 @@ events.emit('alert', 'Sending an alert!');
 
 Subscribing takes the following form: 
 
-```eventDispatcher.on(_eventName_, _callback_);```
+```JavaScript
+eventDispatcher.on(eventName, callback);
+```
 
-_eventName_ is the name of the event you wish to listen for, and
-_callback_ is the function to execute when this event is called.
+eventName is the name of the event you wish to listen for, and
+callback is the function to execute when this event is called.
 
 Triggering an event requires at least the _eventName_, but the whole form accepts the following:
 
-```eventDispatcher.emit(_eventName_, _args_, _context_);```
+```eventDispatcher.emit(eventName, args, context_);```
 
 Optional arguments can be passed in _args_ to the event, and _context_ defines the _this_ scope of the callback function set when subscribed.
 
 Unsubscribing a single event can be done like so:
 
-```eventDispatcher.off(_eventName_, _existingCallback_);```
+```eventDispatcher.off(eventName, existingCallback);```
 
 To unsubscribe all callbacks from a given event use:
 
-```eventDispatcher.unsubscribeAll(_eventName_);``` 
+```eventDispatcher.unsubscribeAll(eventName);``` 
 
 ## Modules
 The examples here use the 'Request' module for making http requests. If you get an error that this module cannot be found, double check that you have run ```npm install``` at the root.
