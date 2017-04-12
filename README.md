@@ -1,16 +1,18 @@
-# Event Driven Design
+# EventDispatcher
 
 ## Overview
 This is small project centered around creating an *Event Dispatcher* to listen to and route events between modules. It is based on the _Publish-Subscribe_ pattern using the event dispatcher as the broadcaster.
 
+
 ## Getting Started
 Clone or fork this repository to you local machine. Navigate to the root and run ```npm install``` to install dependencies. To see the current tests of the broadcaster, try ```npm run main```.
+
 
 ## eventDispatcher
 In any script, simply ```require('./eventDispatcher');```. This will give you the ability to subscribe to events, set callbacks for events, and send events (triggers) to the dispatcher.
 
 For example:
-```
+```bash
 var eventSystem = require('./eventDispatcher');
 var events = eventSystem.eventDispatcher;
 
@@ -22,6 +24,7 @@ events.on('alert', sendMessage);
 
 events.emit('alert', 'Sending an alert!');
 ```
+
 
 Subscribing takes the following form: 
 
