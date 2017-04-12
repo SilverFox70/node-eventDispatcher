@@ -4,8 +4,10 @@
 This is small project centered around creating an *Event Dispatcher* to listen to and route events between modules. It is based on the _Publish-Subscribe_ pattern using the event dispatcher as the broadcaster.
 
 
+
 ## Getting Started
 Clone or fork this repository to you local machine. Navigate to the root and run ```npm install``` to install dependencies. To see the current tests of the broadcaster, try ```npm run main```.
+
 
 
 ## eventDispatcher
@@ -47,6 +49,8 @@ Unsubscribing a single event can be done like so:
 To unsubscribe all callbacks from a given event use:
 
 ```eventDispatcher.unsubscribeAll(eventName);``` 
+
+
 
 ## Modules
 The examples here use the 'Request' module for making http requests. If you get an error that this module cannot be found, double check that you have run ```npm install``` at the root.
