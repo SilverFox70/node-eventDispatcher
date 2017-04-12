@@ -12,15 +12,20 @@ var myfn = function(){
     return this;
   };
 
+  var thenAgain = function(callback){
+    callback("Hello, again!");
+  }
+
   return {
     double,
-    then
+    then,
+    thenAgain
   }
 
 }();
 
 myfn.double(2).then(function(num){
   console.log(num);
-}).then(function(num2){
+}).thenAgain(function(num2){
   console.log(num2);
 });
