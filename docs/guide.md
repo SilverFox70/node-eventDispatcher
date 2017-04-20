@@ -14,7 +14,7 @@ var events = eventSystem.eventDispatcher;
 
 ```events.emit(eventName, data, context)``` - notifies all subscribers that _eventName_ has occured, invoking all subscribed callbacks associated with that event.
 
-```events.once(eventName,callback)``` - subscribes to an event and invokes the callback function only once. Once the function is invoked, eventDispatcher removes the callback from the event using the ```off``` funciton internally.
+```events.once(eventName,callback)``` - subscribes to an event and invokes the callback function only once. Once the function is invoked, eventDispatcher removes the callback from the event using the ```off``` function internally.
 
 ```events.off(eventName, existingCallback)``` -  unsubscribes the _existingCallback_ from the event of _eventName_.
 
@@ -24,7 +24,7 @@ var events = eventSystem.eventDispatcher;
 
 ```events.getSubscriberFunctionsByEventName(eventName)``` - returns an array of all functions associated with the given event.
 
-```events.isValidEvent(eventName)``` - returns **true* if there is an event of the given name registered, and **false** otherwise.
+```events.isValidEvent(eventName)``` - returns **true** if there is an event of the given name registered, and **false** otherwise.
 
 ```events.hasListenersOnEvent(eventName)``` - returns **true** if the given event is being listened to, and **false** otherwise.
 
