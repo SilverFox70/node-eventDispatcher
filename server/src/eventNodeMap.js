@@ -36,16 +36,20 @@ var findEmitEventsandArgs = function(line, index, lineNumber){
 }
 
 fileLoader.getFileList(__dirname).then(function(files){
+  
   files.forEach(function(file){
     console.log(file);
   });
+
   fileLoader.createFilesObject(files).then(function(rawfiles){
+    var eventNodeMap = {};
+    eventNodeMap.files = [];
     rawfiles.forEach(function(rawfile){
       console.log('-----------------------------------------------------');
       console.log(clc.bold(rawfile.fileName));
 
       var fileEventMap = {};
-      fileEventMap.file = rawfile.fileName;
+      fileEventMap.fileName = rawfile.fileName;
       fileEventMap.subscribedEvents = [];
       fileEventMap.invokedEvents = [];
 
@@ -71,7 +75,13 @@ fileLoader.getFileList(__dirname).then(function(files){
         console.log( clc.blackBright((i+1) + ' : ') + lines[i]);
       } // End for...loop
 
-      console.log(clc.blue(JSON.stringify(fileEventMap, null, '  ')));
-    });
-  });
+      eventNodeMap.files.push(fileEventMap);
+    }); // end forEach
+
+    console.log(clc.blueBright(JSON.stringify(eventNodeMap, null, '  ')));
+    
+  }); // end createFilesObject
+
 });
+
+
