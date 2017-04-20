@@ -12,7 +12,7 @@ var events = eventSystem.eventDispatcher;
 
 ```events.on(eventName, callback)``` - subscribes to event of *eventName* and set the callback function as *callback*. If an event of the given name already exists, then the callback will be appended to the list of subscribers to that event in EventDispatcher. If the given event name does not exist yet, it will be created.
 
-```events.emit(eventName, data, context)``` - notifies all subscribers that _eventName_ has occured, invoking all subscribed callbacks associated with that event.
+```events.emit(eventName, data, context)``` - notifies all subscribers that _eventName_ has occured, invoking all subscribed callbacks associated with that event. The **data** can be a single argument, an array of arguments, or an object. **Context** allows you to define the _this_ identifier for use in the subscribed functions that are called.
 
 ```events.once(eventName,callback)``` - subscribes to an event and invokes the callback function only once. Once the function is invoked, eventDispatcher removes the callback from the event using the ```off``` function internally.
 
