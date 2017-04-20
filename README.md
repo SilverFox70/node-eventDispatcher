@@ -50,7 +50,8 @@ To unsubscribe all callbacks from a given event use:
 
 ```eventDispatcher.unsubscribeAll(eventName);``` 
 
-
+## To Do:
+Currently, if you subscribe using `events.on(eventName, callback)` and there is already an existing callback of the same name registered to *eventName* unexpected behavior could occur. This needs to be tested.
 
 ## Modules
 The examples here use the 'Request' module for making http requests. If you get an error that this module cannot be found, double check that you have run ```npm install``` at the root.
