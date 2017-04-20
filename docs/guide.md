@@ -27,7 +27,7 @@ var events = eventSystem.eventDispatcher;
 ```isValidEvent(eventName)``` - returns *true* if there is an event of the given name registered, and *false* otherwise.
 
 ```getALlSubscribedFunctions()``` - returns an object that contains every event name and every callback function associated with that event. For example, see the code below:
-```
+```Javascript
 var list = events.getAllSubscribedFunctions();
 var listKeys = Object.keys(list);
 listKeys.forEach(function(key){
@@ -38,7 +38,7 @@ listKeys.forEach(function(key){
 });
 ```
 Would log the following type of output to the console:
-```
+```Bash
 event name: messaging
 sendMessage = function (msg){
   console.log(msg);
