@@ -132,11 +132,11 @@ var eventDispatcher = function(){
 
       for (i = 0; i < subscribers.length; i++){
         if (subscribers[i].doOnce){
-          subscribedFunctionsList.push(subscribers[i].fn);
+          subscribedFunctionsList.push(subscribers[i].fn); // for logging use
           subscribers[i].fn.apply(context, data);
           this.off(eventName, subscribers[i]);
         } else {
-          subscribedFunctionsList.push(subscribers[i]);
+          subscribedFunctionsList.push(subscribers[i]);    // for logging use
           subscribers[i].apply(context, data);
         }
       }
