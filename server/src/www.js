@@ -13,11 +13,22 @@ var www = function(){
 			} else {
 				res = body;
 			}
-			events.trigger('getComplete', res);
+			events.emit('getComplete', res);
 		});
 	};
 
-	events.subscribe('get', get);
+	var post = function(url, form){
+		request({
+			uri: url,
+			method: post,
+			form: form
+		}, function(error, response, body){
+			events.emit('postComplete', body);
+		});
+	}
+
+	events.on('get', get);
+	events.on('post', post);
 	
 }();
 
