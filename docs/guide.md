@@ -5,11 +5,11 @@ EventDispatcher is a lightweight 'broadcaster' implementation of a "publish-subs
 
 ## API
 Given the following:
-```
+```Javascript
 var eventSystem = require('./eventDispatcher');
 var events = eventSystem.eventDispatcher;
 ```
-Javascript
+
 ```events.on(eventName, callback)``` - subscribes to event of *eventName* and set the callback function as *callback*. If an event of the given name already exists, then the callback will be appended to the list of subscribers to that event in EventDispatcher. If the given event name does not exist yet, it will be created.
 
 ```events.emit(eventName, data, context)``` - notifies all subscribers that _eventName_ has occured, invoking all subscribed callbacks associated with that event.
