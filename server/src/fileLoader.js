@@ -66,7 +66,12 @@ var fileLoader = function(){
 
 }();
 
-var findEventAndCallback = function(line, index){
+var clc = require('cli-color');
+
+var yellow = clc.yellow;
+var cyan = clc.cyan;
+
+var findOnEventNameAndCallback = function(line, index){
   var openP = line.indexOf('(', index);
   var closeP = line.indexOf(')', openP);
   var substr = line.substring(openP +1, closeP);
@@ -74,7 +79,8 @@ var findEventAndCallback = function(line, index){
   substr.split(',').forEach(function(part){
     rawEventandCB.push(part.trim().replace(/(\'|\"")/g, ''));
   });
-  console.log('eventName: ' + rawEventandCB[0] + '\tcallback: ' + rawEventandCB[1]);
+  console.log(yellow('eventName: ') + cyan(rawEventandCB[0]) + yellow('\tcallback: ') + cyan(rawEventandCB[1]));
+  return { eventName: rawEventandCB[0], callback: rawEventandCB[1]};
 }
 
 fileLoader.getFileList(__dirname).then(function(files){
@@ -85,14 +91,23 @@ fileLoader.getFileList(__dirname).then(function(files){
     rawfiles.forEach(function(rawfile){
       console.log('-----------------------------------------------------');
       console.log(rawfile.fileName);
+
+      var fileEventMap = {};
+      fileEventMap.file = rawfile.fileName;
+      fileEventMap.subscribedEvents = [];
+
       var lines = rawfile.fileText.split('\n');
       for(var i = 0; i < lines.length ; i++){
         var index = lines[i].indexOf('.on');
+
         if ( index !== -1){
-          findEventAndCallback(lines[i], index);
+           fileEventMap.subscribedEvents.push(findOnEventNameAndCallback(lines[i], index));
         }
+
         console.log( (i+1) + ' : ' + lines[i]);
       }
+
+      console.log(clc.blue(JSON.stringify(fileEventMap, null, '  ')));
     });
   });
 });
