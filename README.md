@@ -1,7 +1,7 @@
 # EventDispatcher
 
 ## Overview
-This is small project centered around creating an *Event Dispatcher* to listen to and route events between modules. It is based on the _Publish-Subscribe_ pattern using the event dispatcher as the broadcaster. The Event Dispatcher itself has no direct knowledge of who is emitting or listening to events. s
+This is small project centered around creating an *Event Dispatcher* to listen to and route events between modules. It is based on the _Publish-Subscribe_ pattern using the event dispatcher as the broadcaster. The Event Dispatcher itself has no direct knowledge of who is emitting or listening to events. 
 
 
 
@@ -40,7 +40,7 @@ Triggering an event requires at least the _eventName_, but the whole form accept
 
 ```eventDispatcher.emit(eventName, args, context_);```
 
-Optional arguments can be passed in _args_ to the event, and _context_ defines the _this_ scope of the callback function set when subscribed.
+Optional arguments can be passed in _args_ to the event but must be an array or object, and _context_ defines the _this_ scope of the callback function set when subscribed.
 
 Unsubscribing a single event can be done like so:
 
