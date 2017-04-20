@@ -20,13 +20,23 @@ var events = eventSystem.eventDispatcher;
 
 ```events.unsubscribeAll(eventName)``` - removes all subscribed callbacks from the given event and deletes that _eventName_ event from EventDispatcher.
 
-```getEventNames()``` - returns an array of event names that are registered with EventDispatcher.
+```events.getEventNames()``` - returns an array of event names that are registered with EventDispatcher.
 
-```getSubscriberFunctionsByEventName(eventName)``` - returns an array of all functions associated with the given event.
+```events.getSubscriberFunctionsByEventName(eventName)``` - returns an array of all functions associated with the given event.
 
-```isValidEvent(eventName)``` - returns *true* if there is an event of the given name registered, and *false* otherwise.
+```events.isValidEvent(eventName)``` - returns **true* if there is an event of the given name registered, and **false** otherwise.
 
-```getAllSubscribedFunctions()``` - returns an object that contains every event name and every callback function associated with that event. For example, see the code below:
+```events.hasListenersOnEvent(eventName)``` - returns **true** if the given event is being listened to, and **false** otherwise.
+
+```events.eventLog()``` - returns an event log json object that contains a wealth of data about all events registered and called.
+
+```events.eventLoggerOn()``` - turn on the internal event logger (default is that the logger is *off*).
+
+```events.eventLoggerOff()``` - turn the internal event logger off.
+
+```events.eventLoggerIsOn()``` - returns **true** if the event logger is *on*, and **false** if the logger is *off*.
+
+```events.getAllSubscribedFunctions()``` - returns an object that contains every event name and every callback function associated with that event. For example, see the code below:
 ```Javascript
 var list = events.getAllSubscribedFunctions();
 var listKeys = Object.keys(list);
