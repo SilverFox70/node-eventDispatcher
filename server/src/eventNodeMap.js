@@ -7,6 +7,24 @@ var yellow = clc.yellow;
 var cyan = clc.cyan;
 var mag = clc.magenta;
 
+var createEventList = function(eventNodeList){
+  var eventList = {};
+  eventNodeList.files.forEach(function(file){
+    file.subscribedEvents.forEach(function(subscribedEvent){
+      var sevent = subscribedEvent.eventName;
+      console.log("eventName: " + sevent);
+      if (!eventList[sevent]){
+        eventList[sevent] = [];
+      }
+      eventList[sevent].push({functionName: subscribedEvent.callback, 
+                              file: file.fileName, 
+                              once: subscribedEvent.once, 
+                              line: subscribedEvent.line});
+    });
+  });
+  console.log(clc.green(JSON.stringify(eventList, null, '  ')));
+}
+
 var findOnEventNameAndCallback = function(line, index, lineNumber, doOnce){
   var openP = line.indexOf('(', index);
   var closeP = line.indexOf(')', openP);
@@ -80,7 +98,7 @@ fileLoader.getFileList(__dirname).then(function(files){
     }); // end forEach
 
     console.log(clc.blueBright(JSON.stringify(eventNodeMap, null, '  ')));
-
+    createEventList(eventNodeMap);
   }); // end createFilesObject
 
 });
