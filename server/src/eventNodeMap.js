@@ -45,6 +45,7 @@ fileLoader.getFileList(__dirname).then(function(files){
     var eventNodeMap = {};
     eventNodeMap.files = [];
     rawfiles.forEach(function(rawfile){
+      if (rawfile.fileName === 'eventDispatcher.js' || rawfile.fileName === 'eventNodeMap.js') return;
       console.log('-----------------------------------------------------');
       console.log(clc.bold(rawfile.fileName));
 
@@ -79,7 +80,7 @@ fileLoader.getFileList(__dirname).then(function(files){
     }); // end forEach
 
     console.log(clc.blueBright(JSON.stringify(eventNodeMap, null, '  ')));
-    
+
   }); // end createFilesObject
 
 });
