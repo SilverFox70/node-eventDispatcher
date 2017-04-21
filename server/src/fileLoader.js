@@ -66,34 +66,6 @@ var fileLoader = function(){
 
 }();
 
-var findEventAndCallback = function(line, index){
-  var openP = line.indexOf('(', index);
-  var closeP = line.indexOf(')', openP);
-  var substr = line.substring(openP +1, closeP);
-  var rawEventandCB = [];
-  substr.split(',').forEach(function(part){
-    rawEventandCB.push(part.trim().replace(/(\'|\"")/g, ''));
-  });
-  console.log('eventName: ' + rawEventandCB[0] + '\tcallback: ' + rawEventandCB[1]);
-}
+module.exports = { fileLoader: fileLoader};
 
-fileLoader.getFileList(__dirname).then(function(files){
-  files.forEach(function(file){
-    console.log(file);
-  });
-  fileLoader.createFilesObject(files).then(function(rawfiles){
-    rawfiles.forEach(function(rawfile){
-      console.log('-----------------------------------------------------');
-      console.log(rawfile.fileName);
-      var lines = rawfile.fileText.split('\n');
-      for(var i = 0; i < lines.length ; i++){
-        var index = lines[i].indexOf('.on');
-        if ( index !== -1){
-          findEventAndCallback(lines[i], index);
-        }
-        console.log( (i+1) + ' : ' + lines[i]);
-      }
-    });
-  });
-});
 
