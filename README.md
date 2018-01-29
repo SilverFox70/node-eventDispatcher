@@ -1,5 +1,7 @@
 # EventDispatcher
 
+[![codebeat badge](https://codebeat.co/badges/57d60cc6-cc47-4577-815d-9eccb18c4046)](https://codebeat.co/projects/github-com-silverfox70-node-eventdispatcher-master)
+
 ## Overview
 This is small project centered around creating an *Event Dispatcher* to listen to and route events between modules. It is based on the _Publish-Subscribe_ pattern using the event dispatcher as the broadcaster. The Event Dispatcher itself has no direct knowledge of who is emitting or listening to events. 
 
