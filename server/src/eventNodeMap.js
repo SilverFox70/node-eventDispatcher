@@ -12,7 +12,7 @@ var createEventList = function(eventNodeList){
   eventNodeList.files.forEach(function(file){
     file.subscribedEvents.forEach(function(subscribedEvent){
       var sevent = subscribedEvent.eventName;
-      console.log("eventName: " + sevent);
+      console.log('eventName: ' + sevent);
       if (!eventList[sevent]){
         eventList[sevent] = [];
       }
