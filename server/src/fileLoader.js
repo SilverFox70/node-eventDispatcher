@@ -62,7 +62,7 @@ var fileLoader = function(){
     createFilesObject,
     getFileList,
     readFile
-  }
+  };
 
 }();
 
