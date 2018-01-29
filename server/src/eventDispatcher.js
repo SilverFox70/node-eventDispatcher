@@ -65,12 +65,12 @@ var eventDispatcher = function(){
 
     var noSuchEvent = function(eventName){
       var eventLog = baseEvent(eventName);
-      eventLog.warning = "No event: " + eventName + " was found!"
+      eventLog.warning = 'No event: ' + eventName + ' was found!';
     }
 
     var noSuchCallback = function(callback){
-      var eventLog = baseEvent("#OFF is looking for existing callback");
-      eventLog.warning = "No callback: " + callback + " was found!";
+      var eventLog = baseEvent('#OFF is looking for existing callback');
+      eventLog.warning = 'No callback: ' + callback + ' was found!';
     }
 
     var getEventLogs = function(){
@@ -193,7 +193,7 @@ var eventDispatcher = function(){
           if (loggerOn) {
             eventLogger.noSuchEvent(eventName);
           }
-          throw new ReferenceError("No such event: '" + eventName + "' exists", 'eventDispatcher.js', 46);
+          throw new ReferenceError('No such event: ' + eventName + ' exists', 'eventDispatcher.js', 46);
         }
         return delete eventSubscribers[eventName];
 
