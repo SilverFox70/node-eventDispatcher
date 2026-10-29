@@ -1,12 +1,12 @@
 # FBP execution slices — start here
 
-Partition: SP1-r1, 2026-10-28. Master: [r5](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
+Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Next work is S00: the identity contract design. No implementation slice is approved or started.** This request produced plans, not branches/code. Every slice is one recognizable feature/task branch, with internal bounded tasks; it is sized for one focused agent run rather than arbitrarily cutting files or copying the parent's large T tasks.
+**Current work: review [S00 / IC1-r1](../fbp-identity-contract.md).** S00 design tasks are complete under the user's execution/submission request; see [receipt](S00-execution.md). The proposal is not yet accepted or merged. No later feature has started.
 
 **Always execute in numeric order. Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
 
-The choice to retain FIFO and use job/correlation/packet/lineage identity is compatible, but r4 did not freeze an exact metadata API or result-lookup lifetime. S00 settles this before agents implement incompatible interpretations. It does not implement a durable store. No current slice expands into rich public packet codecs, cycles, hosted agents or a drag/drop editor; the extension seams and graphical inspection remain included.
+The choice to retain FIFO and use job/correlation/packet/lineage identity is compatible, but r4 did not freeze an exact metadata API or result-lookup lifetime. IC1-r1 now supplies one concrete proposal with downstream amendments, pending human acceptance. It does not implement a durable store. No current slice expands into rich public packet codecs, cycles, hosted agents or a drag/drop editor; the extension seams and graphical inspection remain included.
 
 ## Branch features and exact order
 
@@ -56,6 +56,6 @@ Suggested execution request: “Execute SNN using its saved plan and SP1. Implem
 
 ## Completion record
 
-All slices: not-started. All merge SHAs: null. Approved execution sets: none. Planning/source anchor: master9cb666d. Current package's npm test is the historical exit1 placeholder; S01 establishes proper baseline and tooling. No new production test/coverage/build claim is made during slicing.
+S00: design complete, awaiting review/acceptance/merge. S01–S19: not-started. All merge SHAs: null. Authorized execution: S00.A–C design and PR submission only,2026-10-29. Planning/source anchor: master9cb666d. Current package's npm test is the historical exit1 placeholder; S01 establishes proper baseline and tooling. No new production test/coverage/build claim is made during slicing.
 
-Use the master ledger for exact behavior and SP1's final-owner table for split proof handoffs; don't copy condition assertions into competing test matrices. S00 adds identity assertions after a concrete decision, then updates dependent readiness. Per-slice journals retain actual commands/red/green/current-candidate outputs. This index must never say “merged” without the actual default-branch commit evidence.
+Use the master ledger for exact behavior and SP1's final-owner table for split proof handoffs; don't copy condition assertions into competing test matrices. C55–C65 now specify the identity proposal; dependent release still requires its acceptance and actual predecessor merge. Per-slice journals retain actual commands/red/green/current-candidate outputs. This index must never say “merged” without the actual default-branch commit evidence.

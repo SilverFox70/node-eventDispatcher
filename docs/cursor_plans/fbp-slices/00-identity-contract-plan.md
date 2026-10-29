@@ -3,9 +3,9 @@
 Contract version: 2  
 Slice revision: r1, 2026-10-28  
 Readiness: ready-for-review  
-Execution: not-started; approved task set: none  
+Execution: design tasks S00.A–C completed for review; user authorized execution/submission2026-10-29; IC1 acceptance/merge pending  
 Branch: `codex/fbp-00-identity-contract`  
-Parent: master r5 / SC-FBP-4 + partition SP1; identity amendment pending S00.
+Parent: master r6 / SC-FBP-4 + proposed IC1-r1 / SP1-r2; acceptance pending.
 
 ## Story and branch outcome
 
@@ -27,7 +27,7 @@ Source: master `9cb666dc6c846512d64edd39770b7eb2f213256c`; old JS prototype insp
 
 ## Solution contract and condition ownership
 
-Shared contract: master SC-FBP-4 + [SP1](shared-execution.md); S00 is the only identity-amendment producer. Conditions contributed by this feature: **Design-only: add new identity conditions after concrete outcomes are frozen; no invented behavior asserted now.**. Exact fixtures/assertions live in the master's authoritative ledger; final condition completion owners (including split cases) are in SP1. Reuse predecessor assertions rather than inventing a second truth table. New identity rows are added only by S00's settled amendment.
+Shared contract: master SC-FBP-4 + [SP1](shared-execution.md); S00 is the only identity-amendment producer. Conditions contributed by this feature: **C55–C65 (design assignment only; final implementation proof owners are downstream).** Exact fixtures/assertions live in the master's authoritative ledger; final condition completion owners (including split cases) are in SP1. Reuse predecessor assertions rather than inventing a second truth table. C55–C65 are specified by IC1-r1; acceptance remains pending. S00 walkthroughs are not implementation proof.
 
 ## Observable behavior and boundaries
 
@@ -99,3 +99,8 @@ Commands must return actual individual exits. `npm run coverage` uses the all-de
 | G7 integration | PASS for proposed story | Acceptance demonstration + handoff + next-merge condition; parent T labels do not hide owner |
 
 Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.
+
+
+## S00 delivery
+
+[IC1-r1](../fbp-identity-contract.md) is the settled proposal; [execution receipt](S00-execution.md) records choices, walkthroughs and checks. C55–C65 are assigned future proof obligations, not implemented runtime tests. The design is submitted for review; no successor or merge is claimed.

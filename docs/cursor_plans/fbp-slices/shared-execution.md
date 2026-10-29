@@ -1,16 +1,16 @@
 # Branch-slice execution contract SP1
 
-Revision: SP1-r1, 2026-10-28. Parent: [master r5](../fbp-foundation-plan.md), architecture SC-FBP-4. This file partitions the parent's T0–T12 into branch features; it does not silently amend packet semantics. The master C00–C54 ledger is authoritative for behavior. Slice contributions/final acceptance owners below replace its broad T labels for scheduling only.
+Revision: SP1-r2, 2026-10-28. Parent: [master r6](../fbp-foundation-plan.md), architecture SC-FBP-4. This file partitions the parent's T0–T12 into branch features; it does not silently amend packet semantics. The master C00–C65 ledger is authoritative for behavior. Slice contributions/final acceptance owners below replace its broad T labels for scheduling only.
 
 ## Purpose, source identity and readiness
 
-Source inspected at master 9cb666dc6c846512d64edd39770b7eb2f213256c. Repository has old package/scripts and no implementation of the new runtime. Initial user dirty artifacts: .DS_Store and .feedback-log/. No relevant AGENTS.md/canonical architecture guides or reusable baseline index existed at the original planning preflight. Repository guidance was subsequently added: read [AGENTS.md](../../../AGENTS.md) and [the documentation map](../../AGENT_FILES.md). No baseline capture is implied by that setup. Read shared batch-plan workflow and execution-contract v2. No source/dependency/config changes, branches or execution agents were started by slicing. New plan files are working artifacts; current request is to save plans, not implement them.
+Source inspected at master 9cb666dc6c846512d64edd39770b7eb2f213256c. Repository has old package/scripts and no implementation of the new runtime. Initial user dirty artifacts: .DS_Store and .feedback-log/. No relevant AGENTS.md/canonical architecture guides or reusable baseline index existed at the original planning preflight. Repository guidance was subsequently added: read [AGENTS.md](../../../AGENTS.md) and [the documentation map](../../AGENT_FILES.md). No baseline capture is implied by that setup. Read shared batch-plan workflow and execution-contract v2. No source/dependency/config changes, branches or execution agents were started by slicing. Those planning-only statements describe the original preflight. The subsequent user request authorizes S00 design execution, branch creation and PR submission; no runtime/successor implementation or merge is inferred.
 
-This is a deliberately sequential branch series. Each slice is one recognizable feature/task branch with bounded internal tasks, designed for one focused execution session; it is a scope target, not a wall-clock or context-window guarantee. If a real prerequisite fails, save the journal and stop that slice instead of absorbing unrelated work. S00 and S01–S03 are ready-for-review proposals. S04–S19 remain blocked-on-decision until S00 freezes the shared identity contract and records approval. Dependencies that have not merged are a separate execution precondition, not an invented behavioral defect.
+This is a deliberately sequential branch series. Each slice is one recognizable feature/task branch with bounded internal tasks, designed for one focused execution session; it is a scope target, not a wall-clock or context-window guarantee. If a real prerequisite fails, save the journal and stop that slice instead of absorbing unrelated work. S00 design is complete for review; S01–S03 remain ready-for-review proposals. S04–S19 remain blocked-on-decision until S00 freezes the shared identity contract and records approval. Dependencies that have not merged are a separate execution precondition, not an invented behavioral defect.
 
-### The identity gap must not be hidden
+### Identity proposal and release gate
 
-After r4, the user asked whether FIFO competes with a durable job ID. The agreed direction was: FIFO per connection; correlation across branches; distinct packet/lineage identity; retained ID lookup and durability require separate storage/lifecycle decisions. Existing optional key alone does not settle this. The current public packet shape in master §5 is therefore provisional for implementation. S00 is a bounded design task, not permission for S04/S08/S11/S13 to invent conflicting metadata rules. S00 must publish exact types, propagation/duplicate/error rules, lookup scope, fixture assertions and affected-slice amendment before those slices can be approved. S01–S03 have no packet API dependency and can be reviewed independently, but default launch order remains00→01→...→19.
+S00 has delivered [IC1-r1](../fbp-identity-contract.md): complete version1 packet/job/parent identity, distinct runId, explicit derive/forward behavior, (jobId,key) joins, bounded immediate lineage and no base result-index/dedup/persistence service. The exact proposal is applied to downstream r2 plans. Human acceptance is still pending; writing or submitting this design does not release S04–S19. See [S00 receipt](S00-execution.md) for authorization, walkthroughs and actual documentation-check evidence. S01–S03 remain independently reviewable; default sequencing still requires actual S00 review/merge first.
 
 No other initial-profile choices are reopened by slicing: latest LTS, TS-first dual builds, JSON admission with generic transport seams, acyclic topology with future loop horizon, trusted server registry, browser-safe model, real-runtime public testing, and graph plus event/subscription inspection remain SC-FBP-4 proposals. Custom codecs/objects, cycles, durable results and an agent engine are future projects, not extra tasks for the execution agent.
 
@@ -23,13 +23,13 @@ No other initial-profile choices are reopened by slicing: latest LTS, TS-first d
 5. Stop at reviewable feature completion; distinguish implementation complete, proof verified, gates passed/known-failure/unavailable, and publication state. Commit/push/PR/merge only within the user's authorization for that execution. Never bypass hooks/branch protection.
 6. Record review/merge evidence and advance next slice only after actual merge. If parent contracts materially change, revise affected plans/statuses and revalidate proofs rather than treating plan titles as compatible interfaces.
 
-Index/manifest are navigation and merge state, not an alternative behavioral ledger. Task completion evidence goes into `SNN-execution.md` beside its plan and is linked from the master execution journal. Future execution files do not exist yet and are not fictional successful receipts. Plan changes/history must be preserved; never overwrite previously approved contract revisions silently.
+Index/manifest are navigation and merge state, not an alternative behavioral ledger. Task completion evidence goes into `SNN-execution.md` beside its plan and is linked from the master execution journal. S00-execution.md records the actual design work; successor journals are created only when their execution starts and never stand in for fictional successful receipts. Plan changes/history must be preserved; never overwrite previously approved contract revisions silently.
 
 ## Shared contracts, producers and consumers
 
 | Boundary | Producer | Frozen artifact/interface | Consumer | Cross-boundary final proof |
 | --- | --- | --- | --- | --- |
-| Identity/correlation/lineage | S00 | versioned identity-contract.md, exact amendment and added master conditions | S04 packet, S08 runtime, S10/S11 combinators, S13 helper, S14 harness | owners assigned by S00; S19 accepts all receipts |
+| Identity/correlation/lineage | S00 | IC1-r1 proposal, exact amendment and C55–C65 | S04 packet, S08 runtime, S10/S11 combinators, S13 helper, S14 harness | owners assigned below; S19 accepts all receipts |
 | Runtime/toolchain | S01 | pins, lock, dual dist/declarations, baseline record | all later slices | S16 clean install; S19 final applicability |
 | Active dispatcher relationships | S03 | DispatcherTopology/inspect/owner/publisher API | S12 scope, S18 graphic | C51 S03 → C52 S12 → C54 S18 |
 | Validated packet → transport | S04 | frozen Packet + generic FIFO/error contract | S05 contracts, S08 runtime | C11/C48 S04 → C34 S08 |
@@ -83,8 +83,15 @@ Master rows retain exact fixtures/assertions. Ownership here assigns their final
 | C41–C43,C46 | S17 | C46 catalog/export S05 + shared graph validation S06 |
 | C44,C54 | S18 | graphic/UI over real inspection model |
 | C47 | S19 | all receipts on one applicable candidate |
+| C55,C56 | S04 | root/derived envelope factories and exact refusal rules |
+| C57,C63 | S08 | ID-preserving admission, deliberate duplicates and job/run separation |
+| C58 | S13 final aggregate | S10 map/filter; S13 function helper/metadata context |
+| C59,C60 | S10 | broadcast derived children; merge forwards originals |
+| C61,C62 | S11 | job-scoped key groups, lineage order and bounds |
+| C64 | S14 | identity-transparent bounded helper results |
+| C65 | S12 | no accidental packet-history/result retention |
 
-S00 adds identity conditions only after choosing concrete outcomes; downstream plans then link row IDs instead of inventing branch-local versions. All55 existing rows must have one final owner, including split subcases; no condition can be “someone else's test” without a named producer and acceptance owner.
+S00 added C55–C65 with concrete proposed outcomes; downstream plans link these master rows rather than competing versions. All66 rows must have one final owner, including split subcases; no condition can be “someone else's test” without a named producer and acceptance owner.
 
 ## Task template and stop conditions
 
@@ -92,4 +99,4 @@ Every slice task inherits its plan's exact allowed files, behavior list, conditi
 
 Stop and save evidence if: identity amendment absent/unapproved for S04 onward; predecessor not merged; moved HEAD invalidates prerequisite; tool cannot establish source coverage; schema policy needs unsupported/private behavior; ownership/missing/error/side-effect contract ambiguous; passing requires widening public types or implementing future features; branch too large because the story gained a new contract; protected branch/hook rejects publication. Do independent already-authorized work, but never use time elapsed as approval.
 
-No surprise approval ceremony is added for routine mechanics within a user-authorized slice. S00's new public identity/lookup behavior is a genuine consequential amendment; the human reviews its concrete artifact once. This user's request currently authorizes planning only, so no implementation is marked approved-for-execution.
+No surprise approval ceremony is added for routine mechanics within a user-authorized slice. S00's new public identity/lookup behavior is a genuine consequential amendment; the human reviews its concrete artifact once. The user authorized S00 design execution and review submission2026-10-29. No successor implementation, IC1 acceptance or merge is inferred.

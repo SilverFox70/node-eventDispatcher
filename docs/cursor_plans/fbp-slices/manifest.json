@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "revision": "SP1-r1",
-  "parent_master_revision": "r5",
-  "architecture_contract": "SC-FBP-4",
+  "revision": "SP1-r2",
+  "parent_master_revision": "r6",
+  "architecture_contract": "SC-FBP-4 + proposed IC1-r1",
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "S00 design contract; no execution approved",
+  "next_planning_action": "Review S00 / IC1-r1; do not start S01 until S00 is accepted and merged",
   "slices": [
     {
       "id": "S00",
@@ -15,14 +15,34 @@
       "plan": "00-identity-contract-plan.md",
       "branch": "codex/fbp-00-identity-contract",
       "readiness": "ready-for-review",
-      "execution_status": "not-started",
+      "execution_status": "complete",
       "previous": null,
       "next": "S01",
       "base": "master after previous slice merge",
       "merge_sha": null,
-      "conditions": [],
+      "conditions": [
+        "C55",
+        "C56",
+        "C57",
+        "C58",
+        "C59",
+        "C60",
+        "C61",
+        "C62",
+        "C63",
+        "C64",
+        "C65"
+      ],
       "blocked_by": [],
-      "legacy_master_work": "Pre-T3 design gate; resolves the FIFO/identity discussion after master r4"
+      "legacy_master_work": "Pre-T3 design gate; resolves the FIFO/identity discussion after master r4",
+      "review_status": "awaiting-review",
+      "execution_receipt": "S00-execution.md",
+      "authorized_tasks": [
+        "S00.A",
+        "S00.B",
+        "S00.C (design review preparation only)"
+      ],
+      "contract_acceptance": "pending"
     },
     {
       "id": "S01",
@@ -99,10 +119,12 @@
         "C06",
         "C07",
         "C11",
-        "C48"
+        "C48",
+        "C55",
+        "C56"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T3"
     },
@@ -125,7 +147,7 @@
         "C32"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T4 contracts/component/catalog portion"
     },
@@ -150,7 +172,7 @@
         "C50"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T4 model/validator/compiler portion"
     },
@@ -170,7 +192,7 @@
         "C32"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T4 typed builder portion"
     },
@@ -192,10 +214,12 @@
         "C14",
         "C15",
         "C34",
-        "C49"
+        "C49",
+        "C57",
+        "C63"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T5 plus required safe baseline lifecycle"
     },
@@ -219,7 +243,7 @@
         "C25"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T7 lifecycle/diagnostics minus scope"
     },
@@ -238,10 +262,13 @@
       "conditions": [
         "C16",
         "C17",
-        "C20"
+        "C20",
+        "C58",
+        "C59",
+        "C60"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T6 excluding keyed join"
     },
@@ -260,10 +287,12 @@
       "conditions": [
         "C18",
         "C19",
-        "C20"
+        "C20",
+        "C61",
+        "C62"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T6 keyed join"
     },
@@ -281,10 +310,11 @@
       "merge_sha": null,
       "conditions": [
         "C52",
-        "C53"
+        "C53",
+        "C65"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T7 scope + T4 Mermaid export portion"
     },
@@ -304,10 +334,11 @@
         "C35",
         "C36",
         "C32",
-        "C50"
+        "C50",
+        "C58"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T8 function helper and recipe portion"
     },
@@ -326,10 +357,11 @@
       "conditions": [
         "C37",
         "C38",
-        "C39"
+        "C39",
+        "C64"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T8 public /testing portion"
     },
@@ -351,7 +383,7 @@
         "C31"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T9"
     },
@@ -376,7 +408,7 @@
         "C50"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T10"
     },
@@ -399,7 +431,7 @@
         "C46"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T11 server/packaging boundary"
     },
@@ -421,7 +453,7 @@
         "C54"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T11 visual portion / R15"
     },
@@ -441,7 +473,7 @@
         "C47"
       ],
       "blocked_by": [
-        "S00 identity amendment reviewed and applied"
+        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
       ],
       "legacy_master_work": "T12"
     }
@@ -501,6 +533,23 @@
     "C51": "S03",
     "C52": "S12",
     "C53": "S12",
-    "C54": "S18"
+    "C54": "S18",
+    "C55": "S04",
+    "C56": "S04",
+    "C57": "S08",
+    "C58": "S13",
+    "C59": "S10",
+    "C60": "S10",
+    "C61": "S11",
+    "C62": "S11",
+    "C63": "S08",
+    "C64": "S14",
+    "C65": "S12"
+  },
+  "identity_contract": {
+    "path": "../fbp-identity-contract.md",
+    "revision": "IC1-r1",
+    "status": "proposed-for-review",
+    "accepted_by": null
   }
 }
