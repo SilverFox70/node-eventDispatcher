@@ -5,7 +5,7 @@ Slice revision: r2, 2026-10-29
 Readiness: blocked-on-decision  
 Execution: not-started; approved task set: none  
 Branch: `codex/fbp-11-keyed-join`  
-Parent: master r6 / SC-FBP-4 + proposed IC1-r1 / SP1-r2; acceptance pending.
+Parent: master r6 / SC-FBP-4 + proposed IC1-r2 / SP1-r2; acceptance pending.
 
 ## Story and branch outcome
 
@@ -22,17 +22,17 @@ Source: master `9cb666dc6c846512d64edd39770b7eb2f213256c`; old JS prototype insp
 - Base: updated `master` after predecessor is actually merged; never an unmerged sibling feature branch.
 - Required predecessor evidence: S10 merged into master, with accepted proof and exact merge SHA recorded.
 - Next: [S12 — Inspect all registered graphs and event relationships](12-inspection-export-plan.md).
-- Readiness gate: IC1-r1 is now concrete and applied to this proposal; execution remains blocked until its human acceptance and actual S00 merge.
+- Readiness gate: IC1-r2 is now concrete and applied to this proposal; execution remains blocked until its human acceptance and actual S00 merge.
 - Legacy master work: T6 keyed join.
 
 ## Solution contract and condition ownership
 
-Shared contract: master SC-FBP-4 + [SP1](shared-execution.md); S00 is the only identity-amendment producer. Conditions contributed by this feature: **C18, C19, C20, C61, C62**. Exact fixtures/assertions live in the master's authoritative ledger; final condition completion owners (including split cases) are in SP1. Reuse predecessor assertions rather than inventing a second truth table. C55–C65 are specified by IC1-r1; acceptance remains pending. S00 walkthroughs are not implementation proof.
+Shared contract: master SC-FBP-4 + [SP1](shared-execution.md); S00 is the only identity-amendment producer. Conditions contributed by this feature: **C18, C19, C20, C61, C62**. Exact fixtures/assertions live in the master's authoritative ledger; final condition completion owners (including split cases) are in SP1. Reuse predecessor assertions rather than inventing a second truth table. C55–C65 are specified by IC1-r2; acceptance remains pending. S00 walkthroughs are not implementation proof.
 
 ## Observable behavior and boundaries
 
 1. Implement joinByKey exact schema composition/outputId, required key, maxKeys128 default/1–4096 bound, duplicate/incomplete/capacity refusals and completion order; preserve S00-defined job/key/parent rules.
-2. Use merge readiness semantics without positional zip or infinite completed-key history; same key after completed group is a new group unless S00 explicitly revised that rule before release.
+2. Use merge readiness semantics without positional zip or infinite completed-key history; same (jobId,key) after completion fails JOIN_GROUP_COMPLETED under IC1-r2, with bounded retained markers and explicit capacity refusal.
 3. Use real channels and runtime for interleaving a:x1,a:y2,b:y20,b:x10 → y{a:2,b:20},x{a:1,b:10}. Test missing key and each error without an earlier unrelated validation masking it.
 
 ### Exact allowed-change boundary
@@ -98,9 +98,9 @@ npm run coverage
 
 Commands must return actual individual exits. `npm run coverage` uses the all-delivered-production denominator, including never-executed changed files. Types-only/docs-only scopes are coverage N/A with reason; S00 does not run implementation tests. UI/Figma/DB checks are N/A unless the feature explicitly owns them: S17 production Next boundary, S18 SVG/keyboard/UI, no DB/Figma source in this series. No external publication is part of the acceptance demonstration.
 
-## IC1-r1 amendment and added proof scope
+## IC1-r2 amendment and added proof scope
 
-Canonical proposed identity contract: [IC1-r1](../fbp-identity-contract.md). Join by exact(jobId,key), not key alone. Parent IDs are ordered by input declaration; output is a fresh derived packet.2–256 inputs, maxKeys counts incomplete job/key tuples; duplicate-before-completion/reuse-after-completion semantics remain as specified. C61/C62 prove cross-job and mismatched-revision keys do not collide. Human acceptance remains pending; this section settles the proposal, not release authority.
+Canonical proposed identity contract: [IC1-r2](../fbp-identity-contract.md). Join by exact(jobId,key), not key alone. Parent IDs are ordered by input declaration; output is a fresh derived packet.2–256 inputs, maxKeys counts incomplete job/key tuples; distinct-packet duplicate-before-completion fails DUPLICATE_KEY; reuse-after-completion fails JOIN_GROUP_COMPLETED; bounded completedGroupLimit exhaustion fails JOIN_HISTORY_CAPACITY without eviction. C61/C62 prove cross-job and mismatched-revision keys do not collide. Human acceptance remains pending; this section settles the proposal, not release authority.
 
 Additional master condition contributions: **C61, C62**. Final owners are SP1-r2/manifest; reuse predecessor subcase receipts.
 
@@ -108,7 +108,7 @@ Additional master condition contributions: **C61, C62**. Final owners are SP1-r2
 
 | Gate | Verdict | Concrete artifact pointers |
 | --- | --- | --- |
-| G1 interfaces | GAP: IC1-r1 acceptance pending | Shared contract + Observable behavior; IC1-r1 freezes proposed interfaces; human acceptance still blocks execution |
+| G1 interfaces | GAP: IC1-r2 acceptance pending | Shared contract + Observable behavior; IC1-r2 freezes proposed interfaces; human acceptance still blocks execution |
 | G2 ownership | PASS | Previous/base/next, numbered boundaries, SP1 handoff graph; sole feature branch above |
 | G3 proof scenarios | PASS for settled proposed fixtures; acceptance pending | Master condition pointers and named assertions; no invented test result |
 | G4 effects/recovery | GAP if identity propagation affects this feature | Master §§6/7/14 + explicit exclusions; no implicit persistence/retry; identity choice held at S00 |
@@ -117,3 +117,5 @@ Additional master condition contributions: **C61, C62**. Final owners are SP1-r2
 | G7 integration | Proposed; release blocked by S00 | Acceptance demonstration + handoff + next-merge condition; parent T labels do not hide owner |
 
 Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.
+
+IC1-r2 amendment: implement the canonical ledger reservation, capacity, concurrency, failure and cleanup rules; add controlled-race and small-capacity fixtures to the existing condition tests. Never release protection records during a live run or retry failed work automatically. Exact new API settings remain subject to contract review before implementation.

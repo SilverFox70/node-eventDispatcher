@@ -5,7 +5,7 @@ Slice revision: r2, 2026-10-29
 Readiness: blocked-on-decision  
 Execution: not-started; approved task set: none  
 Branch: `codex/fbp-13-function-authoring`  
-Parent: master r6 / SC-FBP-4 + proposed IC1-r1 / SP1-r2; acceptance pending.
+Parent: master r6 / SC-FBP-4 + proposed IC1-r2 / SP1-r2; acceptance pending.
 
 ## Story and branch outcome
 
@@ -22,12 +22,12 @@ Source: master `9cb666dc6c846512d64edd39770b7eb2f213256c`; old JS prototype insp
 - Base: updated `master` after predecessor is actually merged; never an unmerged sibling feature branch.
 - Required predecessor evidence: S12 merged into master, with accepted proof and exact merge SHA recorded.
 - Next: [S14 — Test nodes and whole graphs with the real runtime](14-public-test-sdk-plan.md).
-- Readiness gate: IC1-r1 is now concrete and applied to this proposal; execution remains blocked until its human acceptance and actual S00 merge.
+- Readiness gate: IC1-r2 is now concrete and applied to this proposal; execution remains blocked until its human acceptance and actual S00 merge.
 - Legacy master work: T8 function helper and recipe portion.
 
 ## Solution contract and condition ownership
 
-Shared contract: master SC-FBP-4 + [SP1](shared-execution.md); S00 is the only identity-amendment producer. Conditions contributed by this feature: **C35, C36, C32, C50, C58**. Exact fixtures/assertions live in the master's authoritative ledger; final condition completion owners (including split cases) are in SP1. Reuse predecessor assertions rather than inventing a second truth table. C55–C65 are specified by IC1-r1; acceptance remains pending. S00 walkthroughs are not implementation proof.
+Shared contract: master SC-FBP-4 + [SP1](shared-execution.md); S00 is the only identity-amendment producer. Conditions contributed by this feature: **C35, C36, C32, C50, C58**. Exact fixtures/assertions live in the master's authoritative ledger; final condition completion owners (including split cases) are in SP1. Reuse predecessor assertions rather than inventing a second truth table. C55–C65 are specified by IC1-r2; acceptance remains pending. S00 walkthroughs are not implementation proof.
 
 ## Observable behavior and boundaries
 
@@ -102,9 +102,9 @@ npm run coverage
 
 Commands must return actual individual exits. `npm run coverage` uses the all-delivered-production denominator, including never-executed changed files. Types-only/docs-only scopes are coverage N/A with reason; S00 does not run implementation tests. UI/Figma/DB checks are N/A unless the feature explicitly owns them: S17 production Next boundary, S18 SVG/keyboard/UI, no DB/Figma source in this series. No external publication is part of the acceptance demonstration.
 
-## IC1-r1 amendment and added proof scope
+## IC1-r2 amendment and added proof scope
 
-Canonical proposed identity contract: [IC1-r1](../fbp-identity-contract.md). FunctionContext is {signal,packet:PacketMetadata}; handler reads ctx.packet.key/jobId, never ctx.key. Helper validates result then derivePacket(value,[input]) and awaited send. Adopt C58 final-owner integration proof and update recipe to use real root factories, not shorthand raw envelopes. Human acceptance remains pending; this section settles the proposal, not release authority.
+Canonical proposed identity contract: [IC1-r2](../fbp-identity-contract.md). FunctionContext is {signal,packet:PacketMetadata}; handler reads ctx.packet.key/jobId, never ctx.key. Helper validates result then derivePacket(value,[input]) and awaited send. Adopt C58 final-owner integration proof and update recipe to use real root factories, not shorthand raw envelopes. Human acceptance remains pending; this section settles the proposal, not release authority.
 
 Additional master condition contributions: **C58**. Final owners are SP1-r2/manifest; reuse predecessor subcase receipts.
 
@@ -112,7 +112,7 @@ Additional master condition contributions: **C58**. Final owners are SP1-r2/mani
 
 | Gate | Verdict | Concrete artifact pointers |
 | --- | --- | --- |
-| G1 interfaces | GAP: IC1-r1 acceptance pending | Shared contract + Observable behavior; IC1-r1 freezes proposed interfaces; human acceptance still blocks execution |
+| G1 interfaces | GAP: IC1-r2 acceptance pending | Shared contract + Observable behavior; IC1-r2 freezes proposed interfaces; human acceptance still blocks execution |
 | G2 ownership | PASS | Previous/base/next, numbered boundaries, SP1 handoff graph; sole feature branch above |
 | G3 proof scenarios | PASS for settled proposed fixtures; acceptance pending | Master condition pointers and named assertions; no invented test result |
 | G4 effects/recovery | GAP if identity propagation affects this feature | Master §§6/7/14 + explicit exclusions; no implicit persistence/retry; identity choice held at S00 |

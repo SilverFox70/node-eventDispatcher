@@ -76,3 +76,9 @@ Design implementation: complete. Behavioral runtime proof: N/A (not implemented)
 ### User-directed readability follow-up (2026-10-29)
 
 Added the canonical human-reasonable code/structure rules and routed them through AGENTS, architecture/development docs, planning/execution/review runbooks and SP1. Relevant future slice allowlists now permit cohesive private capability modules behind their public entries; no new public behavior or orchestration owner. Around 200 lines is a strong readability guideline with useful exceptions, not a hard gate or artificial-splitting target. Shared utilities and JSDoc must add clarity; line-by-line narration is a refactoring signal. Documentation integrity passes for 54 Markdown files/337 local links/20 slices/66 condition owners, and this follow-up diff passes whitespace validation. No application code, runtime contract acceptance or successor state changed.
+
+## Accepted direction amendment — 2026-10-29
+
+The user accepted the follow-up recommendations. [IC1-r2](../fbp-identity-contract.md) supersedes the duplicate-forwarding and completed-group-reuse defaults recorded above; earlier walkthroughs remain historical design evidence. Same packet/node/run delivery is refused before a second invocation, including concurrent/in-flight/failed cases. Completed job/key groups cannot reopen. Both ledgers are bounded with explicit capacity errors and no live-run eviction. No automatic retry or restart-safe guarantee; global deduplication, payload lookup and persistence remain deferred. The 2–256 join bound stays.
+
+Updated master C20/C57/C62 and downstream S08/S11 handoffs. Exact proposed ledger settings and integration need design review; user acceptance of principles is not approval of every newly written interface. No runtime implementation/tests or merge claimed. Guidance integrity check passes; it checks links/order only.

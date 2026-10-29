@@ -5,7 +5,7 @@ Slice revision: r1, 2026-10-28
 Readiness: ready-for-review  
 Execution: not-started; approved task set: none  
 Branch: `codex/fbp-03-dispatcher-topology`  
-Parent: master r6 / SC-FBP-4 + proposed IC1-r1 / SP1-r2; acceptance pending.
+Parent: master r6 / SC-FBP-4 + proposed IC1-r2 / SP1-r2; acceptance pending.
 
 ## Story and branch outcome
 
@@ -27,7 +27,7 @@ Source: master `9cb666dc6c846512d64edd39770b7eb2f213256c`; old JS prototype insp
 
 ## Solution contract and condition ownership
 
-Shared contract: master SC-FBP-4 + [SP1](shared-execution.md); S00 is the only identity-amendment producer. Conditions contributed by this feature: **C51**. Exact fixtures/assertions live in the master's authoritative ledger; final condition completion owners (including split cases) are in SP1. Reuse predecessor assertions rather than inventing a second truth table. C55–C65 are specified by IC1-r1; acceptance remains pending. S00 walkthroughs are not implementation proof.
+Shared contract: master SC-FBP-4 + [SP1](shared-execution.md); S00 is the only identity-amendment producer. Conditions contributed by this feature: **C51**. Exact fixtures/assertions live in the master's authoritative ledger; final condition completion owners (including split cases) are in SP1. Reuse predecessor assertions rather than inventing a second truth table. C55–C65 are specified by IC1-r2; acceptance remains pending. S00 walkthroughs are not implementation proof.
 
 ## Observable behavior and boundaries
 

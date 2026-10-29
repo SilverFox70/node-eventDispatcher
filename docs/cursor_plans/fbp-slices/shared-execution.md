@@ -10,7 +10,7 @@ This is a deliberately sequential branch series. Each slice is one recognizable 
 
 ### Identity proposal and release gate
 
-S00 has delivered [IC1-r1](../fbp-identity-contract.md): complete version1 packet/job/parent identity, distinct runId, explicit derive/forward behavior, (jobId,key) joins, bounded immediate lineage and no base result-index/dedup/persistence service. The exact proposal is applied to downstream r2 plans. Human acceptance is still pending; writing or submitting this design does not release S04–S19. See [S00 receipt](S00-execution.md) for authorization, walkthroughs and actual documentation-check evidence. S01–S03 remain independently reviewable; default sequencing still requires actual S00 review/merge first.
+S00 has delivered [IC1-r2](../fbp-identity-contract.md): complete version1 packet/job/parent identity, distinct runId, explicit derive/forward behavior, (jobId,key) joins, bounded immediate lineage and no base result-index/persistence service; bounded per-run duplicate protection. The exact proposal is applied to downstream r2 plans. Human acceptance is still pending; writing or submitting this design does not release S04–S19. See [S00 receipt](S00-execution.md) for authorization, walkthroughs and actual documentation-check evidence. S01–S03 remain independently reviewable; default sequencing still requires actual S00 review/merge first.
 
 No other initial-profile choices are reopened by slicing: latest LTS, TS-first dual builds, JSON admission with generic transport seams, acyclic topology with future loop horizon, trusted server registry, browser-safe model, real-runtime public testing, and graph plus event/subscription inspection remain SC-FBP-4 proposals. Custom codecs/objects, cycles, durable results and an agent engine are future projects, not extra tasks for the execution agent.
 
@@ -29,7 +29,7 @@ Index/manifest are navigation and merge state, not an alternative behavioral led
 
 | Boundary | Producer | Frozen artifact/interface | Consumer | Cross-boundary final proof |
 | --- | --- | --- | --- | --- |
-| Identity/correlation/lineage | S00 | IC1-r1 proposal, exact amendment and C55–C65 | S04 packet, S08 runtime, S10/S11 combinators, S13 helper, S14 harness | owners assigned below; S19 accepts all receipts |
+| Identity/correlation/lineage | S00 | IC1-r2 proposal, exact amendment and C55–C65 | S04 packet, S08 runtime, S10/S11 combinators, S13 helper, S14 harness | owners assigned below; S19 accepts all receipts |
 | Runtime/toolchain | S01 | pins, lock, dual dist/declarations, baseline record | all later slices | S16 clean install; S19 final applicability |
 | Active dispatcher relationships | S03 | DispatcherTopology/inspect/owner/publisher API | S12 scope, S18 graphic | C51 S03 → C52 S12 → C54 S18 |
 | Validated packet → transport | S04 | frozen Packet + generic FIFO/error contract | S05 contracts, S08 runtime | C11/C48 S04 → C34 S08 |
@@ -84,7 +84,7 @@ Master rows retain exact fixtures/assertions. Ownership here assigns their final
 | C44,C54 | S18 | graphic/UI over real inspection model |
 | C47 | S19 | all receipts on one applicable candidate |
 | C55,C56 | S04 | root/derived envelope factories and exact refusal rules |
-| C57,C63 | S08 | ID-preserving admission, deliberate duplicates and job/run separation |
+| C57,C63 | S08 | ID-preserving admission, bounded duplicate prevention and job/run separation |
 | C58 | S13 final aggregate | S10 map/filter; S13 function helper/metadata context |
 | C59,C60 | S10 | broadcast derived children; merge forwards originals |
 | C61,C62 | S11 | job-scoped key groups, lineage order and bounds |

@@ -2,11 +2,11 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: review [S00 / IC1-r1](../fbp-identity-contract.md).** S00 design tasks are complete under the user's execution/submission request; see [receipt](S00-execution.md). The proposal is [submitted as PR #4](https://github.com/SilverFox70/node-eventDispatcher/pull/4), not yet accepted or merged. No later feature has started.
+**Current work: review [S00 / IC1-r2](../fbp-identity-contract.md).** S00 design tasks are complete under the user's execution/submission request; see [receipt](S00-execution.md). The proposal is [submitted as PR #4](https://github.com/SilverFox70/node-eventDispatcher/pull/4), not yet accepted or merged. No later feature has started.
 
 **Always execute in numeric order. Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
 
-The choice to retain FIFO and use job/correlation/packet/lineage identity is compatible, but r4 did not freeze an exact metadata API or result-lookup lifetime. IC1-r1 now supplies one concrete proposal with downstream amendments, pending human acceptance. It does not implement a durable store. No current slice expands into rich public packet codecs, cycles, hosted agents or a drag/drop editor; the extension seams and graphical inspection remain included.
+The choice to retain FIFO and use job/correlation/packet/lineage identity is compatible, but r4 did not freeze an exact metadata API or result-lookup lifetime. IC1-r2 now supplies one concrete proposal with downstream amendments, pending human acceptance. It does not implement a durable store. No current slice expands into rich public packet codecs, cycles, hosted agents or a drag/drop editor; the extension seams and graphical inspection remain included.
 
 ## Branch features and exact order
 
