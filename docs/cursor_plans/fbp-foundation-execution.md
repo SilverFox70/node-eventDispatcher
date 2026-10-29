@@ -4,7 +4,7 @@ Updated2026-10-29. Branch codex/fbp-00-identity-contract, based on origin/master
 
 | Slice | Authorized scope | Execution result | Review / merge | Receipt |
 | --- | --- | --- | --- | --- |
-| S00 | Design tasks A–C, branch/commit/push/PR submission | Concrete IC1-r1 proposal and downstream amendments complete | Human acceptance pending; no merge | [S00 journal](fbp-slices/S00-execution.md) |
+| S00 | Design tasks A–C, branch/commit/push/PR submission | Concrete IC1-r1 proposal and downstream amendments complete | [PR #4](https://github.com/SilverFox70/node-eventDispatcher/pull/4) open for review; human acceptance pending; no merge | [S00 journal](fbp-slices/S00-execution.md) |
 | S01–S19 | Not requested | Not started | No merge; S04 onward additionally gated on IC1 acceptance | [Slice index](fbp-slices/INDEX.md) |
 
 [IC1-r1](fbp-identity-contract.md) is a review proposal, not already accepted API or implemented source. [Manifest](fbp-slices/manifest.json) is the machine-readable order/status; the master C00–C65 ledger owns behavioral conditions. This execution index links actual evidence, not a duplicate condition matrix.

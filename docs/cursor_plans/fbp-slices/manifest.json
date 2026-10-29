@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S00 / IC1-r1; do not start S01 until S00 is accepted and merged",
+  "next_planning_action": "Review PR #4 / IC1-r1; S01 waits for actual S00 acceptance and merge",
   "slices": [
     {
       "id": "S00",
@@ -35,14 +35,16 @@
       ],
       "blocked_by": [],
       "legacy_master_work": "Pre-T3 design gate; resolves the FIFO/identity discussion after master r4",
-      "review_status": "awaiting-review",
+      "review_status": "submitted",
       "execution_receipt": "S00-execution.md",
       "authorized_tasks": [
         "S00.A",
         "S00.B",
         "S00.C (design review preparation only)"
       ],
-      "contract_acceptance": "pending"
+      "contract_acceptance": "pending",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/4",
+      "design_commit": "614bff7efb6ac42ae9e3e96ed327c86b9f35819d"
     },
     {
       "id": "S01",

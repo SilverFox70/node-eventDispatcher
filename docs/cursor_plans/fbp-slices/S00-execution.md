@@ -64,4 +64,10 @@ Design implementation: complete. Behavioral runtime proof: N/A (not implemented)
 - `git diff --check`: exit2 for intentional existing Markdown two-space hard-break metadata formatting. No source whitespace/config is changed to conceal it; preserved plan archives retain their original bytes. This formatting diagnostic is recorded separately from the passing document-integrity check.
 - Pre-submission review inspected the current dispatcher logger IDs (not workflow IDs), obsolete package scripts and all added public-envelope consumers. No runtime tests/coverage/typecheck claims; unavailable future toolchain commands were not run.
 
-PR and final candidate links will be added after actual submission.
+### Actual review submission
+
+- [PR #4](https://github.com/SilverFox70/node-eventDispatcher/pull/4): OPEN, non-draft, base master, head codex/fbp-00-identity-contract; submission verified through gh pr view.
+- Prerequisite commit:6ad3760. Design/amendment commit:614bff7efb6ac42ae9e3e96ed327c86b9f35819d. This final receipt update is separate documentation metadata; no new design/source behavior.
+- GitHub mergeStateStatus=CLEAN at verification; statusCheckRollup=[] (no configured PR checks reported, not a claimed CI pass).
+- Title/body/branch verified after write. PR attached to the originating chat. User/maintainer identity acceptance and merge remain pending; no review approval or later slice is inferred.
+- Validation receipts stay tied to the design/metadata scope; this PR link adds no runtime proof. Local .DS_Store and .feedback-log stay untracked.
