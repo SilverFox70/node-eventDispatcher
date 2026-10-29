@@ -1,19 +1,23 @@
 # NodeDispatcher → typed, installable FBP foundation
 
 Contract version: 2  
-Plan revision: r4, 2026-10-28  
-Shared solution contract: SC-FBP-4 (sections 3–8 and 14; section13 records future direction)  
-Status: ready-for-review — proposed contracts, not approved implementation  
-Released tasks: none; proposed scope T0–T12.  
+Plan revision: r6, 2026-10-29  
+Shared solution contract: SC-FBP-4 + proposed IC1-r2 identity amendment / SP1-r2
+Status: S00 design complete for review; IC1 acceptance pending; S04–S19 remain blocked-on-decision  
+Authorized execution: S00.A–C design and review submission only (2026-10-29). No later feature or merge authorized.  
 Tracking identity: fbp-foundation, a local identifier rather than a Jira ticket.
 
-Revision history: [r3](fbp-foundation-plan.r3.md) is preserved verbatim. r4 makes node-graph and event/subscription visualization an explicit base-framework requirement, including a public inspection/export API and a graphical sample.  [r2](fbp-foundation-plan.r2.md) is preserved verbatim. r3 adds explicit rich-packet, feedback-cycle and agent-application extension goals, with bounded present-day architecture proofs. Earlier revisions are historical. [r1](fbp-foundation-plan.r1.md) is preserved verbatim. r2 replaced r1's latest-stable policy with latest LTS, JS-first source with TypeScript, tag-only ports with runtime contracts, and adds a public authoring/testing SDK plus Next.js installation proof. r1/r2 are historical and must not be used as alternative execution contracts. This update changes planning artifacts only; implementation has not been requested.
+Revision history: [r3](fbp-foundation-plan.r3.md) is preserved verbatim. r4 makes node-graph and event/subscription visualization an explicit base-framework requirement, including a public inspection/export API and a graphical sample.  [r2](fbp-foundation-plan.r2.md) is preserved verbatim. r3 adds explicit rich-packet, feedback-cycle and agent-application extension goals, with bounded present-day architecture proofs. Earlier revisions are historical. [r1](fbp-foundation-plan.r1.md) is preserved verbatim. r2 replaced r1's latest-stable policy with latest LTS, JS-first source with TypeScript, tag-only ports with runtime contracts, and adds a public authoring/testing SDK plus Next.js installation proof. r1/r2 are historical and must not be used as alternative execution contracts. This history records planning-only updates; S00 design execution was subsequently authorized on2026-10-29.
+
+**Execution starts at [the ordered slice index](fbp-slices/INDEX.md), not the legacy T task list.** [r5](fbp-foundation-plan.r5.md) preserves the pre-S00 proposal; [r4](fbp-foundation-plan.r4.md) preserves the previously published master. [IC1-r2](fbp-identity-contract.md) now freezes one concrete proposed packet/job/lineage/key/lookup contract for human review. SP1-r2 partitions ownership/order; the master C00–C65 ledger is authoritative for proof. S00 design is complete, not merged/accepted; S04–S19 remain blocked until the identity amendment is accepted. S01–S03 remain independently reviewable and no later slice has started.
 
 ## 1. Outcome, recommendation and integrated milestones
 
 Build an installable framework for reusable asynchronous processes connected through named ports and bounded FIFO channels. Make ordinary nodes easy to write as functions in TypeScript or JavaScript, while advanced streaming nodes have explicit lifecycle control. The same contracts should support type checking, runtime validation, documentation, node fixtures and a future visual graph editor.
 
 **Recommendation: use TypeScript from the first new module.** This is a small legacy prototype without a working test suite; delaying typed port APIs would cause avoidable public-interface migration. Ship built JavaScript and generated declarations, so users and agents can still author JavaScript nodes. Layer the convenience APIs and visual tools on this foundation, rather than bolting type safety onto a completed untyped runtime. TypeScript does not validate incoming JSON; runtime schemas are a separate required boundary.
+
+**Development quality direction (user,2026-10-29):** follow [human-reasonable code and structure](../agent-rules/readability-and-structure.md) throughout these slices. Aim for cohesive ordinary source files around a couple of hundred lines or less, ideally a screen-sized unit of behavior; use meaningful file/folder boundaries, deliberate shared/library functions and plain code. JSDoc explains useful API contracts and non-obvious rationale, not every line. Size is a strong design/review guideline with reasoned exceptions, not a hard cap or permission for artificial fragmentation. Public facade filenames in this plan do not require monolithic implementations; SP1/individual slice allowlists permit bounded private modules.
 
 | Stage | Tasks | Integrated result |
 | --- | --- | --- |
@@ -60,7 +64,7 @@ Sources inspected: [Node downloads](https://nodejs.org/en/download), [official r
 
 ## 3. Requirements, invariants and exclusions — SC-FBP-4
 
-R1 latest LTS/reproducible builds; R2 legacy dispatcher calling compatibility and correctness; R3 externally defined graphs/named ports; R4 bounded FIFO backpressure; R5 per-run state/packet isolation; R6 streams/fan-out/fan-in/keyed join; R7 drain/cancel/timeout/failure semantics; R8 bounded diagnostics and load evidence; R9 clean package installation/cookbook; **R10 typed and runtime-validated port contracts; R11 human/agent-friendly node authoring; R12 public node/graph testing; R13 Next server runtime/client model separation; R14 keep packet representation and topology policies separable so richer data and controlled feedback can be added without replacing transport/process execution; R15 expose all explicitly registered graph, event and subscription relationships through a renderer-independent inspection/export interface.**
+R1 latest LTS/reproducible builds; R2 legacy dispatcher calling compatibility and correctness; R3 externally defined graphs/named ports; R4 bounded FIFO backpressure; R5 per-run state/packet isolation; R6 streams/fan-out/fan-in/keyed join; R7 drain/cancel/timeout/failure semantics; R8 bounded diagnostics and load evidence; R9 clean package installation/cookbook; **R10 typed and runtime-validated port contracts; R11 human/agent-friendly node authoring; R12 public node/graph testing; R13 Next server runtime/client model separation; R14 keep packet representation and topology policies separable so richer data and controlled feedback can be added without replacing transport/process execution; R15 expose all explicitly registered graph, event and subscription relationships through a renderer-independent inspection/export interface; R16 preserve separate job/packet/run/parent identity with explicit correlation and lookup boundaries (IC1 proposal).**
 
 I1 invalid graph executes no process; I2 successful channel delivery is once/FIFO to its single reader (not durable/external exactly-once); I3 close drains, abort explicitly discards; I4 fresh process context/queues per run; I5 first fatal transition wins; I6 no automatic node/provider/run retry or implied rollback; I7 diagnostics are bounded metadata, not packet transport; I8 no executable handlers/dependencies/secrets in graph/catalog JSON or client imports; I9 tests use production validation/runtime, not a second interpreter.
 
@@ -92,11 +96,16 @@ Payload schema mismatch from public run.send rejects INPUT_CONTRACT before enque
 
 Descriptor authority clarification: describeRegistry validates declared examples against real contracts before export. /model validates Catalog structure/allowed JSON-schema descriptors and graph topology/contract consistency; it does not execute application validators or promise arbitrary JSON Schema payload evaluation in the browser. Browser examples are explicitly authored, public fixtures, never sampled live user data. The application author owns their publication suitability. JSON-schema export uses draft2020-12, throws on unrepresentable schemas, and never uses a fallback-to-any conversion. Supported string formats initially limited to UUID and ISO date-time; all other format checks rejected until explicitly added with parity fixtures. Canonical JSON sorts object keys, preserves array order, excludes nonsemantic description/example annotations from equality, and retains all assertion keywords. Zod's documented core def.type/check discriminants provide the allowlist traversal; unknown schema/check kind is a refusal, not silently supported. Schema semantic definitions are immutable by author contract; no application may mutate validator internals after registration.
 
-### Core signatures (replaces r1 tag-only API)
+### Core signatures (IC1-r2 proposal supersedes the earlier key-only envelope)
 
 ```ts
 type Json = null | boolean | number | string | Json[] | {[key:string]:Json};
-type Packet<T = Json> = Readonly<{value:T;key?:string}>;
+type PacketMetadata = Readonly<{
+  version: 1; packetId: string; jobId: string;
+  parentPacketIds: readonly string[]; key?: string;
+}>;
+type Packet<T = Json> = Readonly<PacketMetadata & { value: T }>;
+type FunctionContext = Readonly<{ signal: AbortSignal; packet: PacketMetadata }>;
 type ContractBase = Readonly<{id:string;representationId:string;schema:Json}>;
 type PortMap = Readonly<Record<string,ContractBase>>;
 // Contract<T> extends ContractBase; Port maps retain their concrete Contract<T> members.
@@ -114,14 +123,17 @@ defineComponent<I extends PortMap,O extends PortMap>(spec:{
 defineFunction<I,O>(spec:{
   id:string;version:number;title:string;description:string;
   input:Contract<I>;output:Contract<O>;
-  handler(value:Readonly<I>,ctx:{signal:AbortSignal;key?:string}):O|Promise<O>;
+  handler(value:Readonly<I>,ctx:FunctionContext):O|Promise<O>;
 }):Component<{in:Contract<I>},{out:Contract<O>}>;
-packet<T extends Json>(value:T,options?:{key?:string}):Packet<T>;
+packet<T extends Json>(value:T,options?:{jobId?:string;key?:string}):Packet<T>;
+derivePacket<T extends Json>(value:T,parents:readonly Packet[],options?:{key?:string}):Packet<T>;
 compileGraph(spec:unknown,registry:Registry):CompileResult;
 startNetwork(graph:CompiledGraph,options?:{
   signal?:AbortSignal;timeoutMs?:number;diagnosticLimit?:number;
 }):NetworkRun;
 ```
+
+Canonical identity allocation, validation, error precedence and propagation are in [IC1-r2](fbp-identity-contract.md). Runtime implementation remains blocked on its acceptance; no agent may invent ctx.key or a key-only envelope from historical snippets.
 
 The notation above omits helper constraints for readability; T4 must preserve exact literal port keys/schema-inferred JSON payloads in generated declarations. Concrete acceptance: context.send('missing',...) fails tsc, context.send('out',packet('wrong')) fails for numeric out, and a numeric handler returning a string fails at definition (T8 function helper proof). No any in exported authoring/graph contracts; erased internals use unknown and narrow it. If typed APIs cannot satisfy these fixtures, T4 is incomplete, not permitted to widen them.
 
@@ -141,7 +153,7 @@ T8 writes docs/node-authoring.md and templates/node/ recipe consumable by humans
 
 ## 6. Transport, execution, lifecycle and composition
 
-JSON packet: finite numbers/strings/booleans/null, dense arrays/plain data-property objects; reject undefined/nonfinite numbers/accessors/symbols/classes/functions/cycles/sparse arrays. Max nesting64 and UTF-8 JSON size1MiB; key absent or nonempty string <=128. Copy/deep-freeze; public send revalidates so handwritten Packet cannot bypass isolation. Invalid packet rejects INVALID_PACKET before enqueue; arrays remain one value; EOF is iterator completion, not null. Packet and contract validation are distinct tests.
+JSON packet value: finite numbers/strings/booleans/null, dense arrays/plain data-property objects; reject undefined/nonfinite numbers/accessors/symbols/classes/functions/cycles/sparse arrays. Max nesting64 and UTF-8 JSON size1MiB; key absent or nonempty string <=128. Copy/deep-freeze; public send revalidates so handwritten Packet cannot bypass isolation. Invalid packet rejects INVALID_PACKET before enqueue; arrays remain one value; EOF is iterator completion, not null. Packet and contract validation are distinct tests. IC1 adds version1 packet/job/parent metadata, root/derived factories, exact ID validation,256-parent bound and copy-without-ID-rewriting admission. No result lookup or persistent/global dedup store is added; IC1-r2 requires bounded per-run execution records.
 
 Channels: single reader/writer, FIFO, capacity counts queued packets plus at most one additional parked send. At most one pending send/read at endpoint; overlap rejects later call CONCURRENT_SEND/CONCURRENT_READ. Accepted send means queued/admitted, not downstream effect completed. close prevents new calls with CHANNEL_CLOSED but allows already parked send to admit before final EOF. abort discards queued packets, rejects waits/future ops RUN_TERMINATED. No unbounded pending promise queue. Returning input/output iterator early while live fails INPUT_ABANDONED; internal processes must await all sends (UNAWAITED_SEND if they return with a pending send). Caller misuse rejection does not kill run unless it escapes a process.
 
@@ -153,9 +165,9 @@ Terminal is {status:'completed'} | {status:'cancelled',code:'CANCELLED'} | {stat
 
 Snapshot is immutable detached metadata: runId, status(running/draining/terminal), nodes[{id,status}], channels[{id,queued,capacity,pendingSend,sent,received,discarded}], diagnostics[{sequence,code,nodeId?}]. Node states running/completed/failed/cancelled. Channel IDs edge:INDEX/input:NAME/output:NAME. Order follows graph order; retention default100/allowed0–1000; monotonically increasing sequence, bounded recent events only, no per-packet log, values, function source or service objects. Codes RUN_STARTED, INPUT_CLOSED, PROCESS_COMPLETED and terminal code. No polling timer/callback observer in runtime; application owns any polling and data access.
 
-Combinators use explicit Contract arguments: map(inputContract,outputContract,fn), filter(contract,predicate), broadcast(contract,names), merge(contract,names), joinByKey(inputContracts,{outputId,maxKeys?}). Map/filter in/out; preserve key; serial await. Broadcast >=2 distinct outputs, stable declared order, await every branch before next input; slowest branch backpressures, partial delivery possible on failure, no rollback. Merge >=2 inputs one out; one outstanding read/input, emit ready first, ties declaration order; preserve each input FIFO and EOF only when all closed. No global order promise.
+Combinators use explicit Contract arguments: map(inputContract,outputContract,fn), filter(contract,predicate), broadcast(contract,names), merge(contract,names), joinByKey(inputContracts,{outputId,maxKeys?}). Map/filter in/out; preserve job/key; serial await. map derives a child, filter true forwards its original envelope and false emits nothing. Function helper derives a child and exposes metadata only at ctx.packet. Broadcast >=2 distinct outputs, distinct derived child IDs with one input parent per branch, stable declared order, await every branch before next input; slowest branch backpressures, partial delivery possible on failure, no rollback. Merge >=2 inputs one out, forwarding existing envelope identities; one outstanding read/input, emit ready first, ties declaration order; preserve each input FIFO and EOF only when all closed. No global order promise.
 
-joinByKey requires key; one packet/input/key. When all inputs present, emit {key,value:{inputName:inputValue}}; output contract is strict-object schema composed from input contracts and identified by required outputId. maxKeys default128/integer1–4096. Duplicate input/key before group emits → DUPLICATE_KEY; reuse after completed group is a new group. New key above limit→JOIN_CAPACITY before retaining it; all EOF with groups pending→JOIN_INCOMPLETE, no partial group. Missing key→INVALID_PACKET. Read readiness same as merge. Completion order defines output order; no unbounded history or default group timer. Network timeout/cancel handles indefinitely missing branch. Schema IDs must be unique/consistent across different join shapes.
+joinByKey requires key and2–256 named inputs; one packet/input/(jobId,key). When all inputs present, derive one child with common jobId/key, value{inputName:inputValue}, and immediate parent IDs in input declaration order; output contract is strict-object schema composed from input contracts and identified by required outputId. maxKeys counts distinct(jobId,key) tuples, default128/integer1–4096. Duplicate input/tuple before group emits → DUPLICATE_KEY; reuse after completed group fails JOIN_GROUP_COMPLETED; retain bounded completed markers without live-run eviction (IC1-r2). New key above limit→JOIN_CAPACITY before retaining it; all EOF with groups pending→JOIN_INCOMPLETE, no partial group. Missing key→INVALID_PACKET. Read readiness same as merge. Completion order defines output order; no unbounded history or default group timer. Network timeout/cancel handles indefinitely missing branch. Schema IDs must be unique/consistent across different join shapes.
 
 Failure trace: compile rejection→zero effects; invalid public input→zero admission/run remains usable; full queue→park then exactly one admission on receive; close pending→drain before EOF; process/provider failure after earlier output→failed/no rollback/no replay; cancel→owned waits settled/late output suppressed; OS crash→in-memory state lost. T9 owns whole-network proofs; external operation reconciliation and deployment lifetime remain caller-owned.
 
@@ -231,7 +243,7 @@ C00–C31 carry forward observed source gaps and planned proofs with revised own
 | C17 | R6 | Merge left[1,2],right[10,20] controlled readiness → per-input order preserved, finish only after both EOF; max one read each. | I / T6 / same `merge stream closure` |
 | C18 | R6 | Join a:x=1,a:y=2,b:y=20,b:x=10 → y:{a:2,b:20},x:{a:1,b:10}; never pair x/y. | I / T6 / same `join by key not arrival` |
 | C19 | R6,R7 | Duplicate a:x before b:x → failed DUPLICATE_KEY; maxKeys1 with a:x then a:y → JOIN_CAPACITY; incomplete x at all EOF → JOIN_INCOMPLETE; missing key → INVALID_PACKET. | I / T6 / same `join bounds and incomplete groups` |
-| C20 | R6 | Completed x group then another complete x group → two outputs; filter evens on[1,2,3,4] →[2,4] with original keys. | I / T6 / same `key reuse and filter` |
+| C20 | R6 | Completed x group then fresh input for x → JOIN_GROUP_COMPLETED, only one output; filter evens on[1,2,3,4] →[2,4] with original keys. | I / T6 / same `key reuse and filter` |
 | C21 | R7 | Pre-abort → cancelled/create count0; block read/send → cancel twice → cancelled once, waits settle, timer/listener baseline restored. | I / T7 / test/lifecycle.test.js `cancel releases owned resources` |
 | C22 | R7,I5 | Network deadline while handler awaits deferred → failed TIMEOUT; resolve/reject deferred later → no sends, no unhandledRejection; completed run cannot later cancel/fail. | I / T7 / same `timeout and late completion` |
 | C23 | R7 | Process returns before EOF, or external output iterator returns early → failed INPUT_ABANDONED; process returns with pending send → UNAWAITED_SEND. | I / T7 / same `abandoned work cannot complete` |
@@ -258,19 +270,28 @@ C00–C31 carry forward observed source gaps and planned proofs with revised own
 | C44 | R13 | Browser inspector shows node title/version/ports/contracts/connections; select node reveals schema; invalid descriptor shows error/run disabled; keyboard reaches controls and current request wins after obsolete request abort. | Browser / T11 / fixtures/next-consumer/e2e/inspector.spec.ts |
 | C45 | R11,R12 | Copy documented TS node recipe into isolated consumer, add fake dependency test → build/test pass; change return4→string → named type failure, bypass TS→named runtime/test failure; JS recipe also passes validation. | P,Type / T10 / test/author-recipe.test.js `consumer recipe gives useful feedback` |
 | C46 | R10,R13 | Catalog metadata/examples validation table: unsupported schema rejects before execution, example mismatch rejects, serialized descriptors contain no function/dependency; browser/server graph issues identical. | U,I / T4,T11 / test/model.test.js `catalog parity` |
-| C47 | R1–R13 | Built/packed artifact → framework checks + public harness + Next fixture + UI proof → same SC-FBP-4 revision, no source path alias, latest LTS pins consistent; each failure dimension separately reported. | I,P / T12 / acceptance journal and section11 commands |
-
+| C47 | R1–R16 | Built/packed artifact → framework checks + public harness + Next fixture + UI proof → same SC-FBP-4 revision, no source path alias, latest LTS pins consistent; each failure dimension separately reported. | I,P / T12 / acceptance journal and section11 commands |
 
 | C48 | R14 | Internal generic channel carries a test-local frozen packet whose value is a custom class → reader receives same prototype/value; channel does not serialize/enumerate/freeze payload itself. Public packet/send of that object still rejects INVALID_PACKET. | U / T3 / test/channel.test.js `transport independent of representation` |
 | C49 | R14,I1 | A→B→A valid endpoints/contracts → compile rejects CYCLE before factory; ordinary DAG starts consumer process before source releases its first packet, proving execution is independent stream processes rather than a topological batch. | U,I / T4,T5 / test/graph.test.js and test/runtime.test.js `topology policy separated from execution` |
 | C50 | R11,R14,I8 | Public catalog and author recipe name versioned contract/representation IDs and declared effects/required dependencies; serialize→no executable capability grants. Unknown component/version/representation proposal→compile refusal, zero effects. | U,P / T4,T8,T10 / test/model.test.js and test/author-recipe.test.js `agent recipe cannot bypass registry` |
-
 | C51 | R15 | Dispatcher on/once owner A + declared publisher B → inspect has exact event/publisher/subscriber edges; emit removes once before callback inspection, off removes ordinary subscription, dispose publisher removes declaration; legacy calls have unassigned owner, no invented publisher. | U / T2 / test/dispatcher.test.js `subscription topology stays current` |
 | C52 | R15,I7 | Scope registers two graphs/runs and dispatcher → snapshot includes exactly these sources/relationships; duplicate source rejects, wrong graph/run association rejects RUN_GRAPH_MISMATCH, removal stops exposure; unrelated scope isolated; no handler invocation/payload/source in JSON. | I / T7 / test/inspection.test.js `explicit scoped inventory` |
 | C53 | R15,I8 | Labels contain quotes, newlines, HTML and Mermaid syntax → JSON roundtrip stable; toMermaid uses synthetic IDs and escaped labels, produces no active HTML/directives; recorded IDs deterministic; no executable source leaked. | U / T4 / test/model.test.js `safe diagram export` |
 | C54 | R15 | Next inspector selects between two registered graphs and dispatcher → SVG node/edge counts and labels match scope snapshot; once removal updates next refreshed view; keyboard/text equivalent identifies same relationship; static declaration distinct from active subscription. | Browser,I / T11 / fixtures/next-consumer/e2e/inspector.spec.ts `graphs and event relationships visualized` |
+| C55 | R16,R5 | packet(2,{jobId:'job-42',key:'person-a@r7'}) → fresh UUIDv4 packetId, supplied job/key,parents[]/version1; omitted job generates separate UUIDv4; invalid explicit options→INVALID_ARGUMENT, malformed raw metadata→INVALID_PACKET/no enqueue. | U / S04 / test/packet.test.js `root identity and raw envelope validation` — planned |
+| C56 | R16 | derive from valid same-job parents preserves common job/key and ordered immediate parent IDs with fresh child; duplicate IDs→INVALID_LINEAGE, different jobs→JOB_MISMATCH, conflicting inherited keys→CORRELATION_MISMATCH; explicit key rekeys, no child on refusal. | U / S04 / test/packet.test.js `bounded derivation and refusal precedence` — planned |
+| C57 | R16,I2 | Same valid packet delivered twice to one node/run → DUPLICATE_PACKET and one invocation, including concurrent/in-flight/failed cases; distinct nodes may receive it; execution ledger exhaustion→EXECUTION_CAPACITY before additional work; admission copies/freeze without rewriting IDs; invalid raw envelope enqueues0 and valid follow-up works. | I / S08 / test/runtime.test.js `identity-preserving admission with bounded duplicate protection` — planned |
+| C58 | R16,R11 | map/function input P(job-42,keyx) returns changed value → child ID!=P,parents[P],same job/key; filter true forwards P unchanged and false emits0; helper reads ctx.packet with no ctx.key alias. | I,Type / S10 + S13 final / test/authoring.test.js and test/components.test.js `transform identity contract` — planned |
+| C59 | R16,R6 | Broadcast P to a/b → distinct child IDs with parents[P],same job/key, isolated values; fail/cancel on second branch retains first delivery, no automatic resend. | I / S10 / test/components.test.js `broadcast branch identity` — planned |
+| C60 | R16,R6 | Ready input packets from two merge ports → same original IDs/parent lists at out; each port FIFO preserved, no child ID allocated solely for routing. | I / S10 / test/components.test.js `merge forwards identity` — planned |
+| C61 | R16,R6 | a(job-42,x)=1,b(job-43,x)=10 then a(job-43,x)=2,b(job-42,x)=20 → separated jobs with values{a:2,b:10}/{a:1,b:20},fresh outputs and parent IDs in[a,b]order regardless arrival. With only first two and EOF→JOIN_INCOMPLETE/0joined. | I / S11 / test/components.test.js `job-scoped join and lineage` — planned |
+| C62 | R16,R6 | a(job-42,person-a@r6),b(job-42,person-a@r7)→EOF JOIN_INCOMPLETE/0joined; duplicate same input/tuple before completion→DUPLICATE_KEY; reused completed tuple→JOIN_GROUP_COMPLETED/zero extra output; completed marker exhaustion→JOIN_HISTORY_CAPACITY before final member/output; no live-run ledger eviction; maxKeys1 counts different jobs;257 inputs→INVALID_ARGUMENT, no truncated parents. | I / S11 / test/components.test.js `correlation versions reuse and lineage bounds` — planned |
+| C63 | R16,R5 | Admit same root into R1/R2 → distinct runIds, unchanged root identities, independent process state and fresh derived child IDs per run; runId absent from packet. No durable/retry/lookup claim. | I / S08 / test/runtime.test.js `job identity distinct from run identity` — planned |
+| C64 | R16,R12 | runNode/runGraph return real root/derived metadata and failure partial outputs under existing collector limit; no ID rewriting/dedup by helper, no base getResult registry; limit overflow still TEST_OUTPUT_LIMIT/cleanup. | I,Type / S14 / test/testing-sdk.test.js `identity-transparent bounded helpers` — planned |
+| C65 | R16,I7,I8 | Run/inspection snapshots after repeated packets contain only bounded declared metadata/counters, no packet/value/parent-history registry or callbacks; requesting a public payload-history lookup is not part of exports. | I,Type / S12 / test/inspection.test.js `identity is not payload retention` — planned |
 
-## 10. Dependency graph and bounded task contracts
+## 10. Legacy work groups — superseded by SP1 branch slicing
 
 T0→T1; T1→T2 and T3; T3→T4→T5→T6→T7→T8; T2+T8→T9→T10→T11→T12. T4 owns contracts/model/compiler/builder; T5 sole production orchestrator; T8 convenience authoring and testing SDK call that orchestrator; T11 sole Next fixture owner. Each task reads SC-FBP-4 and applicable ledger rows. No agent delegation is requested or assumed.
 
@@ -363,7 +384,7 @@ Baseline: T0 captures known placeholder/characterization debt; new build/type/li
 
 Publication remains not-requested. This plan authorizes no commits/push/npm publish/reviewer messages. Planning writes only this revision/archive and feedback. Implementation readiness is a proposed decision, not a claim that source or tests exist.
 
-## 12. Readiness content gates, walkthrough and review decisions
+## 12. Historical r4 readiness review — r5 release status is in SP1
 
 | Gate | Proposal verdict | Concrete content evidence |
 | --- | --- | --- |
@@ -411,6 +432,10 @@ A later loop contract must define bootstrap/seed tokens, explicit feedback conne
 Termination cannot reuse “wait for every input EOF” unchanged inside a closed feedback region: a dedicated loop owner must decide when to stop feeding, drain or discard, close loop channels and release state. A policy must address all participants blocked on empty/full buffers; a timer alone is not proof of deadlock freedom. Cancellation, nested invocation, interleaved correlation keys and final-versus-intermediate outputs need observable contracts. Graph/catalog versioning must let old validators reject unsupported loop profiles before effects.
 
 First investigation fixture: seed value0, increment and assess, accept3; record3 iterations and one final result. Complementary fixtures: never converges→explicit iteration-limit outcome; no bootstrap→compile refusal; tiny buffers→documented progress or explicit deadlock refusal; cancellation→all waits released; side-effecting node cannot be silently replayed. These are proposed future acceptance scenarios, not tests delivered by T0–T12. Do not expose a permissive cycles=true option now.
+
+### Optional durable execution add-on
+
+User roadmap direction (2026-10-29): selected graphs should eventually use a database/persistent-store-backed host to checkpoint progress and resume from persisted evidence after supported failures. Most graphs remain in-memory with no persistence dependency. The canonical future scope, recovery assumptions, uncertain external effects and milestone proofs are recorded in [F01 — optional durable execution](../architecture/roadmap.md). This adds no implementation slice, durable flag or store protocol to S00–S19; it is not a promise that every failure or external effect is automatically recoverable.
 
 ### Agent-built applications: graph artifacts as executable application designs
 
@@ -467,3 +492,21 @@ InspectionSnapshot is immutable JSON: {version:1,sources:[{id,kind:'graph',spec,
 T11 Next inspector renders read-only SVG directly from the same structured snapshot, using simple deterministic rows/columns, labeled shapes and arrowed connections; no elaborate automatic layout promise. Include source selector, relationship legend and node/port/event details. Every shown relationship has an accessible text equivalent; keyboard controls have names and visible selected state. Styles must distinguish defined/declared versus active relationships without relying solely on color. Refresh reads a new server-provided safe snapshot; UI owns refresh lifecycle, runtime does not poll. Fixture contains two graph definitions (one may have no run) and one dispatcher; once/unsubscribe changes appear after explicit refresh. No unbounded cross-request run store is introduced to enable the demo; fixture uses fixed definitions and bounded request-local activity snapshots.
 
 T2 owns authoritative dispatcher topology; T4 owns browser-safe types/export with stub-free data fixtures; T7 owns root scope/graph-run identity association; T11 owns graphic integration; T12 accepts C51–C54. Scope/export additions are included in package /model/root type/coverage gates. Full graph editing, arbitrary source discovery and streaming multi-process observability remain future work, while the installed base already supplies the information and utility required to draw the known system.
+
+
+## 15. Agent-executable branch partition SP1
+
+[Start at INDEX.md](fbp-slices/INDEX.md); [machine-readable order](fbp-slices/manifest.json); [shared branch execution contract](fbp-slices/shared-execution.md). Twenty numbered feature/task plans S00–S19 each name one codex/fbp-NN-* branch, predecessor/base/next, recognizable story, exact files/symbols, internal task IDs, proof conditions, executable command scopes, exclusions and stop/handoff criteria.
+
+Order is strict by default: previous slice must be accepted and merged into master before creating the next branch from updated master. A completed but unmerged branch is not a predecessor base. The T labels above group original work for traceability and no longer define execution size or independent branch ownership. S08 owns the sole runtime, S06 the compiler, S12 inspection, S14 public harness, S17 Next server boundary and S18 graphical UI; SP1 lists every handoff and final proof owner.
+
+S00 is the explicit decision gate for packet/job/correlation/lineage identity and lookup expectations raised after r4. IC1-r2 and C55–C65 now specify the proposal; until human acceptance is recorded, S04–S19 remain blocked-on-decision; their saved scope and inherited contracts are planning proposals rather than permission to improvise metadata. S01–S03 can be reviewed independently of that choice; default ordering remains S00 first. No new identity semantics, result store, source implementation or baseline/test success is claimed by slicing.
+
+Historical r5 partitioning was planning-only and left every branch not-started. The current S00 execution/submission authority and status are recorded in §16 and its journal. All merge SHAs remain null; no successor has started.
+
+
+## 16. S00 identity amendment IC1-r2 — review pending
+
+The exact envelope/factory/helper/join/lookup proposal is [IC1-r2](fbp-identity-contract.md). [Execution index](fbp-foundation-execution.md) links the actual work; [S00 execution receipt](fbp-slices/S00-execution.md) records the design walkthrough and documentation checks, not runtime implementation. S00.A–C design preparation is complete under the user’s2026-10-29 execution/submission request; user acceptance of the newly specified identity semantics remains pending. Existing C00–C54 stay preserved; C55–C65 add concrete identity proof obligations and downstream owners.
+
+SP1-r2 and the affected slice r2 plans carry the same proposed types and propagation rules. No S04–S19 readiness gate is released merely by writing or submitting this proposal. S01 remains the next feature only after actual S00 review/merge.

@@ -1,0 +1,114 @@
+# S17 — Run a packaged flow inside a Next.js application
+
+Contract version: 2  
+Slice revision: r2, 2026-10-29  
+Readiness: blocked-on-decision  
+Execution: not-started; approved task set: none  
+Branch: `codex/fbp-17-next-server-consumer`  
+Parent: master r6 / SC-FBP-4 + proposed IC1-r2 / SP1-r2; acceptance pending.
+
+## Story and branch outcome
+
+A Next site installs the published-format library, executes a bounded server flow and imports only safe graph metadata on the client.
+
+This is one feature/task branch, not permission to execute the full roadmap. The three bounded tasks below belong to this one outcome. One agent session is the sizing target; unresolved prerequisites stop execution rather than expand it.
+
+## Provenance, order and entry conditions
+
+Source: master `9cb666dc6c846512d64edd39770b7eb2f213256c`; old JS prototype inspected, new interfaces not yet implemented. This plan is a future change proposal, not a live-source/coverage success claim. Baseline: S01 captures `fbp-pre-modernization-r2`; later slices verify applicability/reuse it. Existing placeholder npm test exit1 is known from planning; no new checks run here.
+
+- Read [execution index](INDEX.md), [shared contract](shared-execution.md), [master plan](../fbp-foundation-plan.md), then this file.
+- Previous: [S16 — Install the framework and author/test nodes outside the repo](16-package-cookbook-plan.md).
+- Base: updated `master` after predecessor is actually merged; never an unmerged sibling feature branch.
+- Required predecessor evidence: S16 merged into master, with accepted proof and exact merge SHA recorded.
+- Next: [S18 — See graph wiring and event relationships in Next.js](18-graphical-inspector-plan.md).
+- Readiness gate: IC1-r2 is now concrete and applied to this proposal; execution remains blocked until its human acceptance and actual S00 merge.
+- Legacy master work: T11 server/packaging boundary.
+
+## Solution contract and condition ownership
+
+Shared contract: master SC-FBP-4 + [SP1](shared-execution.md); S00 is the only identity-amendment producer. Conditions contributed by this feature: **C41, C42, C43, C46**. Exact fixtures/assertions live in the master's authoritative ledger; final condition completion owners (including split cases) are in SP1. Reuse predecessor assertions rather than inventing a second truth table. C55–C65 are specified by IC1-r2; acceptance remains pending. S00 walkthroughs are not implementation proof.
+
+## Observable behavior and boundaries
+
+1. Pin Next/React compatible stable and fixture lock, install exact root tarball, use App Router nodejs route and server-only registry. No core Next/react/server-only dependency, no transpilePackages workaround.
+2. POST /api/demo value2→200 completed4; malformed/type/extra→400 INVALID_INPUT/effect count0; timeout→504 TIMEOUT; failure→500 FLOW_FAILED. Request signal passed to1000ms helper; no raw stack/value leak.
+3. Minimal client imports /model only; production build and asset scan prove server-only canary/node/runtime/test code absent. Tampered catalog does not alter authoritative server contract. test-next owns build/start/tests/finally shutdown.
+
+### Exact allowed-change boundary
+
+- `fixtures/next-consumer/package.json`
+- `fixtures/next-consumer/package-lock.json`
+- `fixtures/next-consumer/tsconfig.json`
+- `fixtures/next-consumer/next-env.d.ts`
+- `fixtures/next-consumer/next.config.*`
+- `fixtures/next-consumer/app/** (minimal page + route)`
+- `fixtures/next-consumer/lib/**`
+- `scripts/test-next.mjs`
+- `test/next/consumer.test.js`
+- `docs/nextjs.md`
+- `.github/workflows/ci.yml`
+- `package.json (test:next script)`
+
+Also allowed: this slice's future `S17-execution.md`, append-only local workflow telemetry and necessary index/manifest evidence updates. Generated dist/coverage output is local tooling output, not a license for source changes elsewhere. Existing files are read before editing; future paths are intentional proposed destinations.
+
+### Preserve and exclude
+
+- No complete graphic UI (S18), arbitrary graph/code execution route, auth product, Edge runtime, module-global background runs or durable deployment claim.
+
+Preserve every earlier merged feature's assertions, safe browser/server boundary and JSON/admission-versus-generic-transport separation. No network/provider side effects in unit tests; only localhost adapters/fixture where explicitly owned. Do not introduce global registries or retries to hide missing correlation/lifecycle behavior.
+
+## Planned proof pointers
+
+- `test/next/consumer.test.js::browser model isolated`
+- `test/next/consumer.test.js::Next server executes fixed flow`
+- `test/next/consumer.test.js::catalog not execution authority`
+
+State/setup/order/exact assertions are the cited master condition rows plus Observable behavior above. Proof strength: type fixtures for authoring, real primitive/runtime integration for execution, isolated packed consumers for distribution, production Next/HTTP/browser for UI. Helper-only greens do not prove a downstream layer. No tests exist yet unless delivered by a predecessor.
+
+## Task contracts
+
+### S17.A — establish this feature's contracts and failing proofs
+
+Purpose/references: the story and conditions above. Prerequisites: S16 merged into master, with accepted proof and exact merge SHA recorded; apply the shared identity-release gate when applicable. Read: parent contract sections corresponding to this feature, shared-execution.md and delivered predecessor symbols. Allowed changes: tests/type fixtures listed in the allowlist, minimal interface scaffold needed to reach the intended behavior, and local journal. Required behavior: establish explicit fixtures/order/outcomes from the linked master ledger before production logic. Named proof targets: test/next/consumer.test.js::browser model isolated; test/next/consumer.test.js::Next server executes fixed flow; test/next/consumer.test.js::catalog not execution authority. Preservation: do not duplicate existing cases that already assert the same boundary; extend their tables. Verification/red: Bad payload never calls handler, server-only import leak fails production build/asset assertion, deadline exact status, server revalidates despite client metadata. Completion: retain actual expected nonzero exits/assertion pointers and valid setups; missing module/setup error is not behavioral proof. Stop if predecessor interface, identity amendment or contract semantics are missing.
+
+### S17.B — deliver the bounded feature
+
+Prerequisites: S17.A meaningful failures or documented characterization/design exception. Read the same contract, existing callers and test failures. Allowed changes: production/config/docs paths explicitly listed above and only their necessary public export/declaration consumer updates. Required behavior: all numbered items in Observable behavior and boundaries, with side effects owned by this slice. Preserve the Exclusions and shared invariants. Verification: make named fixtures green through actual delivered interfaces, inspect diff for extra functionality and run the focused commands below. Completion: allowed-path diff plus green evidence; passing unit tests alone is not integrated acceptance. Return to planning if scope requires new semantics, unimplemented later-slice API, widened any types or excluded recovery/features.
+
+### S17.C — accept the story and hand off the branch
+
+Prerequisite: S17.B implementation. Allowed changes: focused evidence-driven fixes within the same allowlist, feature documentation, journal and index/manifest status from actual evidence. Verify story via the Acceptance demonstration, scoped commands, declaration/import paths and meaningful-condition audit. Measure applicable changed production files with S01 coverage config; reuse valid outputs and classify failures against the baseline. Completion evidence: Built Next packed-consumer fixture/HTTP/asset receipt; S18 adds graph/event rendering on this exact boundary. Record implementation/proof/gates/coverage/publication separately; do not mark merged from a passing local branch. Stop at this branch's outcome. Next slice cannot start until actual merge into master. Publication only with user authorization; planning request has not granted execution.
+
+## Acceptance demonstration and handoff
+
+Recognizable accepted outcome: **A Next site installs the published-format library, executes a bounded server flow and imports only safe graph metadata on the client.**
+
+Handoff artifact/interface: Built Next packed-consumer fixture/HTTP/asset receipt; S18 adds graph/event rendering on this exact boundary.
+
+Exact verification commands for this scope (S01 creates tooling; later commands assume merged scripts):
+
+```sh
+npm run check
+npm run test:next
+```
+
+Commands must return actual individual exits. `npm run coverage` uses the all-delivered-production denominator, including never-executed changed files. Types-only/docs-only scopes are coverage N/A with reason; S00 does not run implementation tests. UI/Figma/DB checks are N/A unless the feature explicitly owns them: S17 production Next boundary, S18 SVG/keyboard/UI, no DB/Figma source in this series. No external publication is part of the acceptance demonstration.
+
+## IC1-r2 amendment and added proof scope
+
+Canonical proposed identity contract: [IC1-r2](../fbp-identity-contract.md). Next demo validates complete server-run behavior while returning only explicit result JSON; do not expose live envelope histories or route-global result storage to make IDs look durable. Human acceptance remains pending; this section settles the proposal, not release authority.
+
+## Readiness evidence
+
+| Gate | Verdict | Concrete artifact pointers |
+| --- | --- | --- |
+| G1 interfaces | GAP: IC1-r2 acceptance pending | Shared contract + Observable behavior; IC1-r2 freezes proposed interfaces; human acceptance still blocks execution |
+| G2 ownership | PASS | Previous/base/next, numbered boundaries, SP1 handoff graph; sole feature branch above |
+| G3 proof scenarios | PASS for settled proposed fixtures; acceptance pending | Master condition pointers and named assertions; no invented test result |
+| G4 effects/recovery | GAP if identity propagation affects this feature | Master §§6/7/14 + explicit exclusions; no implicit persistence/retry; identity choice held at S00 |
+| G5 bounded tasks | PASS | S17.A→B→C (S00 design-specific sequence), exact allowlist and stop rules |
+| G6 commands/baseline | PASS as proposal | Focused command block, S01 baseline/tooling owner, SP1 coverage denominator/evidence policy |
+| G7 integration | Proposed; release blocked by S00 | Acceptance demonstration + handoff + next-merge condition; parent T labels do not hide owner |
+
+Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.

@@ -1,0 +1,12 @@
+# Verification and evidence rules
+
+- Match proof to the boundary: type fixtures prove declared API feedback; primitive tests prove channel behavior; real runtime composition proves graph plumbing; isolated packed consumers prove packaging; production Next/HTTP/browser checks prove server/client/UI boundaries. A helper/mock green is not a downstream guarantee.
+- Reuse existing assertions/fixtures for a distinct condition. Before production changes establish meaningful behavioral red when practical, then green; a missing module, invalid fixture or earlier unintended guard is not that proof. Characterization/design/docs work may be already passing or N/A with reason.
+- Current npm test is a known placeholder. S01 owns baseline/runtime/tooling setup. Reuse applicable baseline records by code ancestry, command, runtime, config and lock identity; capture only missing/invalidated scope. An install failure is not a behavioral failure, and not-run is not passed.
+- Once S01 tooling exists, measure every changed delivered production file, including never-imported modules and /model or /testing code. Planned acceptance is per-file statements/lines/branches>=95% plus assertions for100% of meaningful reachable changed conditions, with individually evidenced unreachable-code exceptions. Suite totals, test counts and duplicate generated/source files are not substitutes.
+- Record exact fixture/order/assertion and forbidden effects for stale/invalid/concurrent inputs, partial failures and cleanup. Preserve actual exits and current revision/dirty scope; retain receipts/raw output safely. No payload/credential logging.
+- Use controlled deferred promises/resource trackers for concurrency/lifecycle proofs; avoid sleep-based luck, flaky timing thresholds and blanket process-handle counts.
+- Keep offline tests offline. External adapter tests use explicit local fixtures; a public endpoint's availability does not prove correct application behavior. No automatic replay of ambiguous external effects.
+- Run scoped checks during iteration and all applicable final gates for authorized publication. Reuse valid expensive receipts; rerun invalidated ones. Classify new/known/unclassified failures, honor hooks, and report coverage acceptance separately from test command success.
+
+Procedures: [verify/handoff/publish](../runbooks/verify-and-publish.md). Exact slice conditions/commands: [master](../cursor_plans/fbp-foundation-plan.md) and [SP1](../cursor_plans/fbp-slices/shared-execution.md).
