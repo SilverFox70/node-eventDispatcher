@@ -33,6 +33,10 @@ The choice to retain FIFO and use job/correlation/packet/lineage identity is com
 | 18 | [S18 — See graph wiring and event relationships in Next.js](18-graphical-inspector-plan.md) | `codex/fbp-18-graphical-inspector` | blocked-on-decision | S17 |
 | 19 | [S19 — Accept the complete application/developer story](19-adoption-acceptance-plan.md) | `codex/fbp-19-adoption-acceptance` | blocked-on-decision | S18 |
 
+## Implementation quality across the sequence
+
+Every slice inherits the [readability and structure rules](../../agent-rules/readability-and-structure.md) through SP1: small cohesive files, folder names that reveal the design, deliberate shared/library helpers, plain code and useful JSDoc. Roughly200 lines is a strong guideline with sensible exceptions, not a hard cap. Allowlisted public files can use named private capability modules; do not build a monolith or scatter one-line wrappers. Include the qualitative tree/readability check in each slice handoff.
+
 ## Milestone stories
 
 - S01: latest-LTS typed package/build/test foundation.

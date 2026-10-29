@@ -8,6 +8,10 @@ Use scoped behavioral checks during iteration and applicable full gates before a
 
 Coverage acceptance follows [verification rules](../agent-rules/verification.md) and actual S01 configuration. Reconcile meaningful conditions and instrumented source denominator separately. Keep evidence for unexecuted files, uncovered regions/exceptions and exact assertions. New failures must be classified, including familiar messages at new sites. A known failure is still failed, not a green gate.
 
+## Human-readability review
+
+Inspect the changed module tree and entry points as a human reader would. Apply [readability rules](../agent-rules/readability-and-structure.md): small cohesive units, clear hierarchy/dependency direction, deliberate shared primitives, plain control flow and JSDoc for non-obvious contracts. Note a justified larger-file exception in the handoff/PR rather than inventing a hard length gate. Preserve assertions/type/behavior evidence when extracting modules; update their owned paths.
+
 ## Required receipt
 
 Each receipt records candidate/dirty scope, cwd/command, tool/config/lock identities, condition/test/assertion, expected and actual result/exit, retained output path and source-restoration check if a deliberate bypass was used. Local-only evidence is labeled; do not commit payloads/secrets/log dumps. A quality check that ran and failed is not unavailable. Check retained outputs exist before handoff.

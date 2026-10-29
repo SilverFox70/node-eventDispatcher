@@ -16,6 +16,8 @@ Create/resume the slice journal from [the template](templates/slice-execution.md
 
 For each task: establish meaningful expected behavior and red/characterization proof, implement only allowed paths/API, verify through the assigned layer, inspect diff, then update journal. Use inherited condition IDs and named assertion pointers; do not build a new competing truth table. New interfaces need behavioral red once scaffold exists, not just missing-module errors. Check upstream helper/interface availability on the actual base.
 
+Before accepting the task, inspect [readability/cohesion](../agent-rules/readability-and-structure.md): obvious file/folder ownership, direct code, purposeful shared utilities, selective JSDoc, and a brief reason for retaining any newly large cohesive files. Do not add mechanical splits or compressed code to hit a number.
+
 If work requires a new public behavior, excluded feature or another whole slice, apply [contract amendment](change-contract.md). A failing prerequisite is not permission to absorb the roadmap. Save a resumable partial state rather than invent success.
 
 ## Handoff the story

@@ -59,6 +59,10 @@ Shared contract: master SC-FBP-4 + [SP1](shared-execution.md); S00 is the only i
 
 Also allowed: this slice's future `S01-execution.md`, append-only local workflow telemetry and necessary index/manifest evidence updates. Generated dist/coverage output is local tooling output, not a license for source changes elsewhere. Existing files are read before editing; future paths are intentional proposed destinations.
 
+### Readability in tooling
+
+Follow [readability rules](../../agent-rules/readability-and-structure.md) in build/check tooling as well as future source. Do not add a hard max-lines gate or minify/fragment code to meet a number; leave the documented qualitative module/file review in the handoff.
+
 ### Preserve and exclude
 
 - No dispatcher semantic fixes, node runtime, graph compiler or fake skipped future tests. Retain old dependency consumers until their owning slices remove them.

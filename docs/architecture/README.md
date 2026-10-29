@@ -5,6 +5,7 @@
 Current code is the old synchronous publish/subscribe dispatcher and examples under server/src. The TypeScript FBP library is planned, not implemented. Guidance setup does not advance slice status, resolve S00 identity or certify current tests.
 
 - [System boundaries](system-boundaries.md): proposed module responsibilities and present source map.
+- [Human-readable structure](../agent-rules/readability-and-structure.md): cohesive modules and legible responsibilities; strong size guideline with exceptions.
 - [Decision register](decision-register.md): what came from the user, what is proposed and what remains unsettled.
 - [Extension roadmap](roadmap.md): optional durable execution and other future profiles.
 - [Decision records](decisions/README.md): status/lifecycle and template for later concrete architecture amendments.

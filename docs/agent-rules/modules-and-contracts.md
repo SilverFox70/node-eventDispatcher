@@ -9,5 +9,6 @@ These are constraints for implementing the proposed FBP design, not claims those
 - Graphs/dispatchers are explicitly registered for inspection. Distinguish defined wiring, declared publishers and active subscriptions. No implicit source discovery or leaked function source/payloads in diagrams.
 - Queues/processes/inspection scopes are owned, bounded and per-run/per-scope. Endpoints and observers cannot grow unbounded hidden promise or logging queues. Preserve close/drain versus abort/discard and first-terminal semantics of the approved contract.
 - Rich payloads, cycles, persistence and agent-driven application generation are extension goals, not enabled merely by a cast or flag. Add validation/ownership/lifecycle/effect/proof contracts before enabling a new profile.
+- Follow [human-reasonable code and structure](readability-and-structure.md): cohesive small modules, clear folder responsibilities, deliberate shared utilities and useful JSDoc; size targets never justify duplicated policies, hidden logic or a second executor.
 
 Read [system boundaries](../architecture/system-boundaries.md) and [decision status](../architecture/decision-register.md); use [contract amendment](../runbooks/change-contract.md) for a material change.

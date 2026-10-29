@@ -93,6 +93,14 @@ Master rows retain exact fixtures/assertions. Ownership here assigns their final
 
 S00 added C55–C65 with concrete proposed outcomes; downstream plans link these master rows rather than competing versions. All66 rows must have one final owner, including split subcases; no condition can be “someone else's test” without a named producer and acceptance owner.
 
+## Readability and humane implementation — applies to every slice
+
+User direction, 2026-10-29: [canonical readability/structure rules](../../agent-rules/readability-and-structure.md) apply to design, implementation, tests and review. Aim for cohesive ordinary source files around 200 lines or less, with screen-sized behavior where practical; explicit, human-reasonable exceptions are allowed. File/folder names should reveal responsibility. Shared/library helpers need meaningful ownership/contracts; no miscellaneous utility buckets, duplicate policies, one-line wrapper forests or compressed code to game line counts. Use plain names/control flow and selective JSDoc for API guarantees/units/ownership/rationale.
+
+A slice's named public file may remain a thin facade with cohesive private modules in the specifically listed owned subdirectory. This preserves one compiler/runtime/effect owner, not a second implementation. The affected slices now name those private paths; the permission is bounded by the same story/contract and does not open unrelated source areas or new public exports. Necessary declaration/import/test assertion paths are updated with the extraction. Test splitting must preserve actual test discovery: the initial `test/*.test.js` convention permits descriptively named sibling test files, not undetected nested suites.
+
+Before accepting each task/branch, inspect the changed tree, responsibility boundaries, shared helpers and any newly large files. Record a short reason for retaining a larger cohesive file and any meaningful extraction made; no separate approval/waiver is required. This is a qualitative readability check, not a new runtime condition matrix or hard line-count/coverage gate. Historical ledgers/archives and generated declarations may be longer; don't rewrite them just to reduce counts.
+
 ## Task template and stop conditions
 
 Every slice task inherits its plan's exact allowed files, behavior list, condition pointers and exclusions. Its own read/prerequisite/verification/receipt is listed in the slice; metadata/journal/feedback updates are always allowed local artifacts. Allowed shared edits are necessary export/consumer type updates for that slice's delivered API, not signature changes in unrelated modules. No broad catch-all source refactor. If a required downstream module does not exist yet, use the lower-level interface delivered by a predecessor, not a fake implemented future API.

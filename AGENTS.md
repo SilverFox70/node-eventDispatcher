@@ -6,7 +6,7 @@ This repository is modernizing an old JavaScript event dispatcher into a typed F
 
 1. Read [the documentation map](docs/AGENT_FILES.md) and [current architecture/status](docs/architecture/README.md).
 2. For slice work, read [the ordered index](docs/cursor_plans/fbp-slices/INDEX.md), [SP1](docs/cursor_plans/fbp-slices/shared-execution.md), the selected slice and its predecessor evidence. For other work, follow the user's actual scope; do not force it through a slice workflow.
-3. Read [scope/handoff rules](docs/agent-rules/scope-and-handoff.md), [module/contract rules](docs/agent-rules/modules-and-contracts.md) and [verification rules](docs/agent-rules/verification.md). Load only relevant architecture details/runbooks thereafter.
+3. Read [scope/handoff rules](docs/agent-rules/scope-and-handoff.md), [module/contract rules](docs/agent-rules/modules-and-contracts.md), [verification rules](docs/agent-rules/verification.md) and [human-readable code/structure rules](docs/agent-rules/readability-and-structure.md). Load only relevant architecture details/runbooks thereafter.
 
 ## Authority and working state
 

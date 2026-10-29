@@ -71,3 +71,8 @@ Design implementation: complete. Behavioral runtime proof: N/A (not implemented)
 - GitHub mergeStateStatus=CLEAN at verification; statusCheckRollup=[] (no configured PR checks reported, not a claimed CI pass).
 - Title/body/branch verified after write. PR attached to the originating chat. User/maintainer identity acceptance and merge remain pending; no review approval or later slice is inferred.
 - Validation receipts stay tied to the design/metadata scope; this PR link adds no runtime proof. Local .DS_Store and .feedback-log stay untracked.
+
+
+### User-directed readability follow-up (2026-10-29)
+
+Added the canonical human-reasonable code/structure rules and routed them through AGENTS, architecture/development docs, planning/execution/review runbooks and SP1. Relevant future slice allowlists now permit cohesive private capability modules behind their public entries; no new public behavior or orchestration owner. Around 200 lines is a strong readability guideline with useful exceptions, not a hard gate or artificial-splitting target. Shared utilities and JSDoc must add clarity; line-by-line narration is a refactoring signal. Documentation integrity passes for 54 Markdown files/337 local links/20 slices/66 condition owners, and this follow-up diff passes whitespace validation. No application code, runtime contract acceptance or successor state changed.

@@ -15,5 +15,6 @@ This is a status/routing register, not proof of an implemented feature or user a
 | D09 | One feature branch per slice; order/merge receipts | User requested bounded branch stories; SP1 proposes strict sequential default | Slice INDEX/manifest; current statuses not-started |
 | D10 | Repository rules, architecture, runbooks and local skills | User-authorized guidance setup | AGENTS.md and AGENT_FILES map; no implementation authorization implied |
 | D11 | Optional database-backed durable/resumable graph execution | User roadmap direction; exact design/store/failure model unresolved; outside current slices | [F01 roadmap](roadmap.md); separate future contract and branch plans |
+| D12 | Human-readable, human-reasonable code and folder structure | Explicit user development direction,2026-10-29; strong small-file guideline with sensible exceptions | [Readability rules](../agent-rules/readability-and-structure.md); applies across planning/implementation/review, not a hard line-count gate |
 
 No numbered ADR is accepted merely because this register exists. [ADR procedure/template](decisions/README.md) is used when a concrete proposal is approved. S00 now links its concrete proposal; record actual acceptance before releasing downstream slice statuses/conditions; do not turn this summary into a guessed Packet interface.

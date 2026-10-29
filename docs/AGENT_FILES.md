@@ -9,6 +9,7 @@ This map is the repository's cross-tool navigation source. No personal home-dire
 | [Development guide](DEVELOPMENT_GUIDELINES.md) | Current commands, future tooling and edit boundaries | Before code/tooling changes |
 | [Scope and handoff](agent-rules/scope-and-handoff.md) | One story/branch, evidence and scope changes | Planning/executing work |
 | [Modules and contracts](agent-rules/modules-and-contracts.md) | Layer ownership and interface discipline | Source, public API and architecture work |
+| [Readability and structure](agent-rules/readability-and-structure.md) | Cohesive small files, meaningful hierarchy/utilities and selective JSDoc | Planning, implementing or reviewing code |
 | [Verification](agent-rules/verification.md) | Proof strength, coverage and baseline meaning | Behavioral/tooling changes |
 | [Architecture index](architecture/README.md) | Current vs target map and topic routing | Architecture context |
 | [System boundaries](architecture/system-boundaries.md) | Layer separation, packets/transport/model/runtime | Affected implementation layer |

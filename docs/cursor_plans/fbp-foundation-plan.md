@@ -17,6 +17,8 @@ Build an installable framework for reusable asynchronous processes connected thr
 
 **Recommendation: use TypeScript from the first new module.** This is a small legacy prototype without a working test suite; delaying typed port APIs would cause avoidable public-interface migration. Ship built JavaScript and generated declarations, so users and agents can still author JavaScript nodes. Layer the convenience APIs and visual tools on this foundation, rather than bolting type safety onto a completed untyped runtime. TypeScript does not validate incoming JSON; runtime schemas are a separate required boundary.
 
+**Development quality direction (user,2026-10-29):** follow [human-reasonable code and structure](../agent-rules/readability-and-structure.md) throughout these slices. Aim for cohesive ordinary source files around a couple of hundred lines or less, ideally a screen-sized unit of behavior; use meaningful file/folder boundaries, deliberate shared/library functions and plain code. JSDoc explains useful API contracts and non-obvious rationale, not every line. Size is a strong design/review guideline with reasoned exceptions, not a hard cap or permission for artificial fragmentation. Public facade filenames in this plan do not require monolithic implementations; SP1/individual slice allowlists permit bounded private modules.
+
 | Stage | Tasks | Integrated result |
 | --- | --- | --- |
 | M0 — supported runtime | T0 | Latest LTS Node and matching npm pinned; historical failure recorded. |

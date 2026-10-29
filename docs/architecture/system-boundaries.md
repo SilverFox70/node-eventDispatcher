@@ -34,3 +34,8 @@ Separate intended package exports: root is Node execution/authoring; /model is s
 JSON public payload admission and acyclic topology are initial profiles. Generic transport/type boundaries preserve later expansion; enabling custom objects requires validation/copy-or-share/serialization/resource rules, and enabling feedback requires seed/budget/termination/deadlock/cancellation contracts. Stable job IDs and retained addressable results are separate concerns; S00 must settle the initial identity and lookup scope. No existing in-memory object becomes durable merely by receiving an ID.
 
 See [decision register](decision-register.md) and [master extension horizon](../cursor_plans/fbp-foundation-plan.md) rather than creating speculative plugin/loop/durable-store implementations now.
+
+
+## Internal module organization
+
+The layers above define responsibilities, not a one-file-per-layer mandate. Follow [readability rules](../agent-rules/readability-and-structure.md): a public runtime.ts/graph.ts entry can delegate to a small capability-owned directory of cohesive internal modules. Keep orchestration/effect ownership singular and public exports deliberate. Prefer meaningful capability names and shallow enough hierarchies that a human can trace data flow without hunting through generic utility buckets. Around200 lines is a review cue, not a hard limit; document why a larger cohesive unit is clearer when retaining it.

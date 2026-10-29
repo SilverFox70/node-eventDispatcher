@@ -44,7 +44,14 @@ Shared contract: master SC-FBP-4 + [SP1](shared-execution.md); S00 is the only i
 - `test/graph.test.js`
 - `test/model.test.js (shared graph cases)`
 
+- `src/graph/*.ts` — private compile/identity helpers
+- `src/model/graph/*.ts` — private browser-safe validation helpers
+
 Also allowed: this slice's future `S06-execution.md`, append-only local workflow telemetry and necessary index/manifest evidence updates. Generated dist/coverage output is local tooling output, not a license for source changes elsewhere. Existing files are read before editing; future paths are intentional proposed destinations.
+
+### Readability and private module scope
+
+Apply [the shared readability section](shared-execution.md#readability-and-humane-implementation--applies-to-every-slice) and [canonical rules](../../agent-rules/readability-and-structure.md). Public filenames above are entry/ownership boundaries, not instructions to place the whole feature in one large file. Listed private helper paths remain bounded by this story; no new public behavior/export or second orchestrator is implied. Review folder responsibility, utility reuse, plain code and selective JSDoc; explain a sensible larger-file exception briefly rather than adding artificial fragmentation.
 
 ### Preserve and exclude
 
