@@ -1,13 +1,15 @@
 # NodeDispatcher → typed, installable FBP foundation
 
 Contract version: 2  
-Plan revision: r4, 2026-10-28  
-Shared solution contract: SC-FBP-4 (sections 3–8 and 14; section13 records future direction)  
-Status: ready-for-review — proposed contracts, not approved implementation  
-Released tasks: none; proposed scope T0–T12.  
+Plan revision: r5, 2026-10-28  
+Shared solution contract: SC-FBP-4 + SP1 branch partition; public packet-identity amendment pending S00  
+Status: mixed readiness — S00–S03 ready-for-review; S04–S19 blocked on the identity amendment; no execution approved  
+Released tasks: none. Execute only saved S00–S19 slice plans after their gates; T0–T12 below are legacy work-group references.  
 Tracking identity: fbp-foundation, a local identifier rather than a Jira ticket.
 
 Revision history: [r3](fbp-foundation-plan.r3.md) is preserved verbatim. r4 makes node-graph and event/subscription visualization an explicit base-framework requirement, including a public inspection/export API and a graphical sample.  [r2](fbp-foundation-plan.r2.md) is preserved verbatim. r3 adds explicit rich-packet, feedback-cycle and agent-application extension goals, with bounded present-day architecture proofs. Earlier revisions are historical. [r1](fbp-foundation-plan.r1.md) is preserved verbatim. r2 replaced r1's latest-stable policy with latest LTS, JS-first source with TypeScript, tag-only ports with runtime contracts, and adds a public authoring/testing SDK plus Next.js installation proof. r1/r2 are historical and must not be used as alternative execution contracts. This update changes planning artifacts only; implementation has not been requested.
+
+**Execution starts at [the ordered slice index](fbp-slices/INDEX.md), not the legacy T task list.** Revision r5 partitions the roadmap into20 branch features with saved task contracts. [r4](fbp-foundation-plan.r4.md) preserves the previously published plan. [SP1](fbp-slices/shared-execution.md) supersedes §§10/12 only for ownership/order/readiness; architectural behavior and the C00–C54 ledger remain shared. The later FIFO discussion exposed an unfinalized packet/job/lineage contract: S00 owns that bounded design amendment, and identity-dependent implementation is not ready until its concrete proposal is reviewed/applied. Toolchain and dispatcher slices remain independently reviewable.
 
 ## 1. Outcome, recommendation and integrated milestones
 
@@ -270,7 +272,7 @@ C00–C31 carry forward observed source gaps and planned proofs with revised own
 | C53 | R15,I8 | Labels contain quotes, newlines, HTML and Mermaid syntax → JSON roundtrip stable; toMermaid uses synthetic IDs and escaped labels, produces no active HTML/directives; recorded IDs deterministic; no executable source leaked. | U / T4 / test/model.test.js `safe diagram export` |
 | C54 | R15 | Next inspector selects between two registered graphs and dispatcher → SVG node/edge counts and labels match scope snapshot; once removal updates next refreshed view; keyboard/text equivalent identifies same relationship; static declaration distinct from active subscription. | Browser,I / T11 / fixtures/next-consumer/e2e/inspector.spec.ts `graphs and event relationships visualized` |
 
-## 10. Dependency graph and bounded task contracts
+## 10. Legacy work groups — superseded by SP1 branch slicing
 
 T0→T1; T1→T2 and T3; T3→T4→T5→T6→T7→T8; T2+T8→T9→T10→T11→T12. T4 owns contracts/model/compiler/builder; T5 sole production orchestrator; T8 convenience authoring and testing SDK call that orchestrator; T11 sole Next fixture owner. Each task reads SC-FBP-4 and applicable ledger rows. No agent delegation is requested or assumed.
 
@@ -363,7 +365,7 @@ Baseline: T0 captures known placeholder/characterization debt; new build/type/li
 
 Publication remains not-requested. This plan authorizes no commits/push/npm publish/reviewer messages. Planning writes only this revision/archive and feedback. Implementation readiness is a proposed decision, not a claim that source or tests exist.
 
-## 12. Readiness content gates, walkthrough and review decisions
+## 12. Historical r4 readiness review — r5 release status is in SP1
 
 | Gate | Proposal verdict | Concrete content evidence |
 | --- | --- | --- |
@@ -411,6 +413,10 @@ A later loop contract must define bootstrap/seed tokens, explicit feedback conne
 Termination cannot reuse “wait for every input EOF” unchanged inside a closed feedback region: a dedicated loop owner must decide when to stop feeding, drain or discard, close loop channels and release state. A policy must address all participants blocked on empty/full buffers; a timer alone is not proof of deadlock freedom. Cancellation, nested invocation, interleaved correlation keys and final-versus-intermediate outputs need observable contracts. Graph/catalog versioning must let old validators reject unsupported loop profiles before effects.
 
 First investigation fixture: seed value0, increment and assess, accept3; record3 iterations and one final result. Complementary fixtures: never converges→explicit iteration-limit outcome; no bootstrap→compile refusal; tiny buffers→documented progress or explicit deadlock refusal; cancellation→all waits released; side-effecting node cannot be silently replayed. These are proposed future acceptance scenarios, not tests delivered by T0–T12. Do not expose a permissive cycles=true option now.
+
+### Optional durable execution add-on
+
+User roadmap direction (2026-10-29): selected graphs should eventually use a database/persistent-store-backed host to checkpoint progress and resume from persisted evidence after supported failures. Most graphs remain in-memory with no persistence dependency. The canonical future scope, recovery assumptions, uncertain external effects and milestone proofs are recorded in [F01 — optional durable execution](../architecture/roadmap.md). This adds no implementation slice, durable flag or store protocol to S00–S19; it is not a promise that every failure or external effect is automatically recoverable.
 
 ### Agent-built applications: graph artifacts as executable application designs
 
@@ -467,3 +473,14 @@ InspectionSnapshot is immutable JSON: {version:1,sources:[{id,kind:'graph',spec,
 T11 Next inspector renders read-only SVG directly from the same structured snapshot, using simple deterministic rows/columns, labeled shapes and arrowed connections; no elaborate automatic layout promise. Include source selector, relationship legend and node/port/event details. Every shown relationship has an accessible text equivalent; keyboard controls have names and visible selected state. Styles must distinguish defined/declared versus active relationships without relying solely on color. Refresh reads a new server-provided safe snapshot; UI owns refresh lifecycle, runtime does not poll. Fixture contains two graph definitions (one may have no run) and one dispatcher; once/unsubscribe changes appear after explicit refresh. No unbounded cross-request run store is introduced to enable the demo; fixture uses fixed definitions and bounded request-local activity snapshots.
 
 T2 owns authoritative dispatcher topology; T4 owns browser-safe types/export with stub-free data fixtures; T7 owns root scope/graph-run identity association; T11 owns graphic integration; T12 accepts C51–C54. Scope/export additions are included in package /model/root type/coverage gates. Full graph editing, arbitrary source discovery and streaming multi-process observability remain future work, while the installed base already supplies the information and utility required to draw the known system.
+
+
+## 15. Agent-executable branch partition SP1
+
+[Start at INDEX.md](fbp-slices/INDEX.md); [machine-readable order](fbp-slices/manifest.json); [shared branch execution contract](fbp-slices/shared-execution.md). Twenty numbered feature/task plans S00–S19 each name one codex/fbp-NN-* branch, predecessor/base/next, recognizable story, exact files/symbols, internal task IDs, proof conditions, executable command scopes, exclusions and stop/handoff criteria.
+
+Order is strict by default: previous slice must be accepted and merged into master before creating the next branch from updated master. A completed but unmerged branch is not a predecessor base. The T labels above group original work for traceability and no longer define execution size or independent branch ownership. S08 owns the sole runtime, S06 the compiler, S12 inspection, S14 public harness, S17 Next server boundary and S18 graphical UI; SP1 lists every handoff and final proof owner.
+
+S00 is the explicit decision gate for packet/job/correlation/lineage identity and lookup expectations raised after r4. Until its exact amendment and condition assertions exist and receive review, S04–S19 are blocked-on-decision; their saved scope and inherited contracts are planning proposals rather than permission to improvise metadata. S01–S03 can be reviewed independently of that choice; default ordering remains S00 first. No new identity semantics, result store, source implementation or baseline/test success is claimed by slicing.
+
+r5/partition planning produced files only. Prior authorization published r4 documents; this new request saves branch plans and does not itself execute features or publish these new artifacts. All branch execution states are not-started and merge SHAs null.

@@ -57,3 +57,7 @@ Currently, if you subscribe using `events.on(eventName, callback)` and there is 
 
 ## Modules
 The examples here use the 'Request' module for making http requests. If you get an error that this module cannot be found, double check that you have run ```npm install``` at the root.
+
+## Agent-assisted development
+
+Start at [AGENTS.md](AGENTS.md) and the [documentation map](docs/AGENT_FILES.md). The [ordered FBP slice plans](docs/cursor_plans/fbp-slices/INDEX.md) describe the proposed modernization; the source and scripts above remain the legacy prototype until those features are implemented.
