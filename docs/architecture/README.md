@@ -20,3 +20,5 @@ User instruction defines scope; accepted decisions and the approved feature cont
 After a feature merges, update only relevant current-state facts and decision status with its evidence link. Keep detailed historical plans/receipts in their existing locations; do not copy all55 conditions into an architecture overview. If an accepted ADR changes a shared interface, amend affected plans/consumers and proof owners together using [the runbook](../runbooks/change-contract.md).
 
 S05 defines [typed contracts, reusable components and safe catalogs](contracts-and-components.md). Graph execution remains a later slice.
+
+S06 adds [graph validation and compilation](graphs.md): JSON wiring becomes an immutable server handle or deterministic issues before factories execute. Streaming execution remains S08.

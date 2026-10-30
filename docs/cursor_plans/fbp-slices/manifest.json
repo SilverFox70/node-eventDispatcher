@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S05 contracts/components; S06 waits for actual S05 merge and its own readiness review",
+  "next_planning_action": "Review S06 graph compilation; S07 requires actual S06 merge and its own readiness review",
   "slices": [
     {
       "id": "S00",
@@ -175,7 +175,7 @@
       "previous": "S04",
       "next": "S06",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "134a9b66664c5591bc62c870c0f1111aae210dd2",
       "conditions": [
         "C33",
         "C46",
@@ -190,7 +190,7 @@
         "S05.C"
       ],
       "execution_receipt": "S05-execution.md",
-      "review_status": "submitted",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/11",
       "implementation_commit": "a9f050c"
     },
@@ -200,8 +200,8 @@
       "title": "Validate and compile externally defined graphs",
       "plan": "06-graph-compiler-plan.md",
       "branch": "codex/fbp-06-graph-compiler",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S05",
       "next": "S07",
       "base": "master after previous slice merge",
@@ -214,10 +214,17 @@
         "C49",
         "C50"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T4 model/validator/compiler portion",
+      "authorized_tasks": [
+        "S06.A",
+        "S06.B",
+        "S06.C"
       ],
-      "legacy_master_work": "T4 model/validator/compiler portion"
+      "execution_receipt": "S06-execution.md",
+      "review_status": "submitted",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/13",
+      "implementation_commit": "01a433e"
     },
     {
       "id": "S07",

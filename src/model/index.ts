@@ -6,3 +6,5 @@ export type { ContractBase, PortDescriptor, ValidationResult } from './contracts
 export type { Catalog, ComponentDescriptor } from './catalog.js';
 export { validateCatalog } from './catalog.js';
 export type { ContractIssue } from './contracts.js';
+export { validateGraph } from './graph.js';
+export type { GraphSpec, Endpoint } from './graph.js';

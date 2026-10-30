@@ -116,3 +116,7 @@ Canonical proposed identity contract: [IC1-r2](../fbp-identity-contract.md). Com
 | G7 integration | Proposed; release blocked by S00 | Acceptance demonstration + handoff + next-merge condition; parent T labels do not hide owner |
 
 Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.
+
+## Execution readiness amendment — 2026-10-30
+
+The user explicitly requested S06 after S05 merged in PR11 at134a9b66664c5591bc62c870c0f1111aae210dd2. S00 is merged and the packet/contract interfaces delivered by S04/S05 are accepted predecessors. This metadata/compiler slice introduces no later packet-ledger or join settings; the historical blanket identity-pending language above no longer blocks this bounded execution. S06.A–C are authorized; current implementation/proof/publication state is in [the execution receipt](S06-execution.md). No S07/S08 work or merge is implied.
