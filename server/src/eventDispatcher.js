@@ -1,7 +1,7 @@
 
 var eventDispatcher = function(){
   'use strict';
-  var shortid = require('shortid');
+  var randomUUID = require('node:crypto').randomUUID;
   var eventSubscribers = {};
   var loggerOn = false;
 
@@ -9,7 +9,7 @@ var eventDispatcher = function(){
     var eventLogs = {};
 
     var baseEvent = function(eventName){
-      var sid = shortid.generate();
+      var sid = randomUUID();
       var timestamp = Date.now();
       eventLogs[sid] = {"timestamp" : timestamp,
                            "event" : eventName};

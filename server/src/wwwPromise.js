@@ -1,44 +1,20 @@
 'use strict';
-var request = require('request');
 
-var wwwHandler = function(){
-	var get = function(url){
-		return new Promise(function(resolve, reject){
-			request(url, function(error, response, body){
+/** Legacy example HTTP helpers; response bodies remain text, including HTTP errors. */
+const wwwHandler = {
+  async get(url) {
+    const response = await fetch(url, { redirect: 'error' });
+    return response.text();
+  },
 
-				if (error){
-					reject(error);
-				} else {
-					resolve(body);
-				}
+  async post(url, form) {
+    const response = await fetch(url, {
+      method: 'POST',
+      body: new URLSearchParams(form),
+      redirect: 'error'
+    });
+    return response.text();
+  }
+};
 
-			});
-		});
-	}
-
-	var post = function(url, form){
-		return new Promise(function(resolve, reject){
-			request({
-				uri: url,
-				method: post,
-				form: form
-			}, function(error, response, body){
-
-				if (error){
-					reject(error);
-				} else {
-					resolve(body);
-				}
-
-			});
-		});
-	}
-
-	return {
-		get,
-		post
-	}
-
-}();
-
-module.exports = {wwwHandler: wwwHandler};
+module.exports = { wwwHandler };

@@ -56,7 +56,7 @@ To unsubscribe all callbacks from a given event use:
 Currently, if you subscribe using `events.on(eventName, callback)` and there is already an existing callback of the same name registered to *eventName* unexpected behavior could occur. This needs to be tested.
 
 ## Modules
-The examples here use the 'Request' module for making http requests. If you get an error that this module cannot be found, double check that you have run ```npm install``` at the root.
+The HTTP examples use the pinned Node runtime’s built-in `fetch`. GET and form-encoded POST return response text, including non-success HTTP responses. Transport failures reject the promise helper and emit an Error through the event helper’s completion event. Redirects are rejected rather than followed automatically.
 
 ## Agent-assisted development
 

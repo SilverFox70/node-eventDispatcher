@@ -2,7 +2,7 @@
 
 ## Current checkout
 
-The current implementation is the historical CommonJS prototype under server/src. package.json depends on request, shortid, cli-color and an fs shim. S01 replaces the absent main.js package entry with generated distributions and adds tooling tests; the legacy scratch examples remain unchanged.
+The current implementation is the historical CommonJS prototype under server/src. The dependency cleanup removes request, shortid and the fs package shim; current runtime dependencies are Zod and cli-color. Legacy HTTP examples use native fetch and log IDs use node:crypto.randomUUID. S01 replaces the absent main.js package entry with generated distributions and adds tooling tests; the legacy scratch examples remain unchanged.
 
 S01 introduces the following commands (use the exact Node/npm pins in .nvmrc and package.json):
 

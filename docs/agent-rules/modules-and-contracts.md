@@ -12,3 +12,5 @@ These are constraints for implementing the proposed FBP design, not claims those
 - Follow [human-reasonable code and structure](readability-and-structure.md): cohesive small modules, clear folder responsibilities, deliberate shared utilities and useful JSDoc; size targets never justify duplicated policies, hidden logic or a second executor.
 
 Read [system boundaries](../architecture/system-boundaries.md) and [decision status](../architecture/decision-register.md); use [contract amendment](../runbooks/change-contract.md) for a material change.
+
+User dependency policy (2026-10-29): prefer supported packages and native runtime capabilities. Do not introduce or retain deprecated/unsupported dependencies when a practical supported replacement exists; document a concrete unavoidable exception rather than assuming an old version is acceptable. A clean audit is evidence about reported vulnerabilities, not proof of maintenance or future security.

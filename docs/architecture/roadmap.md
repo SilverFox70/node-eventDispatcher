@@ -57,3 +57,15 @@ Required proof scenarios include crash before/after intent commit, after provide
 - Agent-built applications: discoverable versioned nodes, composable graphs, simulation, reviewable changes and enforced execution capabilities.
 
 Detailed existing goals remain in [the master extension horizon](../cursor_plans/fbp-foundation-plan.md). These directions may intersect F01 but do not require every graph to become durable. New milestones become executable branches only through a concrete shared contract and saved plans.
+
+## F02 — visual graph authoring, test loads and source generation
+
+Authority: user requested this workflow on2026-10-29. It is a future feature sequence, beyond S18's read-only inspector; no interactive editor or generator exists in the foundation yet.
+
+1. Select versioned components from a node palette, inspect input/output contracts, connect compatible named ports, and edit graph configuration through a Next.js-compatible visual editor.
+2. Save the same versioned GraphSpec consumed by the existing validator/compiler. Layout is separate presentation metadata. Invalid connections are refused before node effects; no second visual-only executor.
+3. Submit controlled fixtures/test loads through the production runtime and public test harness. Display bounded progress/results/errors; server-side authorization and execution budgets govern effectful nodes.
+4. Export readable, deterministic TypeScript graph composition plus necessary imports and version references, suitable for source control and ordinary code review. Save the graph specification alongside it; do not serialize function closures or invent a separate generated runtime.
+5. Prove save/load and generated-source execution match the original graph, and define how handwritten code and visual edits round-trip without silently overwriting user changes.
+
+Node implementation remains ordinary human/agent-authored code registered on the server. Visual selection does not grant permission to execute arbitrary code or reveal credentials. Integration with rich payloads, feedback loops and durable execution follows each profile's eligibility rules. Concrete branch slices and acceptance tests are still to be planned; this direction does not enlarge S18 automatically.
