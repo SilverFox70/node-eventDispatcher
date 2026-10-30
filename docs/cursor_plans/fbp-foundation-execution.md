@@ -34,3 +34,7 @@ User authorized S05 after S04 merged and requested backend evaluation to be refl
 ## S06 — shared graph validation and compilation
 
 User authorized S06 after S05 merged. [S06 receipt](fbp-slices/S06-execution.md) records immutable compilation, client/server wiring parity, capacity/cardinality/identity/cycle proofs and publication. S07 construction and S08 execution remain separate slices.
+
+## S07 — typed graph construction
+
+User authorized S07 after S06 merged. [S07 receipt](fbp-slices/S07-execution.md) records C32 builder typing, runtime handle ownership, shared compiler integration and publication. Actual streaming execution remains S08.

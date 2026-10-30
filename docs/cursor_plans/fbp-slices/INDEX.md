@@ -2,7 +2,7 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: S06 graph compilation complete and verified; [PR #13](https://github.com/SilverFox70/node-eventDispatcher/pull/13) submitted for review.** S05 [PR #11](https://github.com/SilverFox70/node-eventDispatcher/pull/11) merged at134a9b66664c5591bc62c870c0f1111aae210dd2. See [S06 receipt](S06-execution.md) for its bounded readiness and proof handoff; S07 remains unstarted.
+**Current work: S07 typed graph construction complete and verified; publication follows.** S06 [PR #13](https://github.com/SilverFox70/node-eventDispatcher/pull/13) merged at de3059c0e1dbfe7bb1730a5f056d21293222f92c. See [S07 receipt](S07-execution.md); S08 remains unstarted.
 
 **Always execute in numeric order. Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
 
@@ -19,7 +19,7 @@ The choice to retain FIFO and use job/correlation/packet/lineage identity is com
 | 04 | [S04 — Transport validated packets with bounded backpressure](04-packet-channels-plan.md) | `codex/fbp-04-packet-channels` | ready-for-review | S03 |
 | 05 | [S05 — Define typed nodes with validated port contracts](05-port-contracts-plan.md) | `codex/fbp-05-port-contracts` | ready-for-review | S04 |
 | 06 | [S06 — Validate and compile externally defined graphs](06-graph-compiler-plan.md) | `codex/fbp-06-graph-compiler` | ready-for-review | S05 |
-| 07 | [S07 — Compose graphs with checked node and port handles](07-typed-graph-builder-plan.md) | `codex/fbp-07-typed-graph-builder` | blocked-on-decision | S06 |
+| 07 | [S07 — Compose graphs with checked node and port handles](07-typed-graph-builder-plan.md) | `codex/fbp-07-typed-graph-builder` | ready-for-review | S06 |
 | 08 | [S08 — Execute a real multi-packet streaming graph](08-stream-runtime-plan.md) | `codex/fbp-08-stream-runtime` | blocked-on-decision | S07 |
 | 09 | [S09 — Finish, cancel and diagnose every owned wait safely](09-lifecycle-diagnostics-plan.md) | `codex/fbp-09-lifecycle-diagnostics` | blocked-on-decision | S08 |
 | 10 | [S10 — Transform, branch and merge typed streams](10-stream-components-plan.md) | `codex/fbp-10-stream-components` | blocked-on-decision | S09 |

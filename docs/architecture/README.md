@@ -22,3 +22,5 @@ After a feature merges, update only relevant current-state facts and decision st
 S05 defines [typed contracts, reusable components and safe catalogs](contracts-and-components.md). Graph execution remains a later slice.
 
 S06 adds [graph validation and compilation](graphs.md): JSON wiring becomes an immutable server handle or deterministic issues before factories execute. Streaming execution remains S08.
+
+S07 adds [typed graph construction](graph-builder.md), emitting the same GraphSpec for S06 compilation. S08 still owns execution.
