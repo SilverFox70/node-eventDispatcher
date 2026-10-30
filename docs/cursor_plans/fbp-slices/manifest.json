@@ -70,7 +70,9 @@
         "S01.B",
         "S01.C"
       ],
-      "review_status": "preparing"
+      "review_status": "submitted",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/5",
+      "implementation_commit": "08d390f"
     },
     {
       "id": "S02",

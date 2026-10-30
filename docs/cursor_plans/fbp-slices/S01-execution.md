@@ -29,3 +29,5 @@ Build, threshold policy and test fixtures have clear separate owners; handwritte
 ## Final verification
 
 Normal npm ci, npm run check, npm test and npm run coverage each exit0 on the final source/config candidate;3 tests pass, none skipped. A separate clean copy at /tmp/fbp-s01-clean also passed npm ci --offline --cache /tmp/fbp-npm-cache, check and test. The offline install's zero-vulnerability summary is not fresh security evidence; the online install reports the inherited18. Guidance link/order check and git diff --check pass. Only documentation/formatting changed after these outputs; final lint rechecked before commit. Publication follows on this branch; merge remains pending.
+
+Publication: implementation commit08d390f pushed on codex/fbp-01-lts-typescript-build; [PR #5](https://github.com/SilverFox70/node-eventDispatcher/pull/5) submitted against master. No merge claimed. This final receipt-only update does not invalidate runtime/tooling proofs.
