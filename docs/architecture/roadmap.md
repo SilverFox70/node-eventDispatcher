@@ -79,3 +79,34 @@ User clarification,2026-10-29: a graph that is tested and working must be durabl
 - Export a portable graph artifact plus deterministic readable TypeScript and dependency/import manifest. Include or identify the node implementations and versions required to run it; credentials and environment-specific service bindings are supplied by the consuming project, never embedded in the artifact.
 - Demonstrate clean-project import/build/test/run using the ordinary package compiler/runtime, without the editor service being present. Round-trip export/import preserves graph meaning, versions and layout where included; incompatible formats or missing node versions produce clear refusal before effects.
 - Choose durable storage, artifact packaging, release/migration policy and bounded implementation slices in the editor proposal. No storage vendor, hosted service or arbitrary-code execution interface is selected by this roadmap entry.
+
+## F03 — existing application discovery and assisted source transformation
+
+Authority: user direction, 2026-10-30. Future sidecar goal: inspect an existing application, represent its behavior as an editable graph, test proposed changes, and apply the approved changes back to its source. This is beyond F02's authoring of graphs already expressed in our component model. It does not expand S00–S19 or authorize implementation yet.
+
+For example: discover a page's load query, editable state and submit command; show their relationships; let a developer add a post-submit action or change sequencing; then produce and test the corresponding application changes. The final save/apply operation should update the application through a reviewable source patch, with a recoverable previous revision.
+
+### Discovery and an honest behavior model
+
+- Start with a declared JavaScript/TypeScript and Next.js integration scope. Inventory UI events, functions, queries, service commands, state transitions, subscriptions and external effects using source analysis, framework adapters and, where useful, optional runtime traces.
+- Attach source locations, source revision, contracts and supporting evidence to relationships. Distinguish confirmed, inferred and unresolved behavior, including dynamic dispatch, reflection, generated code and missing dependencies. A trace demonstrates an observed path; it does not prove every possible path was discovered.
+- Keep the application analysis graph distinct from an executable FBP graph. Calls, state dependencies and event subscriptions have different meanings; an arbitrary existing function is not automatically a safe packet-processing node. Define explicit adapters or supported transformations where execution in the FBP runtime is desired.
+- Support useful partial maps and focused flows before promising whole-application understanding. Agents may propose missing relationships or changes, but those proposals need evidence and verification before becoming accepted behavior.
+
+### Visual changes that become maintainable application code
+
+- Build on F02's editor, versioned artifacts and test presentation. Express changes as explicit operations such as adding an action, changing a dependency/order, reconnecting a supported flow or editing a function implementation.
+- Preserve the original application's authorization, transaction, concurrency, error and side-effect boundaries unless the developer explicitly changes them. A simplified display must not silently imply different execution semantics.
+- Generate focused, readable source changes through syntax-aware transformations and/or constrained agent assistance. Preserve handwritten code and unsupported regions; refuse or surface ambiguous transformations instead of silently rewriting them. Generated code follows the repository's human-readable structure rules.
+- Test with the application's existing build/type/test checks and new assertions for the requested behavior. Use isolated fixtures or controlled environments for effectful test loads. Present the source diff, affected behavior and verification results before apply.
+- Bind proposals to a source revision, detect intervening edits and require regeneration or reconciliation when stale. Work on a branch or equivalent recoverable revision. Saving an accepted change applies the reviewed patch; it must not overwrite unrelated work.
+
+### Future feature sequence and proof
+
+1. Deliver a read-only application inventory and source-linked graph for one supported framework pattern, with visible unknowns and evidence.
+2. Add targeted flow discovery, contract extraction and optional trace correlation; validate against known fixture applications, including intentionally unresolved dynamic behavior.
+3. Support one bounded visual transformation, such as adding a post-submit action, and produce a reviewable source patch with application-level tests.
+4. Prove the full import → edit → test → approve → apply → rediscover loop. A no-op round-trip creates no unrelated changes; stale revisions and unsupported/ambiguous edits fail clearly; applied behavior matches the accepted graph change.
+5. Expand transformation coverage, framework adapters and agent-assisted implementation only after their preservation and behavioral proofs exist. Define ownership and round-trip rules for applications combining handwritten code, generated code and native FBP flows.
+
+This sidecar can help teams understand and evolve applications without first rebuilding them as FBP programs. Its analysis and transformation tooling belongs outside the lightweight runtime. F01 durability remains independently optional; understanding an existing workflow does not make that workflow recoverable after failure.
