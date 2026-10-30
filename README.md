@@ -22,6 +22,7 @@ These are uses for the planned graph runtime. The current foundation does not ye
 - Pinned Node LTS/npm, strict TypeScript, ESM/CommonJS builds and generated declarations.
 - Independent synchronous event dispatchers, with an optional shared singleton and a legacy compatibility import.
 - Immutable inspection metadata for active subscriptions, optional owners and explicitly declared publishers.
+- Typed reusable component definitions, Zod-backed runtime contracts and safe catalog metadata.
 - Immutable JSON packets with separate packet/job identities, immediate-parent lineage and optional correlation keys.
 - Internal bounded FIFO channels with backpressure, close/drain and abort semantics. These are building blocks for the future runtime, not a public channel API.
 - Offline tests, packed-package consumer/type checks and source-mapped per-file coverage gates.
@@ -66,8 +67,8 @@ npm run coverage
 
 | Stage | Outcome |
 | --- | --- |
-| S00–S04: foundation | Identity contracts, modern tooling, event dispatch/inspection, packets and bounded transport |
-| S05–S09: graph execution | Typed/runtime-validated node ports, one graph validator/compiler, typed graph construction and an isolated runtime with cancellation and lifecycle management |
+| S00–S05: foundation and ports | Identity contracts, modern tooling, event dispatch/inspection, packets, bounded transport and typed node contracts |
+| S06–S09: graph execution | Typed/runtime-validated node ports, one graph validator/compiler, typed graph construction and an isolated runtime with cancellation and lifecycle management |
 | S10–S15: useful flows and tests | Transform/branch/merge/join nodes, graph inspection, ordinary-function authoring, public node/graph test helpers and reliability/load proofs |
 | S16–S19: adoption | Package/migration recipes, a real Next.js consumer, read-only graphical inspection and integrated acceptance |
 | Visual authoring extension | Select/connect nodes, run test loads, durably save drafts and locked graph revisions, and export readable TypeScript plus portable graph artifacts for other projects |
@@ -82,6 +83,7 @@ Duplicate execution prevention belongs to the planned runtime: repeated delivery
 ## Where to go next
 
 - [Ordered feature slices and current progress](docs/cursor_plans/fbp-slices/INDEX.md)
+- [Contracts and component authoring](docs/architecture/contracts-and-components.md)
 - [Architecture and implementation boundaries](docs/architecture/README.md)
 - [Optional extensions: durability and visual graph authoring/export](docs/architecture/roadmap.md)
 - [Development guide](docs/DEVELOPMENT_GUIDELINES.md)

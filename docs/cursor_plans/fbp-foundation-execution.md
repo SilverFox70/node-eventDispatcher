@@ -26,3 +26,7 @@ User authorized S03 after S02 merged. [S03 receipt](fbp-slices/S03-execution.md)
 ## S04 — identified packets and bounded transport
 
 User authorized S04 after S03 merged, then requested a project-purpose/roadmap README rewrite. [S04 receipt](fbp-slices/S04-execution.md) records identity readiness, C06/C07/C11/C48/C55/C56 proofs, quality gates and publication. No S05 implementation or S04 merge is inferred.
+
+## S05 — typed contracts/components/catalog
+
+User authorized S05 after S04 merged and requested backend evaluation to be reflected in displays. [S05 receipt](fbp-slices/S05-execution.md) records contract/port/catalog proofs, safe issue handoff and verification/publication. No S06 implementation, graph runtime or UI delivery is inferred.
