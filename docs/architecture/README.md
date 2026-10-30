@@ -18,3 +18,5 @@ S02 delivers the synchronous TypeScript dispatcher and a legacy CommonJS shim; S
 User instruction defines scope; accepted decisions and the approved feature contract settle behavior. Proposed plans are reviewable design, not implementation approval. For execution order SP1 supersedes old broad T task groupings. For unresolved packet/job/lineage/lookup semantics S00 owns the amendment; do not infer a complete contract from the word key.
 
 After a feature merges, update only relevant current-state facts and decision status with its evidence link. Keep detailed historical plans/receipts in their existing locations; do not copy all55 conditions into an architecture overview. If an accepted ADR changes a shared interface, amend affected plans/consumers and proof owners together using [the runbook](../runbooks/change-contract.md).
+
+S05 defines [typed contracts, reusable components and safe catalogs](contracts-and-components.md). Graph execution remains a later slice.

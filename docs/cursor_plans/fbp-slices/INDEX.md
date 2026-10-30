@@ -2,7 +2,7 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: S04 packet/channel implementation complete; [PR #10](https://github.com/SilverFox70/node-eventDispatcher/pull/10) submitted for review.** S03 [PR #9](https://github.com/SilverFox70/node-eventDispatcher/pull/9) merged at f00de793c1853b2e8b1668ff753eb98422ee4213. The explicit S04 request applies the accepted IC1 packet identity/admission rules; later execution-ledger details remain outside this slice. See [S04 receipt](S04-execution.md). S05 remains unstarted until S04 merges and its own readiness is verified.
+**Current work: S05 contracts/component implementation complete; preparing review.** S04 [PR #10](https://github.com/SilverFox70/node-eventDispatcher/pull/10) merged at bf147e54e0c2065feea3aa5b7aea5509d235336b. See [S05 receipt](S05-execution.md) for readiness, scope and C32/C33/C46/C50 proof contributions. S06 remains unstarted until S05 merges and its own readiness is verified.
 
 **Always execute in numeric order. Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
 
@@ -17,7 +17,7 @@ The choice to retain FIFO and use job/correlation/packet/lineage identity is com
 | 02 | [S02 — Use isolated, correct dispatcher instances](02-dispatcher-core-plan.md) | `codex/fbp-02-dispatcher-core` | ready-for-review | S01 |
 | 03 | [S03 — Inspect event publishers and active subscriptions](03-dispatcher-topology-plan.md) | `codex/fbp-03-dispatcher-topology` | ready-for-review | S02 |
 | 04 | [S04 — Transport validated packets with bounded backpressure](04-packet-channels-plan.md) | `codex/fbp-04-packet-channels` | ready-for-review | S03 |
-| 05 | [S05 — Define typed nodes with validated port contracts](05-port-contracts-plan.md) | `codex/fbp-05-port-contracts` | blocked-on-decision | S04 |
+| 05 | [S05 — Define typed nodes with validated port contracts](05-port-contracts-plan.md) | `codex/fbp-05-port-contracts` | ready-for-review | S04 |
 | 06 | [S06 — Validate and compile externally defined graphs](06-graph-compiler-plan.md) | `codex/fbp-06-graph-compiler` | blocked-on-decision | S05 |
 | 07 | [S07 — Compose graphs with checked node and port handles](07-typed-graph-builder-plan.md) | `codex/fbp-07-typed-graph-builder` | blocked-on-decision | S06 |
 | 08 | [S08 — Execute a real multi-packet streaming graph](08-stream-runtime-plan.md) | `codex/fbp-08-stream-runtime` | blocked-on-decision | S07 |

@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S04 packets/channels; S05 waits for actual S04 merge and its own readiness review",
+  "next_planning_action": "Review S05 contracts/components; S06 waits for actual S05 merge and its own readiness review",
   "slices": [
     {
       "id": "S00",
@@ -143,7 +143,7 @@
       "previous": "S03",
       "next": "S05",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "bf147e54e0c2065feea3aa5b7aea5509d235336b",
       "conditions": [
         "C06",
         "C07",
@@ -160,7 +160,7 @@
         "S04.C"
       ],
       "execution_receipt": "S04-execution.md",
-      "review_status": "submitted",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/10",
       "implementation_commit": "7e4a0f1"
     },
@@ -170,8 +170,8 @@
       "title": "Define typed nodes with validated port contracts",
       "plan": "05-port-contracts-plan.md",
       "branch": "codex/fbp-05-port-contracts",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S04",
       "next": "S06",
       "base": "master after previous slice merge",
@@ -182,10 +182,15 @@
         "C50",
         "C32"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T4 contracts/component/catalog portion",
+      "authorized_tasks": [
+        "S05.A",
+        "S05.B",
+        "S05.C"
       ],
-      "legacy_master_work": "T4 contracts/component/catalog portion"
+      "execution_receipt": "S05-execution.md",
+      "review_status": "preparing"
     },
     {
       "id": "S06",

@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { mkdtempSync, mkdirSync, writeFileSync, cpSync, rmSync, existsSync } = require('node:fs');
+const { mkdtempSync, writeFileSync, cpSync, rmSync, existsSync } = require('node:fs');
 const { join, resolve } = require('node:path');
 const { tmpdir } = require('node:os');
 const { spawnSync } = require('node:child_process');
@@ -28,20 +28,27 @@ test('both distribution entries load', () => {
     }
     assert.ok(files.includes('src/index.ts'));
     const installed = join(fixture, 'node_modules/event-driven-design');
-    mkdirSync(installed, { recursive: true });
-    run('tar', ['-xf', join(fixture, packed.filename), '--strip-components=1', '-C', installed]);
     writeFileSync(join(fixture, 'package.json'), '{"private":true}\n');
+    const cache = run('npm', ['config', 'get', 'cache'], root).trim();
+    run('npm', ['install', '--offline', '--ignore-scripts', '--no-audit', '--no-fund',
+      '--package-lock=false', '--cache', cache, join(fixture, packed.filename)]);
     for (const [mode, load] of [['commonjs', 'require'], ['module', 'await import']]) {
       const expression = ['event-driven-design', 'event-driven-design/model', 'event-driven-design/testing'].map(name => `${load}('${name}')`).join(';');
       run(process.execPath, ['--input-type=' + mode, '-e', expression]);
     }
     run(process.execPath, ['--input-type=module', '-e', `
-      import { createDispatcher, packet, derivePacket } from 'event-driven-design';
+      import { createDispatcher, packet, derivePacket, contract, defineComponent, describeRegistry } from 'event-driven-design';
+      import { z } from 'zod';
       const dispatcher = createDispatcher();
       let count = 0;
       dispatcher.once('x', () => count++);
       dispatcher.emit('x'); dispatcher.emit('x');
       if (count !== 1) throw new Error('ESM once delivery failed');
+      const n = contract('n@1', z.number());
+      const text = contract('text@1', z.string().min(1));
+      const component = defineComponent({ id: 'node', version: 1, title: 'Node', description: '',
+        in: { value: n }, out: { label: text }, create: () => async () => {} });
+      if (describeRegistry({ 'node@1': component }).components.length !== 1) throw new Error('ESM catalog failed');
       const parent = packet(2, { jobId: 'job-42' });
       if (derivePacket(4, [parent]).parentPacketIds[0] !== parent.packetId) throw new Error('ESM packet lineage failed');
       const dispose = dispatcher.declarePublisher('producer', 'x');
@@ -56,6 +63,12 @@ test('both distribution entries load', () => {
       const root = require('event-driven-design');
       const shim = require('event-driven-design/server/src/eventDispatcher.js');
       assert.equal(root.eventDispatcher, shim.eventDispatcher);
+      const z = require('zod');
+      const n = root.contract('n@1', z.number());
+      const text = root.contract('text@1', z.string().min(1));
+      const component = root.defineComponent({ id: 'node', version: 1, title: 'Node', description: '',
+        in: { value: n }, out: { label: text }, create: () => async () => {} });
+      assert.equal(root.describeRegistry({ 'node@1': component }).components.length, 1);
       const parent = root.packet(2, { jobId: 'job-42' });
       assert.equal(root.derivePacket(4, [parent]).parentPacketIds[0], parent.packetId);
       assert.equal(root.createChannel, undefined);

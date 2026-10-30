@@ -2,8 +2,8 @@
 
 Contract version: 2  
 Slice revision: r2, 2026-10-29  
-Readiness: blocked-on-decision  
-Execution: not-started; approved task set: none  
+Readiness: ready-for-review
+Execution: S05.A–C implemented for review; user authorized2026-10-30
 Branch: `codex/fbp-05-port-contracts`  
 Parent: master r6 / SC-FBP-4 + proposed IC1-r2 / SP1-r2; acceptance pending.
 
@@ -119,3 +119,5 @@ Canonical proposed identity contract: [IC1-r2](../fbp-identity-contract.md). Use
 | G7 integration | Proposed; release blocked by S00 | Acceptance demonstration + handoff + next-merge condition; parent T labels do not hide owner |
 
 Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.
+
+Execution amendment: actual S04 packets/types and its accepted identity/admission direction satisfy this slice readiness; older blanket pending language is superseded for S05 only. Necessary packed/declaration consumer tests, cohesive sibling schema tests and the user-requested backend-display handoff are recorded in [S05 receipt](S05-execution.md). Later runtime ledger/report transport details remain their owners’ review gates.
