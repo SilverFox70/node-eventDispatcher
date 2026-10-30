@@ -1,7 +1,8 @@
 {
   "all": true,
   "src": [
-    "dist/cjs"
+    "dist/cjs",
+    "server/src"
   ],
   "extension": [
     ".js",
@@ -9,7 +10,9 @@
   ],
   "include": [
     "dist/**/*.js",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "server/src/www*.js",
+    "server/src/eventDispatcher.js"
   ],
   "exclude": [
     "**/*.d.ts",

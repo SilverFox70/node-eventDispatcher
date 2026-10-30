@@ -1,35 +1,21 @@
 'use strict';
-var request = require('request');
-var eventSystem = require('./eventDispatcher');
-var events = eventSystem.eventDispatcher;
 
-var www = function(){
-	var get = function(url){
-		console.log('Inside the get request.....');
-		var res;
-		request(url, function(error, response, body){
-			if (error){
-				res = error;
-			} else {
-				res = body;
-			}
-			events.emit('getComplete', res);
-		});
-	};
+const { eventDispatcher: events } = require('./eventDispatcher');
+const { wwwHandler } = require('./wwwPromise');
 
-	var post = function(url, form){
-		request({
-			uri: url,
-			method: post,
-			form: form
-		}, function(error, response, body){
-			events.emit('postComplete', body);
-		});
-	}
+// Preserve completion events; report transport failures as Error values.
+events.on('get', url => {
+  wwwHandler.get(url).then(
+    body => events.emit('getComplete', body),
+    error => events.emit('getComplete', error)
+  );
+});
 
-	events.on('get', get);
-	events.on('post', post);
-	
-}();
+events.on('post', (url, form) => {
+  wwwHandler.post(url, form).then(
+    body => events.emit('postComplete', body),
+    error => events.emit('postComplete', error)
+  );
+});
 
-module.exports = {www: www};
+module.exports = { www: undefined };

@@ -33,7 +33,7 @@ test('coverage sees unexecuted production', async () => {
     writeFileSync(join(fixture, 'src/unexecuted.ts'), 'export function untouched(value: number): number {\n  return value + 1;\n}\n');
     const build = spawnSync(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.cjs.json'], { cwd: fixture, encoding: 'utf8' });
     assert.equal(build.status, 0, build.stdout + build.stderr);
-    const measure = spawnSync(process.execPath, [join(root, 'node_modules/c8/bin/c8.js'), process.execPath, '-e', "require('./dist/cjs/index.js')"], { cwd: fixture, encoding: 'utf8' });
+    const measure = spawnSync(process.execPath, [join(root, 'node_modules/c8/bin/c8.js'), '--temp-directory', join(fixture, 'coverage/tmp'), process.execPath, '-e', "require('./dist/cjs/index.js')"], { cwd: fixture, encoding: 'utf8' });
     assert.equal(measure.status, 0, measure.stdout + measure.stderr);
     const report = readJson(join(fixture, 'coverage/coverage-final.json'));
     const mapped = Object.keys(report);
