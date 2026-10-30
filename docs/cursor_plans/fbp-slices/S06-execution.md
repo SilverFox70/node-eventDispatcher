@@ -39,3 +39,5 @@ At the final source candidate, from the repository root with command-local PATH=
 Toolchain/config/lock unchanged; lock SHA256 bf9c99a9567367299e8e5f4afb613fe457a513ad43d1513594af781f2f862bbd. Existing isolated package tests prove both distribution formats and /model graph validation from the installed tarball; both generated declaration consumers pass. No source changes after these final gates. Untracked .DS_Store and .feedback-log/ remain untouched.
 
 Implementation complete; S06 behavioral proof verified; quality and per-file coverage gates passed. Runtime scheduling, durable state, actual browser/Next build and hosted CI are not claimed. S07 must start from the real S06 merge, not this branch. Publication follows; green local evidence does not claim a merge.
+
+Publication: implementation commit01a433e pushed on codex/fbp-06-graph-compiler; [PR #13](https://github.com/SilverFox70/node-eventDispatcher/pull/13) created against master. Receipt/index/manifest updated before marking the PR ready for review. No merge claimed; source gates above remain applicable to this documentation-only receipt.
