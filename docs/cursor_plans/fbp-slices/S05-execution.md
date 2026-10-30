@@ -37,3 +37,5 @@ Every new source/test file is under200 lines; contract, schema traversal, format
 Implementation and S05 proof contributions are complete for review. S06 has not started and requires actual S05 merge and its own contract readiness. Publication receipt follows; green branch is not merge evidence.
 
 Final review correction: metadata snapshot copying preserves nonenumerable data members that S04 admission/contract validation treats as JSON data; a dedicated example-export fixture proves that the exported example still satisfies its real contract. Final check/focused/coverage logs are retained in /tmp/fbp-s05-evidence/. No source changes follow these gates.
+
+Publication: implementation commita9f050c pushed; [PR #11](https://github.com/SilverFox70/node-eventDispatcher/pull/11) created against master. Final receipt pushed before marking ready for review. No merge claimed. Documentation-only updates after the recorded final gates do not invalidate source/config proof.
