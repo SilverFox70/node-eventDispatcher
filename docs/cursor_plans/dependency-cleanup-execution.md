@@ -19,3 +19,5 @@ Coverage:5 tests pass with100% statements/lines/branches for the three modified 
 Final check/install/audit/publication evidence follows below. No merge or Next/editor implementation claimed.
 
 Final npm ci, npm run check, npm run coverage, online npm audit, guidance integrity and whitespace checks all exit0. Lock SHA256:bf9c99a9567367299e8e5f4afb613fe457a513ad43d1513594af781f2f862bbd. Current cli-color pin:2.0.4. npm reports an unapproved es5-ext postinstall script; no approval/bypass was added, and installation/tests succeed without it.
+
+Roadmap clarification: user requires durable saved graph definitions, locked/versioned releases and portable project exports, separately from F01 execution recovery. Recorded in F02; roadmap-only, no editor/storage implementation or new verification claim.
