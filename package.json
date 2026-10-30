@@ -2,10 +2,15 @@
   "name": "event-driven-design",
   "version": "1.0.0",
   "description": "event dispatcher system",
-  "main": "main.js",
+  "main": "./dist/cjs/index.js",
   "scripts": {
     "main": "node server/src/test.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npm run build && node --test test/*.test.js",
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc -p tsconfig.check.json && tsc -p test/types/tsconfig.json",
+    "lint": "eslint src scripts test",
+    "check": "npm run build && npm run typecheck && npm run lint",
+    "coverage": "npm run build && c8 node --test test/*.test.js && node scripts/coverage-thresholds.mjs"
   },
   "keywords": [
     "EDD",
@@ -18,6 +23,59 @@
     "cli-color": "^1.2.0",
     "fs": "0.0.1-security",
     "request": "^2.81.0",
-    "shortid": "^2.2.8"
+    "shortid": "^2.2.8",
+    "zod": "4.6.7"
+  },
+  "types": "./dist/cjs/index.d.ts",
+  "type": "commonjs",
+  "engines": {
+    "node": "26.13.0",
+    "npm": "11.20.0"
+  },
+  "packageManager": "npm@11.20.0",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    },
+    "./model": {
+      "import": {
+        "types": "./dist/esm/model/index.d.ts",
+        "default": "./dist/esm/model/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/model/index.d.ts",
+        "default": "./dist/cjs/model/index.js"
+      }
+    },
+    "./testing": {
+      "import": {
+        "types": "./dist/esm/testing/index.d.ts",
+        "default": "./dist/esm/testing/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/testing/index.d.ts",
+        "default": "./dist/cjs/testing/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "server/src"
+  ],
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.6.6",
+    "c8": "12.0.0",
+    "eslint": "10.13.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1"
   }
 }

@@ -2,11 +2,11 @@
   "schema_version": 1,
   "revision": "SP1-r2",
   "parent_master_revision": "r6",
-  "architecture_contract": "SC-FBP-4 + proposed IC1-r1",
+  "architecture_contract": "SC-FBP-4 + IC1-r2 (merged design; detailed runtime settings retain review notes)",
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review PR #4 / IC1-r1; S01 waits for actual S00 acceptance and merge",
+  "next_planning_action": "Review S01 tooling branch; S02 waits for actual S01 merge",
   "slices": [
     {
       "id": "S00",
@@ -19,7 +19,7 @@
       "previous": null,
       "next": "S01",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "4f350668083fe02c10ce53492d409e7c5c4adf8b",
       "conditions": [
         "C55",
         "C56",
@@ -35,14 +35,14 @@
       ],
       "blocked_by": [],
       "legacy_master_work": "Pre-T3 design gate; resolves the FIFO/identity discussion after master r4",
-      "review_status": "submitted",
+      "review_status": "merged",
       "execution_receipt": "S00-execution.md",
       "authorized_tasks": [
         "S00.A",
         "S00.B",
         "S00.C (design review preparation only)"
       ],
-      "contract_acceptance": "pending",
+      "contract_acceptance": "user accepted principles; IC1-r2 merged in PR4; retain detailed-setting review notes",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/4",
       "design_commit": "614bff7efb6ac42ae9e3e96ed327c86b9f35819d"
     },
@@ -53,7 +53,7 @@
       "plan": "01-lts-typescript-build-plan.md",
       "branch": "codex/fbp-01-lts-typescript-build",
       "readiness": "ready-for-review",
-      "execution_status": "not-started",
+      "execution_status": "complete",
       "previous": "S00",
       "next": "S02",
       "base": "master after previous slice merge",
@@ -63,7 +63,16 @@
         "C31"
       ],
       "blocked_by": [],
-      "legacy_master_work": "T0 + T1"
+      "legacy_master_work": "T0 + T1",
+      "execution_receipt": "S01-execution.md",
+      "authorized_tasks": [
+        "S01.A",
+        "S01.B",
+        "S01.C"
+      ],
+      "review_status": "submitted",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/5",
+      "implementation_commit": "08d390f"
     },
     {
       "id": "S02",

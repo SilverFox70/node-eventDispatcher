@@ -10,3 +10,7 @@ Updated2026-10-29. Branch codex/fbp-00-identity-contract, based on origin/master
 [IC1-r1](fbp-identity-contract.md) is a review proposal, not already accepted API or implemented source. [Manifest](fbp-slices/manifest.json) is the machine-readable order/status; the master C00–C65 ledger owns behavioral conditions. This execution index links actual evidence, not a duplicate condition matrix.
 
 Publication preparation includes prerequisite commit6ad3760 containing the previously local slice/guidance resources. S00 contract changes are kept in the next commit so reviewers can separate setup from the proposal. Application source, package/lock and runtime remain unchanged. Local .DS_Store/feedback are outside publication scope.
+
+## S01 — tooling implementation
+
+User authorized S01 on2026-10-29 after S00 PR4 merged at4f350668083fe02c10ce53492d409e7c5c4adf8b. See [S01 receipt](fbp-slices/S01-execution.md) for baseline, C00/C31 proofs and verification. Latest-LTS/strict-TypeScript dual-build tooling delivered for review; no dispatcher or graph runtime implementation, no S01 merge claimed.

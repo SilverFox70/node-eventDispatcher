@@ -2,21 +2,25 @@
 
 ## Current checkout
 
-The current implementation is the historical CommonJS prototype under server/src. package.json depends on request, shortid, cli-color and an fs shim. The package entry points at absent main.js. There are scratch examples rather than a behavioral test suite.
+The current implementation is the historical CommonJS prototype under server/src. package.json depends on request, shortid, cli-color and an fs shim. S01 replaces the absent main.js package entry with generated distributions and adds tooling tests; the legacy scratch examples remain unchanged.
 
-Commands currently declared:
+S01 introduces the following commands (use the exact Node/npm pins in .nvmrc and package.json):
 
-| Command | Meaning today |
+| Command | Meaning |
 | --- | --- |
-| `npm test` | Prints “Error: no test specified” and exits1; this is a known placeholder, not an actual test result |
-| `npm run main` | Runs server/src/test.js, including a public HTTP request; not an offline verification command |
-| `node scripts/check-agent-guidance.mjs` | Verifies local guidance links and slice ordering; it does not test the dispatcher/runtime |
+| `npm ci` | Reproduce the locked dependency installation |
+| `npm run build` | Generate ESM/CJS JavaScript, declarations and source maps |
+| `npm run check` | Build, strict source/declaration-consumer type checks and lint |
+| `npm test` | Build and run delivered offline node:test suites |
+| `npm run coverage` | Build, run offline tests with all-files source mapping, enforce per-file thresholds |
+| `node scripts/check-agent-guidance.mjs` | Validate documentation links and slice ordering |
+| `npm run main` | Legacy demo with external HTTP; not an offline check |
 
-Read package.json each time: this description is a historical starting point, not permission to ignore new scripts once S01 lands. Do not install the obsolete dependencies just to edit documentation or repeatedly run the placeholder.
+Root, /model and /testing currently export nothing; this is package scaffolding. Legacy CommonJS code remains under server/src. No global runtime change is required; use a version manager or command-local PATH. Exact engine enforcement deliberately refuses an unsupported Node/npm combination. [S01 receipt](cursor_plans/fbp-slices/S01-execution.md) records versions and proof; [baseline](agent-baselines/INDEX.md) records the historical placeholder test and defects.
 
-## Planned toolchain
+## Toolchain and future package features
 
-S01 selects latest LTS Node patch and its npm, pins versions, captures baseline and introduces strict TypeScript, dual ESM/CJS builds, generated declarations and executable offline gates. No global Node default change. Follow its checked-in exact pins/lock/config once delivered; do not silently substitute a newer Current Node major or a convenient older local binary.
+S01 pins the verified latest LTS patch and bundled npm, captures the baseline and delivers strict TypeScript, dual ESM/CJS builds, generated declarations and offline gates. No global Node default change. Follow its checked-in exact pins/lock/config once delivered; do not silently substitute a newer Current Node major or a convenient older local binary.
 
 Root/model/testing export separation, source-map/coverage denominator and package structure are proposed in master §§4/11 and detailed in the owning slice. Do not introduce build/type/lint/coverage/Next scripts pointing at future files merely to match the plan. Scripts become authoritative when their implementation and proof merge. Next fixture dependencies remain separate from the framework's runtime dependency surface.
 
