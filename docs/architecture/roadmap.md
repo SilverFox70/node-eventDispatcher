@@ -69,3 +69,13 @@ Authority: user requested this workflow on2026-10-29. It is a future feature seq
 5. Prove save/load and generated-source execution match the original graph, and define how handwritten code and visual edits round-trip without silently overwriting user changes.
 
 Node implementation remains ordinary human/agent-authored code registered on the server. Visual selection does not grant permission to execute arbitrary code or reveal credentials. Integration with rich payloads, feedback loops and durable execution follows each profile's eligibility rules. Concrete branch slices and acceptance tests are still to be planned; this direction does not enlarge S18 automatically.
+
+### Durable graph artifacts and project adoption
+
+User clarification,2026-10-29: a graph that is tested and working must be durably saved and exportable for use in another project. Browser memory or an ephemeral editor session is insufficient. This stores the graph definition/release; F01 separately owns checkpoints and recovery of running jobs.
+
+- Persist editable drafts and explicit immutable published revisions, with stable graph identity, revision/content integrity, graph-format version, node/contract dependency versions, and separate layout metadata. Reopening or restarting the editor must recover the saved revision.
+- Lock a validated revision for deployment. Subsequent edits create a new draft/revision rather than silently changing a deployed graph. Associate the release with its test fixtures and verification result; importing projects must revalidate compatibility.
+- Export a portable graph artifact plus deterministic readable TypeScript and dependency/import manifest. Include or identify the node implementations and versions required to run it; credentials and environment-specific service bindings are supplied by the consuming project, never embedded in the artifact.
+- Demonstrate clean-project import/build/test/run using the ordinary package compiler/runtime, without the editor service being present. Round-trip export/import preserves graph meaning, versions and layout where included; incompatible formats or missing node versions produce clear refusal before effects.
+- Choose durable storage, artifact packaging, release/migration policy and bounded implementation slices in the editor proposal. No storage vendor, hosted service or arbitrary-code execution interface is selected by this roadmap entry.
