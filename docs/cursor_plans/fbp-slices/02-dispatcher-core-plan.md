@@ -3,7 +3,7 @@
 Contract version: 2  
 Slice revision: r1, 2026-10-28  
 Readiness: ready-for-review  
-Execution: not-started; approved task set: none  
+Execution: S02.A–C implemented for review; user authorized execution2026-10-29
 Branch: `codex/fbp-02-dispatcher-core`  
 Parent: master r6 / SC-FBP-4 + proposed IC1-r2 / SP1-r2; acceptance pending.
 
@@ -112,3 +112,5 @@ Commands must return actual individual exits. `npm run coverage` uses the all-de
 | G7 integration | PASS for proposed story | Acceptance demonstration + handoff + next-merge condition; parent T labels do not hide owner |
 
 Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.
+
+Execution amendment: inherited consumer tests/type fixtures and the explicit Node types compiler option require minimal updates as the first Node source and legacy shim are delivered. Exact scope/evidence are in [S02 receipt](S02-execution.md); no dispatcher semantics or strictness are relaxed.

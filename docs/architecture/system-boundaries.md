@@ -6,8 +6,9 @@ Status: architecture summary of SC-FBP-4/SP1 proposals; no implemented-runtime c
 
 | Current source | Responsibility / known limitation |
 | --- | --- |
-| server/src/eventDispatcher.js | Global synchronous subscribers/logger; once mutation/reentrancy and missing-cleanup defects recorded in plan |
-| server/src/www.js, wwwPromise.js | Old request-based demos, not core transport or offline tests |
+| src/dispatcher.ts, src/dispatcher/log.ts | Independent synchronous dispatcher instances and bounded metadata-only logs; optional shared instance |
+| server/src/eventDispatcher.js | CommonJS shim delegating to the built dispatcher; no separate implementation |
+| server/src/www.js, wwwPromise.js | Legacy native-fetch examples, with localhost regression tests; not core graph transport |
 | server/src/eventNodeMap.js, fileLoader.js | Heuristic source scanning/examples, not authoritative runtime relationship graph |
 | server/src/test.js, tinytest.js, example.js | Scratch demonstrations, not a verified behavioral suite |
 

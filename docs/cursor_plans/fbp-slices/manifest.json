@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S01 tooling branch; S02 waits for actual S01 merge",
+  "next_planning_action": "Review S02 dispatcher implementation; S03 waits for actual S02 merge",
   "slices": [
     {
       "id": "S00",
@@ -57,7 +57,7 @@
       "previous": "S00",
       "next": "S02",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "e82ea08497d9e08f52a35b007d06ac667e9fadae",
       "conditions": [
         "C00",
         "C31"
@@ -70,7 +70,7 @@
         "S01.B",
         "S01.C"
       ],
-      "review_status": "submitted",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/5",
       "implementation_commit": "08d390f"
     },
@@ -81,7 +81,7 @@
       "plan": "02-dispatcher-core-plan.md",
       "branch": "codex/fbp-02-dispatcher-core",
       "readiness": "ready-for-review",
-      "execution_status": "not-started",
+      "execution_status": "complete",
       "previous": "S01",
       "next": "S03",
       "base": "master after previous slice merge",
@@ -94,7 +94,16 @@
         "C05"
       ],
       "blocked_by": [],
-      "legacy_master_work": "T2 core"
+      "legacy_master_work": "T2 core",
+      "authorized_tasks": [
+        "S02.A",
+        "S02.B",
+        "S02.C"
+      ],
+      "execution_receipt": "S02-execution.md",
+      "review_status": "submitted",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/8",
+      "implementation_commit": "20769de"
     },
     {
       "id": "S03",
