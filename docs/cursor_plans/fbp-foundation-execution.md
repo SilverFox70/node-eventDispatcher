@@ -22,3 +22,7 @@ User authorized S02 on2026-10-29 after S01 merged. [S02 receipt](fbp-slices/S02-
 ## S03 — event relationship metadata
 
 User authorized S03 after S02 merged. [S03 receipt](fbp-slices/S03-execution.md) records C51 topology proof, inherited dispatcher/consumer verification and review submission. S04 implementation and identity readiness are separate prerequisites, not inferred from this feature.
+
+## S04 — identified packets and bounded transport
+
+User authorized S04 after S03 merged, then requested a project-purpose/roadmap README rewrite. [S04 receipt](fbp-slices/S04-execution.md) records identity readiness, C06/C07/C11/C48/C55/C56 proofs, quality gates and publication. No S05 implementation or S04 merge is inferred.

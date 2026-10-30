@@ -1,7 +1,7 @@
 # FBP identity contract IC1 — S00 proposal
 
 Revision: IC1-r2, 2026-10-29. IC1-r1 is preserved in Git history.
-Status: identity distinctions and duplicate-protection principles accepted by the user on 2026-10-29. The concrete ledger interfaces and integration details below remain a design proposal for review; no implementation or merge is claimed.
+Status: identity distinctions and duplicate-protection principles accepted2026-10-29; packet/factory/admission portion adopted for S04 by the explicit2026-10-30 execution request after S00/S03 merges. Concrete later execution-ledger/join-history settings and integration details remain proposed for their owning slices. This contract is not runtime implementation evidence.
 Architecture: SC-FBP-4 amended by IC1; parent plan r6 / slice partition SP1-r2.
 Scope: freeze interfaces and downstream proof ownership only. No runtime, store, dependency or future durable scheduler is implemented here.
 

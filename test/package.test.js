@@ -36,12 +36,14 @@ test('both distribution entries load', () => {
       run(process.execPath, ['--input-type=' + mode, '-e', expression]);
     }
     run(process.execPath, ['--input-type=module', '-e', `
-      import { createDispatcher } from 'event-driven-design';
+      import { createDispatcher, packet, derivePacket } from 'event-driven-design';
       const dispatcher = createDispatcher();
       let count = 0;
       dispatcher.once('x', () => count++);
       dispatcher.emit('x'); dispatcher.emit('x');
       if (count !== 1) throw new Error('ESM once delivery failed');
+      const parent = packet(2, { jobId: 'job-42' });
+      if (derivePacket(4, [parent]).parentPacketIds[0] !== parent.packetId) throw new Error('ESM packet lineage failed');
       const dispose = dispatcher.declarePublisher('producer', 'x');
       if (dispatcher.inspect().publishers[0].provenance !== 'declared') throw new Error('ESM publisher missing');
       dispose();
@@ -54,6 +56,9 @@ test('both distribution entries load', () => {
       const root = require('event-driven-design');
       const shim = require('event-driven-design/server/src/eventDispatcher.js');
       assert.equal(root.eventDispatcher, shim.eventDispatcher);
+      const parent = root.packet(2, { jobId: 'job-42' });
+      assert.equal(root.derivePacket(4, [parent]).parentPacketIds[0], parent.packetId);
+      assert.equal(root.createChannel, undefined);
       const dispatcher = root.createDispatcher();
       let count = 0;
       dispatcher.once('x', () => count++);
