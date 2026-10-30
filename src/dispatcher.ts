@@ -1,9 +1,11 @@
+import type { DispatcherTopology, DispatcherSubscriber, OwnerMetadata } from './model/dispatcher-topology.js';
 import { createDispatcherLog } from './dispatcher/log.js';
+import { createDispatcherTopology, readOwnerMetadata } from './dispatcher/topology.js';
 
 /** A dynamic event boundary; callbacks may declare their own positional arguments. */
 export type EventListener = (...args: never[]) => unknown;
 export type DispatcherOptions = { logLimit?: number };
-type Registration = { callback: EventListener; once: boolean; fired: boolean };
+type Registration = DispatcherSubscriber & { callback: EventListener; fired: boolean };
 
 function validateEvent(name: string): void {
   if (typeof name !== 'string' || name.length === 0) {
@@ -26,16 +28,22 @@ export function createDispatcher(options: DispatcherOptions = {}) {
   }
   const subscribers = new Map<string, Registration[]>();
   const log = createDispatcherLog(limit);
+  const topology = createDispatcherTopology();
+  let nextSubscriptionId = 0;
 
-  function register(name: string, callback: EventListener, once: boolean): void {
+  function register(name: string, callback: EventListener, once: boolean, metadata?: OwnerMetadata): void {
     validateEvent(name);
     validateListener(callback);
+    const ownerId = readOwnerMetadata(metadata);
+    const callbackName = typeof callback.name === 'string' && callback.name ? callback.name : 'anonymous';
     let registrations = subscribers.get(name);
     if (!registrations) {
       registrations = [];
       subscribers.set(name, registrations);
     }
-    registrations.push({ callback, once, fired: false });
+    registrations.push({
+      id: ++nextSubscriptionId, event: name, ownerId, callbackName, callback, once, fired: false
+    });
     log.record(once ? 'once' : 'on', name, callback.name);
   }
 
@@ -46,8 +54,19 @@ export function createDispatcher(options: DispatcherOptions = {}) {
   }
 
   return {
-    on(name: string, callback: EventListener): void { register(name, callback, false); },
-    once(name: string, callback: EventListener): void { register(name, callback, true); },
+    inspect(): DispatcherTopology {
+      return topology.snapshot([...subscribers.values()].flat());
+    },
+    declarePublisher(ownerId: string, event: string): () => void {
+      validateEvent(event);
+      return topology.declarePublisher(ownerId, event);
+    },
+    on(name: string, callback: EventListener, metadata?: OwnerMetadata): void {
+      register(name, callback, false, metadata);
+    },
+    once(name: string, callback: EventListener, metadata?: OwnerMetadata): void {
+      register(name, callback, true, metadata);
+    },
 
     /** Membership is fixed for this emit; a once registration can fire only once. */
     emit(name: string, data?: unknown, context?: unknown): void {

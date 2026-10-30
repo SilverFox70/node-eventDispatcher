@@ -42,6 +42,9 @@ test('both distribution entries load', () => {
       dispatcher.once('x', () => count++);
       dispatcher.emit('x'); dispatcher.emit('x');
       if (count !== 1) throw new Error('ESM once delivery failed');
+      const dispose = dispatcher.declarePublisher('producer', 'x');
+      if (dispatcher.inspect().publishers[0].provenance !== 'declared') throw new Error('ESM publisher missing');
+      dispose();
     `]);
     for (const file of ['entries.mts', 'entries.cts', 'tsconfig.json']) cpSync(join(root, 'test/types', file), join(fixture, file));
     run(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', join(fixture, 'tsconfig.json')]);
@@ -56,6 +59,8 @@ test('both distribution entries load', () => {
       dispatcher.once('x', () => count++);
       dispatcher.emit('x'); dispatcher.emit('x');
       assert.equal(count, 1);
+      dispatcher.on('owned', () => {}, { ownerId: 'owner' });
+      assert.equal(dispatcher.inspect().subscribers[0].ownerId, 'owner');
     `]);
   } finally {
     rmSync(fixture, { recursive: true, force: true });

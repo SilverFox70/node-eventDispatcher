@@ -14,3 +14,20 @@ dispatcher.on(42, () => {});
 dispatcher.once('bad', 42);
 // @ts-expect-error logLimit must be numeric.
 root.createDispatcher({ logLimit: '2' });
+
+const metadata: root.OwnerMetadata = { ownerId: 'owner' };
+dispatcher.on('owned', (value: number) => { void value; }, metadata);
+dispatcher.once('owned', () => {}, metadata);
+const dispose: () => void = dispatcher.declarePublisher('producer', 'owned');
+const topology: model.DispatcherTopology = dispatcher.inspect();
+void [dispose, topology];
+// @ts-expect-error Snapshot arrays are immutable.
+topology.subscribers.push({});
+// @ts-expect-error Snapshot version is immutable.
+topology.version = 2;
+// @ts-expect-error Ownership requires a string ownerId.
+dispatcher.on('owned', () => {}, { ownerId: 1 });
+// @ts-expect-error Owner metadata requires ownerId.
+dispatcher.once('owned', () => {}, {});
+// @ts-expect-error Live callbacks are not part of browser-safe topology.
+topology.subscribers[0]?.callback();

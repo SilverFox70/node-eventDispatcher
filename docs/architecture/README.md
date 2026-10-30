@@ -2,7 +2,7 @@
 
 ## Current state versus destination
 
-S02 delivers the synchronous TypeScript dispatcher and a legacy CommonJS shim. Legacy HTTP examples remain under server/src. The FBP graph/runtime layers are still planned. Guidance setup does not advance slice status, resolve S00 identity or certify current tests.
+S02 delivers the synchronous TypeScript dispatcher and a legacy CommonJS shim; S03 adds safe current subscription/publisher topology. Legacy HTTP examples remain under server/src. The FBP graph/runtime layers are still planned. Guidance setup does not advance slice status, resolve S00 identity or certify current tests.
 
 - [Dispatcher API and migration](dispatcher.md): instance ownership, synchronous delivery, bounded metadata logs and the legacy import.
 - [System boundaries](system-boundaries.md): proposed module responsibilities and present source map.
