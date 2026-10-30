@@ -160,7 +160,9 @@
         "S04.C"
       ],
       "execution_receipt": "S04-execution.md",
-      "review_status": "preparing"
+      "review_status": "submitted",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/10",
+      "implementation_commit": "7e4a0f1"
     },
     {
       "id": "S05",

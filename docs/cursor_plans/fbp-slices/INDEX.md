@@ -2,7 +2,7 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: S04 packet/channel implementation complete; preparing review.** S03 [PR #9](https://github.com/SilverFox70/node-eventDispatcher/pull/9) merged at f00de793c1853b2e8b1668ff753eb98422ee4213. The explicit S04 request applies the accepted IC1 packet identity/admission rules; later execution-ledger details remain outside this slice. See [S04 receipt](S04-execution.md). S05 remains unstarted until S04 merges and its own readiness is verified.
+**Current work: S04 packet/channel implementation complete; [PR #10](https://github.com/SilverFox70/node-eventDispatcher/pull/10) submitted for review.** S03 [PR #9](https://github.com/SilverFox70/node-eventDispatcher/pull/9) merged at f00de793c1853b2e8b1668ff753eb98422ee4213. The explicit S04 request applies the accepted IC1 packet identity/admission rules; later execution-ledger details remain outside this slice. See [S04 receipt](S04-execution.md). S05 remains unstarted until S04 merges and its own readiness is verified.
 
 **Always execute in numeric order. Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
 
