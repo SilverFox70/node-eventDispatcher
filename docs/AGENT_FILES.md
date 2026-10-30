@@ -12,6 +12,7 @@ This map is the repository's cross-tool navigation source. No personal home-dire
 | [Readability and structure](agent-rules/readability-and-structure.md) | Cohesive small files, meaningful hierarchy/utilities and selective JSDoc | Planning, implementing or reviewing code |
 | [Verification](agent-rules/verification.md) | Proof strength, coverage and baseline meaning | Behavioral/tooling changes |
 | [Architecture index](architecture/README.md) | Current vs target map and topic routing | Architecture context |
+| [Dispatcher API/migration](architecture/dispatcher.md) | S02 synchronous instance API, logging/getter compatibility and legacy shim | Using or extending the dispatcher |
 | [System boundaries](architecture/system-boundaries.md) | Layer separation, packets/transport/model/runtime | Affected implementation layer |
 | [Decision register](architecture/decision-register.md) | Status/authority of directions and decisions | Choosing or changing behavior |
 | [Extension roadmap](architecture/roadmap.md) | Future optional profiles, including persistent/resumable execution | Evaluating a future capability |

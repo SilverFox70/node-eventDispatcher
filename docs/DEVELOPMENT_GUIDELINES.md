@@ -2,7 +2,7 @@
 
 ## Current checkout
 
-The current implementation is the historical CommonJS prototype under server/src. The dependency cleanup removes request, shortid and the fs package shim; current runtime dependencies are Zod and cli-color. Legacy HTTP examples use native fetch and log IDs use node:crypto.randomUUID. S01 replaces the absent main.js package entry with generated distributions and adds tooling tests; the legacy scratch examples remain unchanged.
+The package now exposes the S02 TypeScript dispatcher; historical examples remain under server/src and the dispatcher path there is a CommonJS compatibility shim. The dependency cleanup removes request, shortid and the fs package shim; current runtime dependencies are Zod and cli-color. Legacy HTTP examples use native fetch and log IDs use node:crypto.randomUUID. S01 replaces the absent main.js package entry with generated distributions and adds tooling tests; the legacy scratch examples remain unchanged.
 
 S01 introduces the following commands (use the exact Node/npm pins in .nvmrc and package.json):
 
@@ -16,7 +16,7 @@ S01 introduces the following commands (use the exact Node/npm pins in .nvmrc and
 | `node scripts/check-agent-guidance.mjs` | Validate documentation links and slice ordering |
 | `npm run main` | Legacy demo with external HTTP; not an offline check |
 
-Root, /model and /testing currently export nothing; this is package scaffolding. Legacy CommonJS code remains under server/src. No global runtime change is required; use a version manager or command-local PATH. Exact engine enforcement deliberately refuses an unsupported Node/npm combination. [S01 receipt](cursor_plans/fbp-slices/S01-execution.md) records versions and proof; [baseline](agent-baselines/INDEX.md) records the historical placeholder test and defects.
+The root exports the S02 dispatcher factory, singleton and types. /model and /testing remain scaffolds for later slices. See [dispatcher migration](architecture/dispatcher.md). Legacy CommonJS code remains under server/src. No global runtime change is required; use a version manager or command-local PATH. Exact engine enforcement deliberately refuses an unsupported Node/npm combination. [S01 receipt](cursor_plans/fbp-slices/S01-execution.md) records versions and proof; [baseline](agent-baselines/INDEX.md) records the historical placeholder test and defects.
 
 ## Toolchain and future package features
 

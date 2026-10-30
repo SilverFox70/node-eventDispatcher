@@ -2,8 +2,9 @@
 
 ## Current state versus destination
 
-Current code is the old synchronous publish/subscribe dispatcher and examples under server/src. The TypeScript FBP library is planned, not implemented. Guidance setup does not advance slice status, resolve S00 identity or certify current tests.
+S02 delivers the synchronous TypeScript dispatcher and a legacy CommonJS shim. Legacy HTTP examples remain under server/src. The FBP graph/runtime layers are still planned. Guidance setup does not advance slice status, resolve S00 identity or certify current tests.
 
+- [Dispatcher API and migration](dispatcher.md): instance ownership, synchronous delivery, bounded metadata logs and the legacy import.
 - [System boundaries](system-boundaries.md): proposed module responsibilities and present source map.
 - [Human-readable structure](../agent-rules/readability-and-structure.md): cohesive modules and legible responsibilities; strong size guideline with exceptions.
 - [Decision register](decision-register.md): what came from the user, what is proposed and what remains unsettled.

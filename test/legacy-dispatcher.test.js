@@ -32,7 +32,7 @@ test('legacy dispatcher behavior and native log identities remain observable', (
   assert.equal(d.isValidEvent('logged'), true);
   assert.equal(d.isValidEvent('absent'), false);
   d.once('inspect-once', other);
-  assert.ok(d.getAllSubscribedFunctions()['inspect-once'][0].includes('once'));
+  assert.ok(d.getAllSubscribedFunctions()['inspect-once'].includes(other));
   assert.ok(d.getAllSubscribedFunctions().logged.includes(listener));
   assert.ok(d.getEventNames().includes('logged'));
   assert.ok(d.getSubscriberFunctionsByEventName('logged').includes(listener));
@@ -42,8 +42,7 @@ test('legacy dispatcher behavior and native log identities remain observable', (
   d.emit('new-once', 1);
   assert.equal(d.hasListenersOnEvent('new-once'), false);
   assert.equal(d.unsubscribeAll('logged'), true);
-  // Preserve this existing failure for S02 rather than mixing semantic fixes here.
-  assert.throws(() => d.unsubscribeAll('absent'), ReferenceError);
+  assert.equal(d.unsubscribeAll('absent'), false);
   const logs = d.eventLog();
   assert.ok(Object.keys(logs).length > 0);
   for (const id of Object.keys(logs)) {

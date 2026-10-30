@@ -35,9 +35,28 @@ test('both distribution entries load', () => {
       const expression = ['event-driven-design', 'event-driven-design/model', 'event-driven-design/testing'].map(name => `${load}('${name}')`).join(';');
       run(process.execPath, ['--input-type=' + mode, '-e', expression]);
     }
+    run(process.execPath, ['--input-type=module', '-e', `
+      import { createDispatcher } from 'event-driven-design';
+      const dispatcher = createDispatcher();
+      let count = 0;
+      dispatcher.once('x', () => count++);
+      dispatcher.emit('x'); dispatcher.emit('x');
+      if (count !== 1) throw new Error('ESM once delivery failed');
+    `]);
     for (const file of ['entries.mts', 'entries.cts', 'tsconfig.json']) cpSync(join(root, 'test/types', file), join(fixture, file));
     run(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', join(fixture, 'tsconfig.json')]);
     assert.ok(existsSync(join(installed, 'server/src/eventDispatcher.js')));
+    run(process.execPath, ['-e', `
+      const assert = require('node:assert/strict');
+      const root = require('event-driven-design');
+      const shim = require('event-driven-design/server/src/eventDispatcher.js');
+      assert.equal(root.eventDispatcher, shim.eventDispatcher);
+      const dispatcher = root.createDispatcher();
+      let count = 0;
+      dispatcher.once('x', () => count++);
+      dispatcher.emit('x'); dispatcher.emit('x');
+      assert.equal(count, 1);
+    `]);
   } finally {
     rmSync(fixture, { recursive: true, force: true });
   }

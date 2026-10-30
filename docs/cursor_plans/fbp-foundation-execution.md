@@ -14,3 +14,7 @@ Publication preparation includes prerequisite commit6ad3760 containing the previ
 ## S01 — tooling implementation
 
 User authorized S01 on2026-10-29 after S00 PR4 merged at4f350668083fe02c10ce53492d409e7c5c4adf8b. See [S01 receipt](fbp-slices/S01-execution.md) for baseline, C00/C31 proofs and verification. Latest-LTS/strict-TypeScript dual-build tooling delivered for review; no dispatcher or graph runtime implementation, no S01 merge claimed.
+
+## S02 — independent synchronous dispatchers
+
+User authorized S02 on2026-10-29 after S01 merged. [S02 receipt](fbp-slices/S02-execution.md) records behavioral red, C01–C05 implementation/proofs, consumer compatibility, verification and publication. No S02 merge or S03 implementation is inferred.

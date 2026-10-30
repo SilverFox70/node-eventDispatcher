@@ -60,7 +60,8 @@
         "types": "./dist/cjs/testing/index.d.ts",
         "default": "./dist/cjs/testing/index.js"
       }
-    }
+    },
+    "./server/src/eventDispatcher.js": "./server/src/eventDispatcher.js"
   },
   "files": [
     "dist",
