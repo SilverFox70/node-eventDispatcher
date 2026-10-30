@@ -3,7 +3,7 @@
 Contract version: 2  
 Slice revision: r1, 2026-10-28  
 Readiness: ready-for-review  
-Execution: not-started; approved task set: none  
+Execution: S03.A–C implemented for review; user authorized execution2026-10-29
 Branch: `codex/fbp-03-dispatcher-topology`  
 Parent: master r6 / SC-FBP-4 + proposed IC1-r2 / SP1-r2; acceptance pending.
 
@@ -59,7 +59,7 @@ Preserve every earlier merged feature's assertions, safe browser/server boundary
 
 ## Planned proof pointers
 
-- `test/dispatcher.test.js::subscription topology stays current`
+- `test/dispatcher-topology.test.js::subscription topology stays current`
 
 State/setup/order/exact assertions are the cited master condition rows plus Observable behavior above. Proof strength: type fixtures for authoring, real primitive/runtime integration for execution, isolated packed consumers for distribution, production Next/HTTP/browser for UI. Helper-only greens do not prove a downstream layer. No tests exist yet unless delivered by a predecessor.
 
@@ -67,7 +67,7 @@ State/setup/order/exact assertions are the cited master condition rows plus Obse
 
 ### S03.A — establish this feature's contracts and failing proofs
 
-Purpose/references: the story and conditions above. Prerequisites: S02 merged into master, with accepted proof and exact merge SHA recorded; apply the shared identity-release gate when applicable. Read: parent contract sections corresponding to this feature, shared-execution.md and delivered predecessor symbols. Allowed changes: tests/type fixtures listed in the allowlist, minimal interface scaffold needed to reach the intended behavior, and local journal. Required behavior: establish explicit fixtures/order/outcomes from the linked master ledger before production logic. Named proof targets: test/dispatcher.test.js::subscription topology stays current. Preservation: do not duplicate existing cases that already assert the same boundary; extend their tables. Verification/red: Exact subscriber/event/publisher sets before/after once/off/dispose; no unbounded topology history or guessed module owner. Completion: retain actual expected nonzero exits/assertion pointers and valid setups; missing module/setup error is not behavioral proof. Stop if predecessor interface, identity amendment or contract semantics are missing.
+Purpose/references: the story and conditions above. Prerequisites: S02 merged into master, with accepted proof and exact merge SHA recorded; apply the shared identity-release gate when applicable. Read: parent contract sections corresponding to this feature, shared-execution.md and delivered predecessor symbols. Allowed changes: tests/type fixtures listed in the allowlist, minimal interface scaffold needed to reach the intended behavior, and local journal. Required behavior: establish explicit fixtures/order/outcomes from the linked master ledger before production logic. Named proof targets: test/dispatcher-topology.test.js::subscription topology stays current. Preservation: do not duplicate existing cases that already assert the same boundary; extend their tables. Verification/red: Exact subscriber/event/publisher sets before/after once/off/dispose; no unbounded topology history or guessed module owner. Completion: retain actual expected nonzero exits/assertion pointers and valid setups; missing module/setup error is not behavioral proof. Stop if predecessor interface, identity amendment or contract semantics are missing.
 
 ### S03.B — deliver the bounded feature
 
@@ -87,7 +87,7 @@ Exact verification commands for this scope (S01 creates tooling; later commands 
 
 ```sh
 npm run build
-node --test test/dispatcher.test.js
+node --test test/dispatcher-topology.test.js test/dispatcher.test.js
 npm run check
 npm run coverage
 ```
@@ -107,3 +107,5 @@ Commands must return actual individual exits. `npm run coverage` uses the all-de
 | G7 integration | PASS for proposed story | Acceptance demonstration + handoff + next-merge condition; parent T labels do not hide owner |
 
 Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.
+
+Execution scope clarification: topology proofs use a discovered sibling test file for cohesion; necessary packed/declaration consumer fixture updates verify the root and browser-safe model handoff. See [S03 receipt](S03-execution.md).

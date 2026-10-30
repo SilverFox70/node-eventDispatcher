@@ -18,3 +18,7 @@ User authorized S01 on2026-10-29 after S00 PR4 merged at4f350668083fe02c10ce5349
 ## S02 — independent synchronous dispatchers
 
 User authorized S02 on2026-10-29 after S01 merged. [S02 receipt](fbp-slices/S02-execution.md) records behavioral red, C01–C05 implementation/proofs, consumer compatibility, verification and publication. No S02 merge or S03 implementation is inferred.
+
+## S03 — event relationship metadata
+
+User authorized S03 after S02 merged. [S03 receipt](fbp-slices/S03-execution.md) records C51 topology proof, inherited dispatcher/consumer verification and review submission. S04 implementation and identity readiness are separate prerequisites, not inferred from this feature.

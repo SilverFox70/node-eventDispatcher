@@ -16,7 +16,7 @@ S01 introduces the following commands (use the exact Node/npm pins in .nvmrc and
 | `node scripts/check-agent-guidance.mjs` | Validate documentation links and slice ordering |
 | `npm run main` | Legacy demo with external HTTP; not an offline check |
 
-The root exports the S02 dispatcher factory, singleton and types. /model and /testing remain scaffolds for later slices. See [dispatcher migration](architecture/dispatcher.md). Legacy CommonJS code remains under server/src. No global runtime change is required; use a version manager or command-local PATH. Exact engine enforcement deliberately refuses an unsupported Node/npm combination. [S01 receipt](cursor_plans/fbp-slices/S01-execution.md) records versions and proof; [baseline](agent-baselines/INDEX.md) records the historical placeholder test and defects.
+The root exports the dispatcher factory, singleton and types, with S03 ownership/publisher inspection. /model exports browser-safe readonly topology types; /testing remains a scaffold. See [dispatcher migration](architecture/dispatcher.md). Legacy CommonJS code remains under server/src. No global runtime change is required; use a version manager or command-local PATH. Exact engine enforcement deliberately refuses an unsupported Node/npm combination. [S01 receipt](cursor_plans/fbp-slices/S01-execution.md) records versions and proof; [baseline](agent-baselines/INDEX.md) records the historical placeholder test and defects.
 
 ## Toolchain and future package features
 

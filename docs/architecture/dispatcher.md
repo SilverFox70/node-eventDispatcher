@@ -30,3 +30,15 @@ Logging starts off. `eventLoggerOn/Off/IsOn` retain their calling convention. `e
 After `npm run build`, the old `server/src/eventDispatcher.js` path is a CommonJS shim. Both direct filesystem imports and `require('event-driven-design/server/src/eventDispatcher.js')` expose the factory and the same singleton as the CommonJS package root. It contains no duplicate dispatcher implementation.
 
 ESM and CommonJS distributions have their own module instances; share one explicitly created dispatcher when bridging code that mixes formats. Do not assume singleton identity across the two distributions. The incompatible FBP-Presentation emit signature is not adopted.
+
+## S03 — current subscription and publisher topology
+
+`on(name, callback, { ownerId })` and `once(name, callback, { ownerId })` optionally attribute a registration; two-argument calls still work and return undefined. Owners must be nonempty strings of at most128 characters. The string is copied when registering; missing attribution appears as `ownerId: null`, meaning unassigned.
+
+`declarePublisher(ownerId, event)` declares an intended publisher and returns an idempotent disposer. It does not subscribe, emit or establish proof of delivery. Duplicate declarations are independent; disposing one leaves the others. `unsubscribeAll` removes subscriptions, not publisher declarations.
+
+`inspect()` returns deeply frozen, detached version1 JSON: sorted `events: [{ name }]`, registration-ordered `subscribers: [{ id, event, ownerId, callbackName, once }]`, and declaration-ordered `publishers: [{ id, event, ownerId, provenance: 'declared' }]`. IDs are increasing numbers local to each dispatcher and entity kind; removing/re-registering allocates a new ID. Namespace them by dispatcher/entity kind when combining sources. Anonymous functions are labeled `anonymous`; owners are never inferred from source.
+
+Events are the union of active subscriptions and current publisher declarations. A known but empty legacy event is absent from topology. Once removal is visible before its callback executes; off/cleanup/disposal are reflected immediately. Logging toggles do not affect topology. Emitting does not create publisher history.
+
+Snapshots contain no callbacks, source, payloads, contexts or timestamps. Readonly topology/owner types are exported from both the root and browser-safe /model entry. This is relationship data for the later S12 inspection scope and S18 visual inspector, not a graph editor or persistent trace store.

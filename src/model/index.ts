@@ -1,2 +1,3 @@
-// Reserved package entry; implementations arrive in their owning slices.
-export {};
+export type {
+  DispatcherTopology, DispatcherSubscriber, DispatcherPublisher, OwnerMetadata
+} from './dispatcher-topology.js';
