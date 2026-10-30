@@ -1,63 +1,93 @@
-# EventDispatcher
+# NodeDispatcher: a foundation for flow-based applications
 
-[![codebeat badge](https://codebeat.co/badges/57d60cc6-cc47-4577-815d-9eccb18c4046)](https://codebeat.co/projects/github-com-silverfox70-node-eventdispatcher-master)
+This project is rebuilding a small, historical JavaScript event dispatcher into a typed **flow-based programming (FBP) library** for Node.js. The aim is to make applications from reusable nodes with explicit input/output contracts, connected by bounded data streams.
 
-## Overview
-This is small project centered around creating an *Event Dispatcher* to listen to and route events between modules. It is based on the _Publish-Subscribe_ pattern using the event dispatcher as the broadcaster. The Event Dispatcher itself has no direct knowledge of who is emitting or listening to events. 
+The graph describes how work fits together. Each node remains an ordinary, understandable function or process that a human or coding agent can write and test. The library is intended to install alongside an application—including a Next.js site—rather than require an application to become a hosted workflow product.
 
+## What earthly use is it?
 
+Applications often need to split a request into several independent operations, wait for different results, combine them correctly and show progress. That coordination tends to become scattered callbacks, queues and state flags. A graph can make those relationships explicit and reusable.
 
-## Getting Started
-Clone or fork this repository to you local machine. Navigate to the root and run ```npm install``` to install dependencies. To see the current tests of the broadcaster, try ```npm run main```.
+Planned examples include:
 
+- **Account setup:** validate a request, provision independent services, collate their results and update the UI as work finishes.
+- **Data processing:** parse records, enrich them through asynchronous lookups, filter them and combine results without overwhelming a slow downstream service.
+- **Background orchestration:** coordinate projections, notifications or integrations using application-supplied business identities and effect policies.
+- **Game services:** organize asynchronous game/server events and background jobs. Deterministic frame/tick execution needs a separate future execution profile.
 
+These are uses for the planned graph runtime. The current foundation does not yet execute complete node graphs or recover jobs after a crash.
 
-## eventDispatcher
-In any script, simply ```require('./eventDispatcher');```. This will give you the ability to subscribe to events, set callbacks for events, and send events (triggers) to the dispatcher.
+## What exists in this revision
 
+- Pinned Node LTS/npm, strict TypeScript, ESM/CommonJS builds and generated declarations.
+- Independent synchronous event dispatchers, with an optional shared singleton and a legacy compatibility import.
+- Immutable inspection metadata for active subscriptions, optional owners and explicitly declared publishers.
+- Immutable JSON packets with separate packet/job identities, immediate-parent lineage and optional correlation keys.
+- Internal bounded FIFO channels with backpressure, close/drain and abort semantics. These are building blocks for the future runtime, not a public channel API.
+- Offline tests, packed-package consumer/type checks and source-mapped per-file coverage gates.
 
-For example:
-```JavaScript
-var eventSystem = require('./eventDispatcher');
-var events = eventSystem.eventDispatcher;
+The [slice index](docs/cursor_plans/fbp-slices/INDEX.md) records review/merge status; a feature on a review branch is not automatically released. The package name remains `event-driven-design`. No new npm release is claimed here.
 
-var sendMessage = function(msg){
-  console.log(msg);
-}
+## Try the current APIs
 
-events.on('alert', sendMessage);
+After building this checkout, or installing its locally packed tarball:
 
-events.emit('alert', 'Sending an alert!');
+```js
+const { createDispatcher, packet, derivePacket } = require('event-driven-design');
+
+const events = createDispatcher();
+events.once('ready', jobId => console.log(`Ready: ${jobId}`));
+
+const request = packet({ accountId: 'account-123' }, {
+  jobId: 'signup-456',
+  key: 'account-123@v1'
+});
+const result = derivePacket({ validated: true }, [request]);
+
+events.emit('ready', [result.jobId]);
 ```
 
+This demonstrates the dispatcher and packet factories, not a graph scheduler. Event delivery is synchronous; packet movement in the planned graph runtime will be asynchronous. See the [dispatcher API/migration guide](docs/architecture/dispatcher.md) and [identity contract](docs/cursor_plans/fbp-identity-contract.md).
 
-Subscribing takes the following form: 
+## Build and verify
 
-`eventDispatcher.on(eventName, callback);`
+Use the exact project versions in `.nvmrc`, `.node-version` and `package.json`: Node **26.13.0 LTS**, npm **11.20.0**. A version manager can select them without changing your global default.
 
-eventName is the name of the event you wish to listen for, and
-callback is the function to execute when this event is called.
+```sh
+npm ci
+npm run check
+npm test
+npm run coverage
+```
 
-Triggering an event requires at least the _eventName_, but the whole form accepts the following:
+`check` builds both distributions, checks source and consumer declarations, and runs lint. Tests use local fixtures; the legacy `npm run main` demo makes an external HTTP request and is not a verification command. To prepare a local installable artifact, build first and run `npm pack`, then install the resulting `.tgz` into the consuming project.
 
-```eventDispatcher.emit(eventName, args, context_);```
+## Roadmap
 
-Optional arguments can be passed in _args_ to the event but must be an array or object, and _context_ defines the _this_ scope of the callback function set when subscribed.
+| Stage | Outcome |
+| --- | --- |
+| S00–S04: foundation | Identity contracts, modern tooling, event dispatch/inspection, packets and bounded transport |
+| S05–S09: graph execution | Typed/runtime-validated node ports, one graph validator/compiler, typed graph construction and an isolated runtime with cancellation and lifecycle management |
+| S10–S15: useful flows and tests | Transform/branch/merge/join nodes, graph inspection, ordinary-function authoring, public node/graph test helpers and reliability/load proofs |
+| S16–S19: adoption | Package/migration recipes, a real Next.js consumer, read-only graphical inspection and integrated acceptance |
+| Visual authoring extension | Select/connect nodes, run test loads, durably save drafts and locked graph revisions, and export readable TypeScript plus portable graph artifacts for other projects |
+| Optional durable execution extension | Persist eligible running workflows, retain outcomes and recover safely after failures using a separate durable host |
 
-Unsubscribing a single event can be done like so:
+The initial graphical inspector is **read-only**. The interactive editor and code export are separate planned features built on the same graph model/compiler/runtime, rather than a second execution engine. Durable saved graph definitions are also distinct from checkpointing a running job.
 
-```eventDispatcher.off(eventName, existingCallback);```
+Rich/custom payload types, controlled cyclic graphs and more capable agent-authored applications are extension goals. Initial public payloads are JSON-compatible and initial graph topology is acyclic. Most graphs should remain useful without a database.
 
-To unsubscribe all callbacks from a given event use:
+Duplicate execution prevention belongs to the planned runtime: repeated delivery of the same packet to the same node within one run is to be refused. The channel alone does not enforce that policy. Crash-safe execution and exactly-once external side effects are not current guarantees; a durable host still needs application/provider idempotency or reconciliation where effects are uncertain.
 
-```eventDispatcher.unsubscribeAll(eventName);``` 
+## Where to go next
 
-## To Do:
-Currently, if you subscribe using `events.on(eventName, callback)` and there is already an existing callback of the same name registered to *eventName* unexpected behavior could occur. This needs to be tested.
+- [Ordered feature slices and current progress](docs/cursor_plans/fbp-slices/INDEX.md)
+- [Architecture and implementation boundaries](docs/architecture/README.md)
+- [Optional extensions: durability and visual graph authoring/export](docs/architecture/roadmap.md)
+- [Development guide](docs/DEVELOPMENT_GUIDELINES.md)
+- [Agent rules, skills and runbooks](docs/AGENT_FILES.md)
+- [Full foundation plan](docs/cursor_plans/fbp-foundation-plan.md)
 
-## Modules
-The HTTP examples use the pinned Node runtime’s built-in `fetch`. GET and form-encoded POST return response text, including non-success HTTP responses. Transport failures reject the promise helper and emit an Error through the event helper’s completion event. Redirects are rejected rather than followed automatically.
+Historical examples remain under `server/src`; their source-scanning diagram utility is a prototype, not the authoritative graph model. The old dispatcher path delegates to the built implementation. The sibling FBP-Presentation repository is reference material, not this library's runtime.
 
-## Agent-assisted development
-
-Start at [AGENTS.md](AGENTS.md) and the [documentation map](docs/AGENT_FILES.md). The [ordered FBP slice plans](docs/cursor_plans/fbp-slices/INDEX.md) describe the proposed modernization; the source and scripts above remain the legacy prototype until those features are implemented.
+License: ISC.

@@ -36,3 +36,5 @@ For a public API or other consequential change, use [the amendment runbook](runb
 ## Human-reasonable implementation
 
 Follow [readability and structure](agent-rules/readability-and-structure.md): aim for ordinary source files around a couple of hundred lines or less, with focused behavior understandable on one screen where practical. Structure folders/files so a human can locate responsibilities, keep shared primitives deliberate and plainly named, and use JSDoc for useful contracts/rationale rather than narration. This is a strong design/review guideline with reasoned exceptions, not a hard size gate or an instruction to fragment/condense code. Every feature's handoff reviews cohesion and newly large files; no extra approval ceremony is required for a sensible exception.
+
+S04 adds public packet/derivePacket factories and FlowError, with internal admission/channel primitives. See [ownership/validation](architecture/packets-and-channels.md); a generic type or internal rich-value test does not enable public custom codecs.

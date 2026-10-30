@@ -2,8 +2,8 @@
 
 Contract version: 2  
 Slice revision: r2, 2026-10-29  
-Readiness: blocked-on-decision  
-Execution: not-started; approved task set: none  
+Readiness: ready-for-review
+Execution: S04.A–C implemented for review; user authorized2026-10-30
 Branch: `codex/fbp-04-packet-channels`  
 Parent: master r6 / SC-FBP-4 + proposed IC1-r2 / SP1-r2; acceptance pending.
 
@@ -119,3 +119,5 @@ Additional master condition contributions: **C55, C56**. Final owners are SP1-r2
 | G7 integration | Proposed; release blocked by S00 | Acceptance demonstration + handoff + next-merge condition; parent T labels do not hide owner |
 
 Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.
+
+Execution readiness: user acceptance of packet identity principles, S00 merge and the explicit2026-10-30 S04 request authorize the packet/factory/admission portion of IC1-r2. Later ledger settings remain out of scope. See [S04 receipt](S04-execution.md) for actual authority, consumer-fixture/type-glob amendments, README request and verification. Historical proposal gate rows above are superseded for this bounded slice only.

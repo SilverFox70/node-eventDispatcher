@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S03 topology branch; S04 waits for S03 merge and its identity readiness gate",
+  "next_planning_action": "Review S04 packets/channels; S05 waits for actual S04 merge and its own readiness review",
   "slices": [
     {
       "id": "S00",
@@ -116,7 +116,7 @@
       "previous": "S02",
       "next": "S04",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "f00de793c1853b2e8b1668ff753eb98422ee4213",
       "conditions": [
         "C51"
       ],
@@ -128,7 +128,7 @@
         "S03.C"
       ],
       "execution_receipt": "S03-execution.md",
-      "review_status": "submitted",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/9",
       "implementation_commit": "9e3835e"
     },
@@ -138,8 +138,8 @@
       "title": "Transport validated packets with bounded backpressure",
       "plan": "04-packet-channels-plan.md",
       "branch": "codex/fbp-04-packet-channels",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S03",
       "next": "S05",
       "base": "master after previous slice merge",
@@ -152,10 +152,17 @@
         "C55",
         "C56"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T3",
+      "authorized_tasks": [
+        "S04.A",
+        "S04.B",
+        "S04.C"
       ],
-      "legacy_master_work": "T3"
+      "execution_receipt": "S04-execution.md",
+      "review_status": "submitted",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/10",
+      "implementation_commit": "7e4a0f1"
     },
     {
       "id": "S05",
