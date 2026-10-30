@@ -101,7 +101,9 @@
         "S02.C"
       ],
       "execution_receipt": "S02-execution.md",
-      "review_status": "preparing"
+      "review_status": "submitted",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/8",
+      "implementation_commit": "20769de"
     },
     {
       "id": "S03",

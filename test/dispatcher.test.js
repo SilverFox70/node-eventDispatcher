@@ -159,4 +159,3 @@ test('recursive snapshots do not repeat consumed once listeners', () => {
   d.emit('off');
   assert.equal(calls.at(-1), 'D');
 });
-
