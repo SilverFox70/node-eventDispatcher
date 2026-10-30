@@ -95,3 +95,5 @@ Historical examples remain under `server/src`; their source-scanning diagram uti
 License: ISC.
 
 Graph validation/compilation is now available: see [the runnable S06 example](docs/architecture/graphs.md). Valid JSON wiring compiles without calling factories; invalid wiring returns deterministic issues. Streaming execution remains S08.
+
+For typed graph construction, see [the S07 builder example](docs/architecture/graph-builder.md). It checks port names and payload types while producing the same portable graph definition.

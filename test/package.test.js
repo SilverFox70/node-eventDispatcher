@@ -37,7 +37,7 @@ test('both distribution entries load', () => {
       run(process.execPath, ['--input-type=' + mode, '-e', expression]);
     }
     run(process.execPath, ['--input-type=module', '-e', `
-      import { createDispatcher, packet, derivePacket, contract, defineComponent, describeRegistry, compileGraph } from 'event-driven-design';
+      import { createDispatcher, packet, derivePacket, contract, defineComponent, describeRegistry, compileGraph, createGraph } from 'event-driven-design';
       import { z } from 'zod';
       const dispatcher = createDispatcher();
       let count = 0;
@@ -49,8 +49,9 @@ test('both distribution entries load', () => {
       const component = defineComponent({ id: 'node', version: 1, title: 'Node', description: '',
         in: { value: n }, out: { label: text }, create: () => async () => {} });
       if (describeRegistry({ 'node@1': component }).components.length !== 1) throw new Error('ESM catalog failed');
-      const graph = { version: 1, nodes: [{ id: 'node', component: 'node@1' }], edges: [],
-        inputs: { value: { node: 'node', port: 'value' } }, outputs: { label: { node: 'node', port: 'label' } } };
+      const builder = createGraph(), handle = builder.add('node', component);
+      builder.exposeInput('value', handle, 'value'); builder.exposeOutput('label', handle, 'label');
+      const graph = builder.toSpec();
       if (!compileGraph(graph, { 'node@1': component }).ok) throw new Error('ESM compile failed');
       const { validateGraph } = await import('event-driven-design/model');
       if (!validateGraph(graph, describeRegistry({ 'node@1': component })).ok) throw new Error('ESM validate failed');
@@ -74,8 +75,9 @@ test('both distribution entries load', () => {
       const component = root.defineComponent({ id: 'node', version: 1, title: 'Node', description: '',
         in: { value: n }, out: { label: text }, create: () => async () => {} });
       assert.equal(root.describeRegistry({ 'node@1': component }).components.length, 1);
-      const graph = { version: 1, nodes: [{ id: 'node', component: 'node@1' }], edges: [],
-        inputs: { value: { node: 'node', port: 'value' } }, outputs: { label: { node: 'node', port: 'label' } } };
+      const builder = root.createGraph(), handle = builder.add('node', component);
+      builder.exposeInput('value', handle, 'value'); builder.exposeOutput('label', handle, 'label');
+      const graph = builder.toSpec();
       assert.equal(root.compileGraph(graph, { 'node@1': component }).ok, true);
       assert.equal(require('event-driven-design/model').validateGraph(graph, root.describeRegistry({ 'node@1': component })).ok, true);
       assert.equal(root.getGraphDefinition, undefined);

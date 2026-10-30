@@ -17,3 +17,5 @@ export type { ContractIssue } from './model/contracts.js';
 export { compileGraph } from './graph.js';
 export type { CompiledGraph, CompileResult } from './graph.js';
 export type { GraphSpec, Endpoint } from './model/graph.js';
+export { createGraph } from './builder.js';
+export type { GraphBuilder, NodeHandle } from './builder.js';

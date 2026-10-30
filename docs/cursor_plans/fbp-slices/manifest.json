@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S06 graph compilation; S07 requires actual S06 merge and its own readiness review",
+  "next_planning_action": "Review S07 typed builder; S08 requires actual S07 merge and its own runtime-contract readiness",
   "slices": [
     {
       "id": "S00",
@@ -205,7 +205,7 @@
       "previous": "S05",
       "next": "S07",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "de3059c0e1dbfe7bb1730a5f056d21293222f92c",
       "conditions": [
         "C08",
         "C09",
@@ -222,7 +222,7 @@
         "S06.C"
       ],
       "execution_receipt": "S06-execution.md",
-      "review_status": "submitted",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/13",
       "implementation_commit": "01a433e"
     },
@@ -232,8 +232,8 @@
       "title": "Compose graphs with checked node and port handles",
       "plan": "07-typed-graph-builder-plan.md",
       "branch": "codex/fbp-07-typed-graph-builder",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S06",
       "next": "S08",
       "base": "master after previous slice merge",
@@ -241,10 +241,17 @@
       "conditions": [
         "C32"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T4 typed builder portion",
+      "authorized_tasks": [
+        "S07.A",
+        "S07.B",
+        "S07.C"
       ],
-      "legacy_master_work": "T4 typed builder portion"
+      "execution_receipt": "S07-execution.md",
+      "review_status": "submitted",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/14",
+      "implementation_commit": "0cd3d07"
     },
     {
       "id": "S08",

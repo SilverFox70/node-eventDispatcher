@@ -12,6 +12,7 @@ This map is the repository's cross-tool navigation source. No personal home-dire
 | [Readability and structure](agent-rules/readability-and-structure.md) | Cohesive small files, meaningful hierarchy/utilities and selective JSDoc | Planning, implementing or reviewing code |
 | [Verification](agent-rules/verification.md) | Proof strength, coverage and baseline meaning | Behavioral/tooling changes |
 | [Architecture index](architecture/README.md) | Current vs target map and topic routing | Architecture context |
+| [Graph builder](architecture/graph-builder.md) | S07 typed construction, local handle ownership and runnable example | Authoring graphs in TypeScript/JavaScript |
 | [Graphs](architecture/graphs.md) | S06 graph shape, wiring validation, compilation and runnable validation example | Building/compiler/runtime graph consumers |
 | [Contracts/components](architecture/contracts-and-components.md) | S05 schema subset, typed ports, safe catalog and backend validation-detail handoff | Defining nodes or implementing compiler/runtime/inspection consumers |
 | [Packets and channels](architecture/packets-and-channels.md) | S04 admission/identity/JSON ownership and internal FIFO semantics | Implementing ports/runtime or using packet factories |

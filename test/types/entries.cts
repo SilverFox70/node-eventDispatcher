@@ -42,3 +42,7 @@ void forgedGraph;
 // @ts-expect-error Graph definitions are readonly.
 graphSpec.nodes.push({ id: 'x', component: 'x@1' });
 if (compiledGraph.ok) { const handle: root.CompiledGraph = compiledGraph.graph; void handle; }
+
+const graphBuilder: root.GraphBuilder = root.createGraph();
+const builtGraphSpec: root.GraphSpec = graphBuilder.toSpec();
+void builtGraphSpec;
