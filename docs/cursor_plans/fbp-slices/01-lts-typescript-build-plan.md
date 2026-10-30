@@ -3,9 +3,9 @@
 Contract version: 2  
 Slice revision: r1, 2026-10-28  
 Readiness: ready-for-review  
-Execution: not-started; approved task set: none  
+Execution: S01.A–C implemented for review; user authorized S01 execution2026-10-29
 Branch: `codex/fbp-01-lts-typescript-build`  
-Parent: master r6 / SC-FBP-4 + proposed IC1-r2 / SP1-r2; acceptance pending.
+Parent: master r6 / SC-FBP-4 + proposed IC1-r2 / SP1-r2; S00 merged in PR4 at4f350668083fe02c10ce53492d409e7c5c4adf8b.
 
 ## Story and branch outcome
 

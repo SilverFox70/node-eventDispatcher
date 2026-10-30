@@ -1,0 +1,25 @@
+{
+  "all": true,
+  "src": [
+    "dist/cjs"
+  ],
+  "extension": [
+    ".js",
+    ".ts"
+  ],
+  "include": [
+    "dist/**/*.js",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "**/*.d.ts",
+    "**/test/**",
+    "**/node_modules/**"
+  ],
+  "exclude-after-remap": true,
+  "reporter": [
+    "json",
+    "text",
+    "html"
+  ]
+}

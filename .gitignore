@@ -4,3 +4,8 @@ node_modules/
 # dotenv environment variables file
 .env
 .env.*
+
+# Generated build and verification output
+dist/
+coverage/
+.nyc_output/
