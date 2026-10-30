@@ -249,7 +249,9 @@
         "S07.C"
       ],
       "execution_receipt": "S07-execution.md",
-      "review_status": "pending-publication"
+      "review_status": "submitted",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/14",
+      "implementation_commit": "0cd3d07"
     },
     {
       "id": "S08",

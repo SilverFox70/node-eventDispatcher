@@ -2,7 +2,7 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: S07 typed graph construction complete and verified; publication follows.** S06 [PR #13](https://github.com/SilverFox70/node-eventDispatcher/pull/13) merged at de3059c0e1dbfe7bb1730a5f056d21293222f92c. See [S07 receipt](S07-execution.md); S08 remains unstarted.
+**Current work: S07 typed graph construction complete and verified; [PR #14](https://github.com/SilverFox70/node-eventDispatcher/pull/14) submitted for review.** S06 [PR #13](https://github.com/SilverFox70/node-eventDispatcher/pull/13) merged at de3059c0e1dbfe7bb1730a5f056d21293222f92c. See [S07 receipt](S07-execution.md); S08 remains unstarted.
 
 **Always execute in numeric order. Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
 
