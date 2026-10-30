@@ -31,3 +31,14 @@ dispatcher.on('owned', () => {}, { ownerId: 1 });
 dispatcher.once('owned', () => {}, {});
 // @ts-expect-error Live callbacks are not part of browser-safe topology.
 topology.subscribers[0]?.callback();
+
+const graphSpec: root.GraphSpec = { version: 1, nodes: [], edges: [], inputs: {}, outputs: {} };
+const compiledGraph: root.CompileResult = root.compileGraph(graphSpec, {});
+const graphValidation: model.ValidationResult = model.validateGraph(graphSpec, { version: 1, components: [] });
+void graphValidation;
+// @ts-expect-error Compiled graph handles cannot be constructed by consumers.
+const forgedGraph: root.CompiledGraph = {};
+void forgedGraph;
+// @ts-expect-error Graph definitions are readonly.
+graphSpec.nodes.push({ id: 'x', component: 'x@1' });
+if (compiledGraph.ok) { const handle: root.CompiledGraph = compiledGraph.graph; void handle; }

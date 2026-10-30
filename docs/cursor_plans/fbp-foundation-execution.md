@@ -30,3 +30,7 @@ User authorized S04 after S03 merged, then requested a project-purpose/roadmap R
 ## S05 — typed contracts/components/catalog
 
 User authorized S05 after S04 merged and requested backend evaluation to be reflected in displays. [S05 receipt](fbp-slices/S05-execution.md) records contract/port/catalog proofs, safe issue handoff and verification/publication. No S06 implementation, graph runtime or UI delivery is inferred.
+
+## S06 — shared graph validation and compilation
+
+User authorized S06 after S05 merged. [S06 receipt](fbp-slices/S06-execution.md) records immutable compilation, client/server wiring parity, capacity/cardinality/identity/cycle proofs and publication. S07 construction and S08 execution remain separate slices.

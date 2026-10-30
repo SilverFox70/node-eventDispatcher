@@ -14,3 +14,6 @@ export type { Component, ComponentBase, ComponentSpec, ProcessContext, PortMap, 
 export type { ContractBase, PortDescriptor } from './model/contracts.js';
 export type { Catalog, ComponentDescriptor } from './model/catalog.js';
 export type { ContractIssue } from './model/contracts.js';
+export { compileGraph } from './graph.js';
+export type { CompiledGraph, CompileResult } from './graph.js';
+export type { GraphSpec, Endpoint } from './model/graph.js';

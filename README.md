@@ -93,3 +93,5 @@ Duplicate execution prevention belongs to the planned runtime: repeated delivery
 Historical examples remain under `server/src`; their source-scanning diagram utility is a prototype, not the authoritative graph model. The old dispatcher path delegates to the built implementation. The sibling FBP-Presentation repository is reference material, not this library's runtime.
 
 License: ISC.
+
+Graph validation/compilation is now available: see [the runnable S06 example](docs/architecture/graphs.md). Valid JSON wiring compiles without calling factories; invalid wiring returns deterministic issues. Streaming execution remains S08.
