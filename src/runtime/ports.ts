@@ -14,7 +14,7 @@ export function createAdmission(runId: string, limit: number, ledger: Set<string
       if (stats.closed) throw new FlowError('CHANNEL_CLOSED');
       if (stats.pendingSend) throw new FlowError('CONCURRENT_SEND');
       const packet = admitPacket(value);
-      validateValue(packet, target.component[direction === 'input' ? 'in' : 'out'][target.port]!, {
+      validateValue(packet.value, target.component[direction === 'input' ? 'in' : 'out'][target.port]!, {
         runId, nodeId: target.nodeId, port: target.port, component: target.component, direction,
       });
       const recipient = direction === 'input' ? target : destination;

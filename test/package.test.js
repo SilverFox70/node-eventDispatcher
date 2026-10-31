@@ -62,7 +62,7 @@ test('both distribution entries load', () => {
       dispose();
     `]);
     for (const mode of ['commonjs', 'module']) {
-      const load = mode === 'commonjs' ? "const f = require('event-driven-design');" : "import * as f from 'event-driven-design';";
+      const load = mode === 'commonjs' ? "const f = require('event-driven-design'); const { z } = require('zod');" : "import * as f from 'event-driven-design'; import { z } from 'zod';";
       const output = run(process.execPath, ['--input-type=' + mode, '-e', load + `
         (async () => {
           let attempts = 0;
@@ -95,9 +95,26 @@ test('both distribution entries load', () => {
             edges: [], inputs: {}, outputs: {} }, { 'local@1': local }).graph;
           const localTerminal = await f.startNetwork(localGraph, { timeoutMs: 1000 }).done;
           console.log('node-deadline:' + localTerminal.code);
+          const numeric = f.contract('function-number@1', z.number()); let functionCalls = 0;
+          const fn = f.defineFunction({ id: 'function', version: 1, title: 'Function', description: '', input: numeric, output: numeric,
+            handler: (value, ctx) => { functionCalls++; if (ctx.packet.jobId !== 'function-job') throw Error('Metadata lost');
+              if (ctx.attempt === 1) throw new f.FlowError('TEMPORARY'); return value * 2; } });
+          const functions = f.createGraph(), fh = functions.add('fn', fn, { retry: { maxRetries: 1, codes: ['TEMPORARY'], delayMs: 0, idempotent: true } });
+          functions.exposeInput('in', fh, 'in'); functions.exposeOutput('out', fh, 'out');
+          const fg = f.compileGraph(functions.toSpec(), { 'function@1': fn }).graph, fr = f.startNetwork(fg);
+          const results = (async () => { const values = []; for await (const p of fr.outputs.out) values.push(p); return values; })();
+          const fp = f.packet(2, { jobId: 'function-job' }); await fr.send('in', fp); await fr.finish();
+          const fv = await results; if (fv.length !== 1 || fv[0].parentPacketIds[0] !== fp.packetId) throw Error('Function lineage lost');
+          console.log('function:' + fv[0].value + ':' + functionCalls);
+          const hung = f.defineFunction({ id: 'hung', version: 1, title: 'Hung', description: '', input: numeric, output: numeric,
+            handler: () => new Promise(() => {}) });
+          const hg = f.createGraph(), hh = hg.add('hung', hung, { taskTimeoutMs: 1 }); hg.exposeInput('in', hh, 'in'); hg.exposeOutput('out', hh, 'out');
+          const hr = f.startNetwork(f.compileGraph(hg.toSpec(), { 'hung@1': hung }).graph, { timeoutMs: 1000 });
+          await hr.send('in', f.packet(1)); console.log('function-timeout:' + (await hr.done).code);
+
         })().catch(error => { console.error(error); process.exitCode = 1; });
       `]);
-      assert.equal(output.trim(), 'stream:4\nattempts:2\ndeadline:TIMEOUT\nnode-deadline:NODE_TIMEOUT');
+      assert.equal(output.trim(), 'stream:4\nattempts:2\ndeadline:TIMEOUT\nnode-deadline:NODE_TIMEOUT\nfunction:4:2\nfunction-timeout:NODE_TIMEOUT');
     }
     for (const file of ['entries.mts', 'entries.cts', 'tsconfig.json']) cpSync(join(root, 'test/types', file), join(fixture, file));
     run(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', join(fixture, 'tsconfig.json')]);

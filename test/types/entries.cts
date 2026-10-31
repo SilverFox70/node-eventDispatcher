@@ -59,3 +59,10 @@ if (compiledGraph.ok) {
   run.snapshot().nodes.push({ id: 'bad', status: 'running' });
   run.cancel();
 }
+
+const functionNode = root.defineFunction({ id: 'function', version: 1, title: 'Function', description: '',
+  input: root.jsonContract, output: root.jsonContract,
+  handler: (_value, context) => { const metadata: root.FunctionContext = context; void metadata; return 42; } });
+void functionNode.in.in;
+// @ts-expect-error Function adapter output ports retain their exact literal name.
+void functionNode.out.missing;

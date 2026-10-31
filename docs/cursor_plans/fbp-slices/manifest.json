@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S09A node operations/retries; S09B requires actual S09A merge",
+  "next_planning_action": "Review S09B automatic function nodes; original S10 requires actual S09B merge",
   "slices": [
     {
       "id": "S00",
@@ -325,7 +325,7 @@
       "branch": "codex/fbp-09a-node-task-deadlines",
       "readiness": "ready-for-review",
       "execution_status": "complete",
-      "merge_sha": null,
+      "merge_sha": "d607bb69187df5b1cf95381ac362df394d933dfa",
       "conditions": [
         "NT01",
         "NT02",
@@ -353,7 +353,7 @@
         "S09A.B",
         "S09A.C"
       ],
-      "review_status": "submitted",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/17",
       "implementation_commit": "f6e0968"
     },
@@ -363,7 +363,7 @@
       "plan": "09b-function-task-deadlines-plan.md",
       "branch": "codex/fbp-09b-function-task-deadlines",
       "readiness": "ready-for-review",
-      "execution_status": "not-started",
+      "execution_status": "complete",
       "merge_sha": null,
       "conditions": [
         "NT11",
@@ -379,7 +379,14 @@
       "base": "master after previous slice merge",
       "order": 11,
       "previous": "S09A",
-      "next": "S10"
+      "next": "S10",
+      "authorized_tasks": [
+        "S09B.A",
+        "S09B.B",
+        "S09B.C"
+      ],
+      "execution_receipt": "S09B-execution.md",
+      "review_status": "pending-publication"
     },
     {
       "id": "S10",

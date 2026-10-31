@@ -33,3 +33,7 @@ Handoff: S10 map/filter callbacks use the same ctx.task mechanism; transport com
 Readiness: actual S09A merge is the remaining execution prerequisite. NT1 timing/retry choices are settled; G1/G7 have concrete proposed interfaces and integration acceptance; G2/G3/G4/G5/G6 have concrete proposed signatures, one owner, executable NT11–14 fixtures, no replay/recovery promise and actual build/type/package commands. No implementation, test or coverage success claimed by planning.
 
 R2 amendment: implement/preserve NT1 R11 retry policy and NT15–17 in the same operation owner. Conditions NT01–10/NT15–17 belong to S09A; S09B delegates all retry/deadline behavior.
+
+## Execution amendment — 2026-10-30
+
+User requested S09B after actual S09A merge d607bb69187df5b1cf95381ac362df394d933dfa; S09B.A–C are released. One ctx.task operation is invoked per input packet; only S09A owns any explicit retry attempts. To preserve the existing attributed backend-output report before deriving a packet, the bounded allowlist also includes runtime/context-validation.ts (private weak attribution keyed by owned process context), runtime.ts (register that metadata only), and runtime/validation.ts plus runtime/ports.ts (same validator accepts plain output value rather than a packet wrapper). This changes no public context/run shape, scheduler, timer, retry, channel or graph policy. Required proof is wrong handler output → OUTPUT_CONTRACT with actual node/run/port/schema details and0 downstream effects, not a generic error without attribution. See [S09B receipt](S09B-execution.md).
