@@ -32,3 +32,13 @@ th, td { padding: .6rem; text-align: left; border-bottom: 1px solid #d4dce7; }
 caption { font-weight: 600; text-align: left; padding: .75rem 0; }
 .inspector li { margin: .5rem 0; overflow-wrap: anywhere; }
 .inspector button[aria-pressed="true"] { outline: 3px solid #8b9bb2; outline-offset: 2px; }
+.inspector select {
+  appearance: none;
+  padding-right: 2.5rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23526174' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .9rem center;
+}
+@media (forced-colors: active) {
+  .inspector select { appearance: auto; background-image: none; }
+}
