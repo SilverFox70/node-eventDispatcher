@@ -125,3 +125,11 @@ Two-executor counterexample: an executor cannot change the numbered behavior, er
 ## NT1-r2 producer handoff — 2026-10-30
 
 User moved the minimal production defineFunction adapter and essential deadline/type proofs to S09B, before S10. S13 now consumes that delivered adapter for cookbook/templates/dependency recipes and final C32/C35/C36/C50/C58 aggregate acceptance; it does not reimplement timers, ctx.task or the function adapter. FunctionContext includes scoped signal, attempt/attemptId and frozen packet metadata. See [NT1](../fbp-node-timeout-contract.md) and [S09B](09b-function-task-deadlines-plan.md). Original S12→S13→S14 branch order for the remaining authoring story is preserved.
+
+## S13 execution adoption — 2026-10-30
+
+The explicit S13 request authorizes A–C after verified S12 PR21 merge eb629796f890c50123aaaf71c818d9765ff78857. Earlier pending labels are historical for this execution. S09B already owns defineFunction; S13 consumes it unchanged and attaches effects/dependency/examples through the existing defineComponent metadata wrapper. No framework runtime/API implementation is duplicated or altered.
+
+Necessary bounded recipe verification additions: test/node-template-fixture.cjs copies the recipe into a temporary ESM consumer linked to built package exports, uses the pinned TypeScript/Node types and cleans up. scripts/test-node-template.mjs is the direct checkout command; examples/05-node-authoring.cjs runs the exact copied recipe. A separate temporary per-file c8 measurement covers compiled template contract/node code; the library coverage configuration stays unchanged. Child test-worker context is isolated and TAP discovery counts asserted. Controlled wrong-type/wrong-behavior edits are local test counterexamples, not an arbitrary-code service.
+
+Existing lint command/config include templates/node/**/*.ts and the new CJS fixture. README/current architecture/navigation carry the user's progress/demo convention. No dependency/lock/build/type/coverage policy changes; existing generated type fixture extends with the actual service protocol. Installed-tarball copy acceptance remains S16, and S14's public test collector is not implemented.

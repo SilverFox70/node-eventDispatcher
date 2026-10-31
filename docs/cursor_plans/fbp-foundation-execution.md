@@ -66,3 +66,7 @@ User authorized S11 after verified S10 merge. See [S11 execution receipt](fbp-sl
 ## S12 — scoped inspection/export
 
 User authorized S12 after verified S11 merge. See [S12 receipt](fbp-slices/S12-execution.md) for bounded implementation, condition proofs and verification/publication. S13 remains unstarted.
+
+## S13 — checked node authoring
+
+User authorized S13 after verified S12 merge. See [S13 receipt](fbp-slices/S13-execution.md) for the recipe, aggregate adapter/service/state/contract proofs and verification/publication. S14 remains unstarted.

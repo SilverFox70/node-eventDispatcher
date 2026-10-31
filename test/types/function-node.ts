@@ -27,3 +27,13 @@ defineFunction({ id: 'narrow-handler', version: 1, title: 'Narrow', description:
   handler: (value: number) => value * 2 });
 defineFunction({ id: 'broad-handler', version: 1, title: 'Broad', description: '', input: numeric, output: numeric,
   handler: (value: number | string) => typeof value === 'number' ? value * 2 : 0 });
+
+import { defineComponent } from 'event-driven-design';
+import type { Lookup } from '../../templates/node/node.js';
+const injected: Lookup = async (_id, { signal }) => { signal.throwIfAborted(); return { label: 'Ada' }; };
+void injected;
+// @ts-expect-error Services must honor the declared result shape.
+const wrongService: Lookup = async () => ({ label: 42 });
+void wrongService;
+const described = defineComponent({ ...legal, effects: ['profile.read'], requiredDependencies: ['lookup'] });
+void described;

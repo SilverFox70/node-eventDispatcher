@@ -1,0 +1,14 @@
+[
+  {
+    "title": "found profile",
+    "input": { "id": "account-123" },
+    "dependency": { "label": "Ada" },
+    "output": { "kind": "found", "id": "account-123", "label": "Ada" }
+  },
+  {
+    "title": "missing profile is ordinary data",
+    "input": { "id": "missing" },
+    "dependency": null,
+    "output": { "kind": "missing", "id": "missing" }
+  }
+]
