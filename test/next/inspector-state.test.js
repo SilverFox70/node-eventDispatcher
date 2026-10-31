@@ -96,3 +96,21 @@ test('diagram arrows meet card boundaries in both axes and directions', async ()
   assert.equal(connectionPath(c, a), 'M320,50 L280,50');
   assert.equal(b.height, 90); assert.equal(a.height, 80);
 });
+
+
+test('disposing an inspection fixture before run settlement releases callbacks and drains cancellation', async () => {
+  const { command } = await import('../../scripts/next/process.mjs');
+  const source = pathToFileURL(join(app, 'lib/inspection-fixture.ts')).href;
+  const result = await command(process.execPath, ['--conditions=react-server', '--input-type=module', '-e', `
+    import assert from 'node:assert/strict';
+    const { createInspectionFixture } = await import(${JSON.stringify(source)});
+    const inventory = createInspectionFixture();
+    let notifications = 0;
+    const stop = inventory.subscribe(() => notifications++);
+    stop(); inventory.dispose();
+    await new Promise(setImmediate);
+    assert.equal(notifications, 0);
+    assert.deepEqual(inventory.snapshot().sources, []);
+  `], { cwd: app, env: { NODE_V8_COVERAGE: join(process.env.FBP_NEXT_EVIDENCE, 'v8-test') } });
+  assert.equal(result.code, 0, result.output);
+});

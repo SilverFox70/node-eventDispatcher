@@ -39,3 +39,35 @@ test('coverage preserves authored empty functions and unmapped executable code, 
   assert.deepEqual(mappedFunctions([authored, generated, executable], source, map), [authored, executable]);
   assert.deepEqual(mappedFunctions([generated], source, { ...map, mappings: ';AAAA' }), [generated]);
 });
+
+test('coverage keeps cross-file locations and unexecuted authored functions exact', async () => {
+  const { prepareCoverage, mappedFunctions } = await import('../../scripts/next/coverage-ranges.mjs');
+  const { encode } = require('@jridgewell/sourcemap-codec');
+  const convert = require('v8-to-istanbul');
+  const source = 'function blocked(){return 1;}function good(){return 2;}';
+  const split = source.indexOf('function good');
+  const a = resolve('/tmp/fbp-map-a.ts'), b = resolve('/tmp/fbp-map-b.ts');
+  const map = { version: 3, sources: [a, b], names: [], sourcesContent: [
+    '\n'.repeat(49) + source.slice(0, split), '\n' + source.slice(split)
+  ], mappings: encode([[[0, 0, 49, 0], [split - 1, 0, 49, split - 1],
+    [split, 1, 1, 0], [source.length - 1, 1, 1, source.length - split - 1]]]) };
+  const functions = [
+    { functionName: 'blocked', isBlockCoverage: true, ranges: [{ startOffset: 0, endOffset: split, count: 0 }] },
+    { functionName: 'good', isBlockCoverage: true, ranges: [{ startOffset: split, endOffset: source.length, count: 1 }] }
+  ];
+  const prepared = prepareCoverage(functions, source, map);
+  const converter = convert('/tmp/fbp-generated.js', 0, { source: prepared.source, sourceMap: { sourcemap: prepared.map } }, path => ![a, b].includes(path));
+  await converter.load(); converter.applyCoverage(mappedFunctions(prepared.functions, prepared.source, prepared.map));
+  const report = converter.toIstanbul();
+  const count = (file, name) => Object.entries(report[file].fnMap).find(([, fn]) => fn.name === name)?.[0];
+  assert.equal(report[a].f[count(a, 'blocked')], 0, 'Unexecuted authored function must stay uncovered');
+  assert.equal(report[b].f[count(b, 'good')], 1, 'Earlier source line in another file must not be reassigned');
+  for (const text of ['x\ny', 'x\r\ny']) {
+    const second = text.indexOf('y');
+    const sample = prepareCoverage([{ ranges: [{ startOffset: 0, endOffset: 1, count: 1 }, { startOffset: second, endOffset: second + 1, count: 0 }] }], text,
+      { ...map, mappings: 'AAAA;ACCA' });
+    assert.equal(sample.source, ' x' + text.slice(1, second) + ' y');
+    assert.deepEqual(sample.functions[0].ranges, [{ startOffset: 1, endOffset: 2, count: 1 },
+      { startOffset: second + 2, endOffset: second + 3, count: 0 }]);
+  }
+});

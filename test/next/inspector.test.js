@@ -117,3 +117,15 @@ test('schema and current request state: actual stream reconnect, invalid snapsho
     assert.equal(await view.page.locator('[data-vertex]').count(), 0);
   } finally { await view.close(); await reconnectServer.stop(); }
 });
+
+
+test('invalid server inspection definition refuses before opening a stream or starting a run', async () => {
+  const { startServer } = await import('../../scripts/next/server.mjs');
+  const invalid = await startServer(app, { badInspection: true, coverage: join(evidence, 'v8-server'), log: join(evidence, 'server-inspector-invalid.log') });
+  try {
+    const response = await globalThis.fetch(invalid.url + '/api/inspection', { signal: globalThis.AbortSignal.timeout(5000) });
+    assert.equal(response.status, 500);
+    await until(() => invalid.logs().includes('Invalid fixed inspection graph'));
+    assert(!invalid.logs().includes('FBP_INSPECTION_OPEN'));
+  } finally { await invalid.stop(); }
+});

@@ -1,6 +1,6 @@
 import 'server-only';
 import { createDispatcher, createInspectionScope, createGraph, map, jsonContract,
-  describeRegistry, compileGraph, startNetwork } from 'event-driven-design';
+  describeRegistry, compileGraph, startNetwork, packet } from 'event-driven-design';
 
 /** Each connection owns a small real inventory; no cross-request registry. */
 export function createInspectionFixture() {
@@ -13,10 +13,13 @@ export function createInspectionFixture() {
   graph.exposeInput('request', first, 'in');
   graph.exposeOutput('result', second, 'out');
   const spec = graph.toSpec();
-  const compiled = compileGraph(spec, { 'map@1': component });
+  const candidate = process.env.FBP_INSPECTION_BAD_GRAPH === '1' ? { ...spec, edges: [] } : spec;
+  const compiled = compileGraph(candidate, { 'map@1': component });
   if (!compiled.ok) throw Error('Invalid fixed inspection graph');
   const run = startNetwork(compiled.graph, { timeoutMs: 60000 });
-  const draining = (async () => { for await (const packet of run.outputs.result!) void packet; })();
+  // Terminal cancellation is already reflected in the run snapshot.
+  const draining = (async () => { for await (const packet of run.outputs.result!) void packet; })().catch(() => {});
+  void run.send('request', packet(21));
   void run.finish();
   const events = createDispatcher();
   const event = 'account-ready <img src=x onerror=alert(1)>';

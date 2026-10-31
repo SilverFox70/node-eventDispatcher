@@ -29,7 +29,10 @@ export function openInspectionStream(inventory: Inventory, signal: AbortSignal, 
   const publish = () => {
     if (closed) return;
     try {
-      const data = new TextEncoder().encode(`retry: 1500\nid: ${session}:${++sequence}\ndata: ${JSON.stringify({ sequence, snapshot: inventory.snapshot() })}\n\n`);
+      const data = new TextEncoder().encode([
+        'retry: 1500', 'id: ' + session + ':' + ++sequence,
+        'data: ' + JSON.stringify({ sequence, snapshot: inventory.snapshot() }), '', ''
+      ].join('\n'));
       if (controller.desiredSize! > 0) { pending = null; controller.enqueue(data); }
       else pending = data;
     } catch {
