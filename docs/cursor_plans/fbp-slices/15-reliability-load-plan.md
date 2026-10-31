@@ -106,3 +106,10 @@ Canonical proposed identity contract: [IC1-r2](../fbp-identity-contract.md). Exe
 | G7 integration | Proposed; release blocked by S00 | Acceptance demonstration + handoff + next-merge condition; parent T labels do not hide owner |
 
 Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.
+
+
+## S15 execution adoption — 2026-10-31
+
+The explicit execution request adopts S15.A–C after verified S14 PR23 merge75fb972bd685bdc15d68d7624d3d34017024b453. Historical pending IC1 prose does not override delivered/accepted runtime and NT1 contracts. The C26 authoritative capacity2 slow-sink success/abort fixture is included in addition to the planned capacities1/16 matrix. Load runs use existing explicit executionRecordLimit1048576 and completedGroupLimit100000, without modifying defaults, evicting identities or reopening joins.
+
+Necessary cohesive private fixture scope extends to benchmark/flow-fixture.cjs (shared graph construction/channel observation for stress tests and benchmark), benchmark/README.md, and current progress in README.md/examples/README.md and discovery in docs/AGENT_FILES.md. package.json's lint command and eslint.config.mjs include these delivered benchmark CJS files. This changes lint discovery only, not dependencies or behavioral/coverage thresholds. No production changes unless an actual defect is evidenced. [S15 receipt](S15-execution.md) records proofs, observations and publication.

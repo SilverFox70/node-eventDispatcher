@@ -31,3 +31,5 @@ S10's merge emits two separate result packets. S11's joinByKey collects matching
 To adapt these examples to an installed package, replace require('../dist/cjs') with require('event-driven-design'). Use explicit application-owned IDs when defining multiple transformations, as shown in the second demo. See [the stream component guide](../docs/architecture/stream-components.md) for API/ordering details and the [slice index](../docs/cursor_plans/fbp-slices/INDEX.md) for actual review/merge progress.
 
 The fifth demo needs the installed project dev tools and compiles into a temporary ESM consumer linked to this built checkout. It does not install packages or duplicate the template implementation. Run `node scripts/test-node-template.mjs` to execute its copyable found/missing tests. See [node authoring](../docs/node-authoring.md).
+
+For larger correctness/load experiments, see [the offline benchmark](../benchmark/README.md):100000-packet pipeline/fork-join runs, queue bounds and throughput/heap observations.

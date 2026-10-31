@@ -19,9 +19,9 @@ The current runtime executes node graphs; these application examples still need 
 
 ## Current progress
 
-**Implemented through S14 on this review branch.** S00–S13 have merged. S14 adds typed public runNode/runGraph testing helpers using the real compiler/runtime, with bounded collection, deadlines and cleanup; it is awaiting review and merge. **S15 is next:** composed-flow and sustained-load reliability proofs.
+**Implemented through S15 on this review branch.** S00–S14 have merged. S15 adds complete-flow, failure, cleanup and 100,000-packet load proofs plus a reproducible benchmark; it is awaiting review and merge. **S16 is next:** installing the package and authoring/testing nodes outside this repository.
 
-You can now build and run real, typed, asynchronous pipelines locally. The graphical inspector UI, the Next.js example, public test helpers and optional durable execution remain on the roadmap below.
+You can now build and run real, typed, asynchronous pipelines locally. The graphical inspector UI, the Next.js example and optional durable execution remain on the roadmap below.
 
 ## What exists in this revision
 
@@ -33,7 +33,8 @@ You can now build and run real, typed, asynchronous pipelines locally. The graph
 - Internal bounded FIFO channels with backpressure, close/drain and abort semantics, used by the streaming runtime.
 - Typed graph construction and authoritative compilation, isolated streaming runs, bounded duplicate protection, cancellation, deadlines and safe diagnostics.
 - Serial map/filter callbacks, explicit branching, bounded readiness-ordered merging and job/key result collation.
-- Offline tests, packed-package consumer/type checks and source-mapped per-file coverage gates.
+- Typed public node/graph test helpers, offline tests, packed-package consumer/type checks and source-mapped per-file coverage gates.
+- Full-flow failure/cleanup proofs and reproducible 100,000-packet load measurements.
 
 The [slice index](docs/cursor_plans/fbp-slices/INDEX.md) records review/merge status; a feature on a review branch is not automatically released. The package name remains `event-driven-design`. No new npm release is claimed here.
 
@@ -52,7 +53,7 @@ node examples/05-node-authoring.cjs
 node examples/06-testing.cjs
 ```
 
-The first doubles1/2/3/4 and filters the results to6/8. The second splits one account request into independent asynchronous profile/settings operations, then brings their separate results into one stream. The third collates those branches into one typed result. The fourth prints a graph/event diagram inventory. The fifth compiles the copyable lookup recipe and runs it with a local fake service. All run offline. See [examples and expected output](examples/README.md).
+The first doubles1/2/3/4 and filters the results to6/8. The second splits one account request into independent asynchronous profile/settings operations, then brings their separate results into one stream. The third collates those branches into one typed result. The fourth prints a graph/event diagram inventory. The fifth compiles the copyable lookup recipe and runs it with a local fake service. The sixth tests one node and a complete graph using the public testing helpers. All run offline. See [examples and expected output](examples/README.md).
 
 ## Try the current APIs
 
@@ -87,6 +88,8 @@ npm run coverage
 ```
 
 `check` builds both distributions, checks source and consumer declarations, and runs lint. Tests use local fixtures; the legacy `npm run main` demo makes an external HTTP request and is not a verification command. To prepare a local installable artifact, build first and run `npm pack`, then install the resulting `.tgz` into the consuming project.
+
+To inspect sustained-load behavior after building, run `node benchmark/throughput.cjs`. It verifies two graph shapes at capacities 1 and 16 and reports throughput, sampled heap and queue bounds. These are machine-specific observations, not performance guarantees. See [benchmark instructions](benchmark/README.md) for settings and focused reliability tests.
 
 ## Roadmap
 
