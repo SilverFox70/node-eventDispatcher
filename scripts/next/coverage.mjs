@@ -21,7 +21,7 @@ export async function measureFixture(app, evidence) {
   const owned = new Set(expected), coverage = createCoverageMap({});
   const sources = [...walk(join(evidence, 'v8-server')), ...walk(join(evidence, 'v8-test')),
     ...readdirSync(evidence).filter(file => file.startsWith('browser-') && file.endsWith('.json')).map(file => join(evidence, file))];
-  const normalizedMaps = new Map();
+  const normalizedMaps = new Map(), contributions = [];
   for (const file of sources) {
     const raw = JSON.parse(readFileSync(file, 'utf8'));
     for (const script of raw.result) {
@@ -56,7 +56,9 @@ export async function measureFixture(app, evidence) {
       } else if (!owned.has(canonical)) continue;
       const converter = convert(canonical, 0, { source: script.source ?? readFileSync(path, 'utf8'), ...(sourceMap ? { sourceMap } : {}) }, path => !owned.has(path));
       await converter.load(); converter.applyCoverage(script.functions);
-      coverage.merge(converter.toIstanbul());
+      const mapped = converter.toIstanbul();
+      for (const [source, data] of Object.entries(mapped)) contributions.push({ capture: file, script: canonical, source, coverage: data });
+      coverage.merge(mapped);
     }
   }
   for (const file of expected) if (!coverage.files().includes(file)) {
@@ -65,6 +67,7 @@ export async function measureFixture(app, evidence) {
     missing.applyCoverage([{ functionName: '(empty-report)', isBlockCoverage: true, ranges: [{ startOffset: 0, endOffset: source.length, count: 0 }] }]);
     coverage.merge(missing.toIstanbul());
   }
+  writeFileSync(join(evidence, 'fixture-contributions.json'), JSON.stringify(contributions));
   const report = coverage.toJSON();
   writeFileSync(join(evidence, 'fixture-coverage.json'), JSON.stringify(report));
   const failures = [];
