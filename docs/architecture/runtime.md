@@ -61,7 +61,7 @@ S08 adopts IC1-r2's proposed settings for this slice. executionRecordLimit defau
 
 External refusal leaves the run usable; an uncaught refusal inside a process fails it. Distinct nodes and runs may receive the same identity; intentional new work requires a fresh packet identity. This is in-memory protection, not restart-safe deduplication or external-effect exactly-once execution. Long streams may require an explicit larger limit or a future durable/retention profile. Boundary outputs have no destination node and do not reserve another execution record.
 
-Options are signal, executionRecordLimit and diagnosticLimit (default100, integer0–1000). Invalid/unknown options fail INVALID_ARGUMENT before factories. timeoutMs is intentionally unavailable until S09. Advanced lifecycle proofs, deadline cleanup and diagnostic protocol refinement remain S09; no background host, persistence, retry engine or result lookup is provided here.
+Options are signal, executionRecordLimit and diagnosticLimit (default100, integer0–1000). Invalid/unknown options fail INVALID_ARGUMENT before factories. S09 now adds timeoutMs and verifies cleanup/diagnostics; see [the lifecycle guide](lifecycle.md). No background host, persistence, retry engine or result lookup is provided here.
 
 ## Backend verdicts and safe inspection
 

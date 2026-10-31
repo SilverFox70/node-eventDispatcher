@@ -2,7 +2,7 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: S08 streaming runtime complete and verified; [PR #15](https://github.com/SilverFox70/node-eventDispatcher/pull/15) submitted for review.** S07 [PR #14](https://github.com/SilverFox70/node-eventDispatcher/pull/14) merged at528e1aa1de176291c2adfe1f681b6b4981510a8a. See [S08 receipt](S08-execution.md); S09 remains unstarted.
+**Current work: S09 deadlines/lifecycle verification complete; publication follows.** S08 [PR #15](https://github.com/SilverFox70/node-eventDispatcher/pull/15) merged at185f30326092b1d920b0b55449b3195d30757f59. See [S09 receipt](S09-execution.md); S10 remains unstarted.
 
 **Always execute in numeric order. Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
 
@@ -21,7 +21,7 @@ The choice to retain FIFO and use job/correlation/packet/lineage identity is com
 | 06 | [S06 — Validate and compile externally defined graphs](06-graph-compiler-plan.md) | `codex/fbp-06-graph-compiler` | ready-for-review | S05 |
 | 07 | [S07 — Compose graphs with checked node and port handles](07-typed-graph-builder-plan.md) | `codex/fbp-07-typed-graph-builder` | ready-for-review | S06 |
 | 08 | [S08 — Execute a real multi-packet streaming graph](08-stream-runtime-plan.md) | `codex/fbp-08-stream-runtime` | ready-for-review | S07 |
-| 09 | [S09 — Finish, cancel and diagnose every owned wait safely](09-lifecycle-diagnostics-plan.md) | `codex/fbp-09-lifecycle-diagnostics` | blocked-on-decision | S08 |
+| 09 | [S09 — Finish, cancel and diagnose every owned wait safely](09-lifecycle-diagnostics-plan.md) | `codex/fbp-09-lifecycle-diagnostics` | ready-for-review | S08 |
 | 10 | [S10 — Transform, branch and merge typed streams](10-stream-components-plan.md) | `codex/fbp-10-stream-components` | blocked-on-decision | S09 |
 | 11 | [S11 — Collate asynchronous branch results by key](11-keyed-join-plan.md) | `codex/fbp-11-keyed-join` | blocked-on-decision | S10 |
 | 12 | [S12 — Inspect all registered graphs and event relationships](12-inspection-export-plan.md) | `codex/fbp-12-inspection-export` | blocked-on-decision | S11 |

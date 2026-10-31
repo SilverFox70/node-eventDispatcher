@@ -50,8 +50,9 @@ void builtGraphSpec;
 if (compiledGraph.ok) {
   const run: root.NetworkRun = root.startNetwork(compiledGraph.graph, { executionRecordLimit: 10, diagnosticLimit: 2 });
   const done: Promise<root.Terminal> = run.finish(); void done;
-  // @ts-expect-error Timeout is not delivered until S09.
-  root.startNetwork(compiledGraph.graph, { timeoutMs: 1 });
+  root.startNetwork(compiledGraph.graph, { timeoutMs: 1 }).cancel();
+  // @ts-expect-error Deadline duration must be numeric.
+  root.startNetwork(compiledGraph.graph, { timeoutMs: '1' });
   // @ts-expect-error Network sends require complete packet envelopes.
   run.send('in', 2);
   // @ts-expect-error Snapshot metadata is readonly.

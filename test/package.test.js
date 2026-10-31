@@ -72,14 +72,21 @@ test('both distribution entries load', () => {
           const builder = f.createGraph(), n = builder.add('n', node);
           builder.exposeInput('in', n, 'in'); builder.exposeOutput('out', n, 'out');
           const graph = f.compileGraph(builder.toSpec(), { 'double@1': node }).graph;
-          const network = f.startNetwork(graph);
+          const network = f.startNetwork(graph, { timeoutMs: 1000 });
           const collected = (async () => { const values = []; for await (const p of network.outputs.out) values.push(p.value); return values; })();
           await network.send('in', f.packet(2));
           if ((await network.finish()).status !== 'completed') throw Error('Runtime did not complete');
           console.log('stream:' + (await collected).join(','));
+          const slow = f.defineComponent({ id: 'slow', version: 1, title: 'Slow', description: '',
+            in: {}, out: {}, create: () => async () => { await new Promise(() => {}); } });
+          const slowGraph = f.compileGraph({ version: 1, nodes: [{ id: 's', component: 'slow@1' }],
+            edges: [], inputs: {}, outputs: {} }, { 'slow@1': slow }).graph;
+          const terminal = await f.startNetwork(slowGraph, { timeoutMs: 1 }).done;
+          if (terminal.code !== 'TIMEOUT') throw Error('Deadline result missing');
+          console.log('deadline:' + terminal.code);
         })().catch(error => { console.error(error); process.exitCode = 1; });
       `]);
-      assert.equal(output.trim(), 'stream:4');
+      assert.equal(output.trim(), 'stream:4\ndeadline:TIMEOUT');
     }
     for (const file of ['entries.mts', 'entries.cts', 'tsconfig.json']) cpSync(join(root, 'test/types', file), join(fixture, file));
     run(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', join(fixture, 'tsconfig.json')]);

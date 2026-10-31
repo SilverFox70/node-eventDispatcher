@@ -28,7 +28,7 @@ export type Snapshot = Readonly<{
     sent: number; received: number; discarded: number }>[];
   diagnostics: readonly Diagnostic[];
 }>;
-export type StartOptions = Readonly<{ signal?: AbortSignal; executionRecordLimit?: number; diagnosticLimit?: number }>;
+export type StartOptions = Readonly<{ signal?: AbortSignal; executionRecordLimit?: number; diagnosticLimit?: number; timeoutMs?: number }>;
 export type NetworkRun = Readonly<{
   runId: string; outputs: Readonly<Record<string, AsyncIterable<Packet>>>;
   send(name: string, packet: Packet): Promise<void>; closeInput(name: string): void;
@@ -43,12 +43,15 @@ const internalCodes = new Set(['INVALID_PACKET', 'OUTPUT_CONTRACT', 'UNKNOWN_POR
 /** Start independent stream processes; callers must consume outputs concurrently with feeding inputs. */
 export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): NetworkRun {
   const definition = getGraphDefinition(graph), fields = readRecord(options, 'INVALID_ARGUMENT');
-  if (Object.keys(fields).some(key => !['signal', 'executionRecordLimit', 'diagnosticLimit'].includes(key))) throw new FlowError('INVALID_ARGUMENT');
+  if (Object.keys(fields).some(key => !['signal', 'executionRecordLimit', 'diagnosticLimit', 'timeoutMs'].includes(key))) throw new FlowError('INVALID_ARGUMENT');
   const recordLimit = Object.hasOwn(fields, 'executionRecordLimit') ? fields.executionRecordLimit : 65536;
   const diagnosticLimit = Object.hasOwn(fields, 'diagnosticLimit') ? fields.diagnosticLimit : 100;
   if (!Number.isSafeInteger(recordLimit) || (recordLimit as number) < 1 || (recordLimit as number) > 1048576 ||
     !Number.isSafeInteger(diagnosticLimit) || (diagnosticLimit as number) < 0 || (diagnosticLimit as number) > 1000 ||
     (Object.hasOwn(fields, 'signal') && !(fields.signal instanceof globalThis.AbortSignal))) throw new FlowError('INVALID_ARGUMENT');
+  if (Object.hasOwn(fields, 'timeoutMs') && (!Number.isSafeInteger(fields.timeoutMs) || (fields.timeoutMs as number) < 1)) {
+    throw new FlowError('INVALID_ARGUMENT');
+  }
   const signal = fields.signal as AbortSignal | undefined;
   const runId = randomUUID(), channels = new Map<string, Channel>();
   const inputs = new Map<string, Port>(), outputs = new Map<string, Port>();
@@ -77,7 +80,7 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
     outputs.set(name, target); nodeOutputs.get(target.nodeId)!.set(target.port, target);
   }
   const ledger = new Set<string>();
-  const state = createRunState(runId, nodeStates, channels, diagnosticLimit as number, () => ledger.clear(), signal);
+  const state = createRunState(runId, nodeStates, channels, diagnosticLimit as number, () => ledger.clear(), signal, fields.timeoutMs as number | undefined);
   const admission = createAdmission(runId, recordLimit as number, ledger);
   const closed = new Set<string>(), drained = new Set<string>();
   function complete(): void {
@@ -115,7 +118,11 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
       });
       return result;
     },
-    finish(): Promise<Terminal> { for (const name of inputs.keys()) closeInput(name); return state.done; },
+    finish(): Promise<Terminal> {
+      for (const name of inputs.keys()) closeInput(name);
+      if (state.live()) state.drain();
+      return state.done;
+    },
   });
   definitions.set(run, definition);
   queueMicrotask(() => {

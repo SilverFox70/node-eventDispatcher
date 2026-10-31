@@ -2,7 +2,7 @@
 
 ## Current state versus destination
 
-S02 delivers the synchronous TypeScript dispatcher and a legacy CommonJS shim; S03 adds safe current subscription/publisher topology. S04 adds immutable JSON packets and internal bounded channels; [packet/channel ownership](packets-and-channels.md) describes their boundaries. Legacy HTTP examples remain under server/src. The FBP graph/runtime layers are still planned. Guidance setup does not advance slice status, resolve S00 identity or certify current tests.
+S02 delivers the synchronous TypeScript dispatcher and a legacy CommonJS shim; S03 adds safe current subscription/publisher topology. S04 adds immutable JSON packets and internal bounded channels; [packet/channel ownership](packets-and-channels.md) describes their boundaries. Legacy HTTP examples remain under server/src. S05–S09 now deliver typed contracts, graph validation/construction, streaming execution and deadlines. Guidance setup does not advance slice status, resolve S00 identity or certify current tests.
 
 - [Dispatcher API and migration](dispatcher.md): instance ownership, synchronous delivery, bounded metadata logs and the legacy import.
 - [System boundaries](system-boundaries.md): proposed module responsibilities and present source map.
@@ -26,3 +26,5 @@ S06 adds [graph validation and compilation](graphs.md): JSON wiring becomes an i
 S07 adds [typed graph construction](graph-builder.md), emitting the same GraphSpec for S06 compilation. S08 still owns execution.
 
 S08 adds [streaming execution](runtime.md): per-run processes/channels, real packet flow, bounded duplicate protection, baseline cancellation and safe backend verdicts. Deadlines remain S09.
+
+S09 adds [deadlines and lifecycle verification](lifecycle.md), preserving the same streaming runtime and bounded backend verdicts.
