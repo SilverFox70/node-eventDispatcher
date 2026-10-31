@@ -111,10 +111,22 @@ test('both distribution entries load', () => {
           const hg = f.createGraph(), hh = hg.add('hung', hung, { taskTimeoutMs: 1 }); hg.exposeInput('in', hh, 'in'); hg.exposeOutput('out', hh, 'out');
           const hr = f.startNetwork(f.compileGraph(hg.toSpec(), { 'hung@1': hung }).graph, { timeoutMs: 1000 });
           await hr.send('in', f.packet(1)); console.log('function-timeout:' + (await hr.done).code);
+          const stages = [f.map(numeric, numeric, n => n * 2), f.filter(numeric, n => n > 2),
+            f.broadcast(numeric, ['a', 'b']), f.merge(numeric, ['a', 'b'])];
+          const pipeline = f.createGraph(), handles = stages.map((stage, i) => pipeline.add('s' + i, stage));
+          pipeline.connect(handles[0], 'out', handles[1], 'in'); pipeline.connect(handles[1], 'out', handles[2], 'in');
+          for (const port of ['a', 'b']) pipeline.connect(handles[2], port, handles[3], port);
+          pipeline.exposeInput('in', handles[0], 'in'); pipeline.exposeOutput('out', handles[3], 'out');
+          const registry = Object.fromEntries(stages.map(stage => [stage.id + '@1', stage]));
+          const pr = f.startNetwork(f.compileGraph(pipeline.toSpec(), registry).graph);
+          const ps = (async () => { const values = []; for await (const p of pr.outputs.out) values.push(p.value); return values; })();
+          await pr.send('in', f.packet(1)); await pr.send('in', f.packet(2));
+          if ((await pr.finish()).status !== 'completed') throw Error('Combinator pipeline failed');
+          console.log('components:' + (await ps).join(','));
 
         })().catch(error => { console.error(error); process.exitCode = 1; });
       `]);
-      assert.equal(output.trim(), 'stream:4\nattempts:2\ndeadline:TIMEOUT\nnode-deadline:NODE_TIMEOUT\nfunction:4:2\nfunction-timeout:NODE_TIMEOUT');
+      assert.equal(output.trim(), 'stream:4\nattempts:2\ndeadline:TIMEOUT\nnode-deadline:NODE_TIMEOUT\nfunction:4:2\nfunction-timeout:NODE_TIMEOUT\ncomponents:4,4');
     }
     for (const file of ['entries.mts', 'entries.cts', 'tsconfig.json']) cpSync(join(root, 'test/types', file), join(fixture, file));
     run(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', join(fixture, 'tsconfig.json')]);

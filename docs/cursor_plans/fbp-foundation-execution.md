@@ -54,3 +54,7 @@ User inserted node/function deadline work, accepted active-operation timing and0
 ## S09B — automatic function-node operations
 
 User requested S09B after S09A merged. [S09B receipt](fbp-slices/S09B-execution.md) records the thin function adapter, automatic task/attempt context, backend-output report preservation, declaration/real runtime/package proof and publication. S10 follows after actual S09B merge; S13 retains the full cookbook/templates and aggregate acceptance.
+
+## S10 — stream components
+
+User authorized S10 after S09B merged. See [S10 execution receipt](fbp-slices/S10-execution.md) for bounded implementation and actual verification/publication evidence. S11 remains unstarted.

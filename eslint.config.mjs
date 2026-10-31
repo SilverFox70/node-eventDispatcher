@@ -12,7 +12,7 @@ export default tseslint.config(
   { ignores: ['dist/**', 'coverage/**'] },
   {
     ...js.configs.recommended,
-    files: ['scripts/**/*.mjs', 'test/**/*.js'],
+    files: ['scripts/**/*.mjs', 'test/**/*.js', 'examples/**/*.cjs'],
     languageOptions: {
       globals: {
         console: 'readonly',

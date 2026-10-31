@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S09B automatic function nodes; original S10 requires actual S09B merge",
+  "next_planning_action": "Review S10 stream components; S11 requires actual S10 merge",
   "slices": [
     {
       "id": "S00",
@@ -364,7 +364,7 @@
       "branch": "codex/fbp-09b-function-task-deadlines",
       "readiness": "ready-for-review",
       "execution_status": "complete",
-      "merge_sha": null,
+      "merge_sha": "4bad939d45f0f61e820a375dcea7b7a92a8a6f51",
       "conditions": [
         "NT11",
         "NT12",
@@ -386,7 +386,7 @@
         "S09B.C"
       ],
       "execution_receipt": "S09B-execution.md",
-      "review_status": "open",
+      "review_status": "merged",
       "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/18"
     },
     {
@@ -395,8 +395,8 @@
       "title": "Transform, branch and merge typed streams",
       "plan": "10-stream-components-plan.md",
       "branch": "codex/fbp-10-stream-components",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S09B",
       "next": "S11",
       "base": "master after previous slice merge",
@@ -409,10 +409,15 @@
         "C59",
         "C60"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T6 excluding keyed join",
+      "authorized_tasks": [
+        "S10.A",
+        "S10.B",
+        "S10.C"
       ],
-      "legacy_master_work": "T6 excluding keyed join"
+      "execution_receipt": "S10-execution.md",
+      "review_status": "pending-publication"
     },
     {
       "id": "S11",

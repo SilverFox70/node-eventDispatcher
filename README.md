@@ -17,6 +17,12 @@ Planned examples include:
 
 The current runtime executes node graphs; these application examples still need their own domain nodes and integration tests. Recovery after process loss remains a future optional extension.
 
+## Current progress
+
+**Implemented through S10 on this review branch.** S00–S09B have merged. S10 adds reusable map/filter/broadcast/merge components and runnable demos; it is awaiting review and merge. **S11 is next:** collect related asynchronous branch results into one payload using job/key correlation.
+
+You can now build and run real, typed, asynchronous pipelines locally. Visual graph inspection, the Next.js example, public test helpers and optional durable execution remain on the roadmap below.
+
 ## What exists in this revision
 
 - Pinned Node LTS/npm, strict TypeScript, ESM/CommonJS builds and generated declarations.
@@ -26,9 +32,23 @@ The current runtime executes node graphs; these application examples still need 
 - Immutable JSON packets with separate packet/job identities, immediate-parent lineage and optional correlation keys.
 - Internal bounded FIFO channels with backpressure, close/drain and abort semantics, used by the streaming runtime.
 - Typed graph construction and authoritative compilation, isolated streaming runs, bounded duplicate protection, cancellation, deadlines and safe diagnostics.
+- Serial map/filter callbacks, explicit branching and bounded readiness-ordered merging.
 - Offline tests, packed-package consumer/type checks and source-mapped per-file coverage gates.
 
 The [slice index](docs/cursor_plans/fbp-slices/INDEX.md) records review/merge status; a feature on a review branch is not automatically released. The package name remains `event-driven-design`. No new npm release is claimed here.
+
+## Run a graph demo
+
+From this directory with the project’s pinned Node/npm versions:
+
+```sh
+npm ci
+npm run build
+node examples/01-map-filter.cjs
+node examples/02-async-branches.cjs
+```
+
+The first doubles1/2/3/4 and filters the results to6/8. The second splits one account request into independent asynchronous profile/settings operations, then brings their separate results into one stream. Both run offline. See [examples and expected output](examples/README.md).
 
 ## Try the current APIs
 
@@ -85,6 +105,9 @@ The runtime refuses repeated delivery of the same packet to the same node within
 ## Where to go next
 
 - [Ordered feature slices and current progress](docs/cursor_plans/fbp-slices/INDEX.md)
+- [Stream components, ordering and operation policies](docs/architecture/stream-components.md)
+- [Ordinary function nodes](docs/architecture/function-nodes.md)
+- [Streaming runtime and lifecycle](docs/architecture/runtime.md)
 - [Contracts and component authoring](docs/architecture/contracts-and-components.md)
 - [Architecture and implementation boundaries](docs/architecture/README.md)
 - [Optional extensions: durability and visual graph authoring/export](docs/architecture/roadmap.md)
@@ -95,13 +118,3 @@ The runtime refuses repeated delivery of the same packet to the same node within
 Historical examples remain under `server/src`; their source-scanning diagram utility is a prototype, not the authoritative graph model. The old dispatcher path delegates to the built implementation. The sibling FBP-Presentation repository is reference material, not this library's runtime.
 
 License: ISC.
-
-Graph validation/compilation is now available: see [the runnable S06 example](docs/architecture/graphs.md). Valid JSON wiring compiles without calling factories; invalid wiring returns deterministic issues. Streaming execution remains S08.
-
-For typed graph construction, see [the S07 builder example](docs/architecture/graph-builder.md). It checks port names and payload types while producing the same portable graph definition.
-
-Graphs can now process packets: [run the S08 streaming example](docs/architecture/runtime.md) to send1/2/3 through double→plus-one and receive3/5/7. Run instances have isolated state, bounded queues, duplicate protection and baseline cancellation.
-
-S09 adds [run deadlines and verified cleanup/diagnostics](docs/architecture/lifecycle.md): set timeoutMs when starting a graph to bound stalled asynchronous work.
-
-Node-operation deadlines and bounded opt-in retries are now available through [ctx.task and graph policy](docs/architecture/node-operations.md). Retries default to0; configured1–5 retries retain the original flow deadline and packet identity protections. The [S09B function adapter](docs/architecture/function-nodes.md) applies this automatically to ordinary typed handlers.
