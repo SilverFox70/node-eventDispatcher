@@ -1,5 +1,5 @@
 import Inspector from './inspector';
 
 export default function Page() {
-  return <main><h1>Graph and event inspector</h1><Inspector /></main>;
+  return <main className="inspector-page"><h1>Graph and execution inspector</h1><Inspector /></main>;
 }

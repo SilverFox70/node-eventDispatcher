@@ -524,3 +524,18 @@ S08 freezes the bounded runtime validation report and per-run immutable definiti
 User inserted S09A and S09B after S09 and before original S10. [NT1](fbp-node-timeout-contract.md) owns NT01–NT18 as an additive authoritative condition ledger, plus operation-policy producer/consumer signatures. Default retries remain0; explicitly configured1–5 retries repeat only scoped attempts, never packet delivery or process creation. Existing C00–C65/IC1 constraints remain, with retry behavior amended only by NT1's explicit opt-in. S13 retains cookbook/aggregate proof and reuses S09B's adapter.
 
 S18 execution checkpoint (2026-10-31): [LV2](fbp-slices/18-graphical-inspector-plan.md#lv2--execution-design-checkpoint-2026-10-31) resolves the producer/consumer ownership required by C54’s automatic-update amendment. S18 adds a bounded, disposable dispatcher topology observer because S03/S12 only sampled state, then owns safe request-local SSE delivery and the read-only browser view. S12 scope remains a sampler; graph/run notifications are explicitly wired by the host, not discovered globally. S18’s producer tests and production browser/cleanup/reconnect proofs extend the original presentation-only allowance; no editor, payload history or durable session host is authorized.
+
+## Approved execution-inspection extension
+
+[EX1](fbp-execution-inspection-contract.md) / [S18A](fbp-slices/18a-live-execution-inspector-plan.md) implements the user-approved follow-up without changing default safe inspection scope or execution-ledger semantics.
+
+| Condition | Requirement | Concrete proof | Owner |
+| --- | --- | --- | --- |
+| C66 | Optional bounded trace disabled/default privacy and strict JS/type options | test/runtime-trace.test.js; test/next/execution.test.js; test/next/inspector-state.test.js | S18A |
+| C67 | Real channel transfer identities/order; no rejected/aborted phantom transfers | test/runtime-trace.test.js; test/next/execution.test.js; test/next/inspector-state.test.js | S18A |
+| C68 | Bounded observers, immutable ring/clear/overflow and independent runs | test/runtime-trace.test.js; test/next/execution.test.js; test/next/inspector-state.test.js | S18A |
+| C69 | Explicit payload opt-in, immutable JSON byte cap and no hidden lookup store | test/runtime-trace.test.js; test/next/execution.test.js; test/next/inspector-state.test.js | S18A |
+| C70 | Meaningful async account lookup/summary and same-job derived lineage | test/runtime-trace.test.js; test/next/execution.test.js; test/next/inspector-state.test.js | S18A |
+| C71 | Run-correlated safe transport, obsolete-frame suppression and consent/reset | test/runtime-trace.test.js; test/next/execution.test.js; test/next/inspector-state.test.js | S18A |
+| C72 | Useful cards, actual counters, packet markers/timeline and keyboard/inert text | test/runtime-trace.test.js; test/next/execution.test.js; test/next/inspector-state.test.js | S18A |
+| C73 | Manual localhost:54545, explicit override, clear collision refusal and ephemeral test isolation | test/runtime-trace.test.js; test/next/execution.test.js; test/next/inspector-state.test.js | S18A |

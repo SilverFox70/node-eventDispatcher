@@ -5,6 +5,10 @@ import { createChannel } from './channel.js';
 import type { Packet } from './packet.js';
 import type { Snapshot } from './model/inspection.js';
 export type { Snapshot, Diagnostic, ValidationReport } from './model/inspection.js';
+import { createExecutionTrace } from './runtime/trace.js';
+import type { TraceOptions } from './runtime/trace.js';
+import type { ExecutionTraceSnapshot } from './model/execution-trace.js';
+import type { Endpoint } from './model/graph.js';
 import { FlowError } from './errors.js';
 import { readRecord } from './packet/data.js';
 import { createRunState } from './runtime/state.js';
@@ -19,10 +23,11 @@ export { RuntimeValidationError } from './runtime/validation.js';
 
 export type Terminal = Readonly<{ status: 'completed' } | { status: 'cancelled'; code: 'CANCELLED' } |
   { status: 'failed'; code: string; nodeId?: string }>;
-export type StartOptions = Readonly<{ signal?: AbortSignal; executionRecordLimit?: number; diagnosticLimit?: number; timeoutMs?: number }>;
+export type StartOptions = Readonly<{ signal?: AbortSignal; executionRecordLimit?: number; diagnosticLimit?: number; timeoutMs?: number; trace?: TraceOptions }>;
 export type NetworkRun = Readonly<{
   runId: string; outputs: Readonly<Record<string, AsyncIterable<Packet>>>;
   send(name: string, packet: Packet): Promise<void>; closeInput(name: string): void;
+  trace(): ExecutionTraceSnapshot | null; onTrace(listener: () => void): () => void; clearTrace(): void;
   finish(): Promise<Terminal>; cancel(): void; done: Promise<Terminal>; snapshot(): Snapshot;
 }>;
 
@@ -35,7 +40,7 @@ const internalCodes = new Set(['INVALID_PACKET', 'OUTPUT_CONTRACT', 'UNKNOWN_POR
 /** Start independent stream processes; callers must consume outputs concurrently with feeding inputs. */
 export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): NetworkRun {
   const definition = getGraphDefinition(graph), fields = readRecord(options, 'INVALID_ARGUMENT');
-  if (Object.keys(fields).some(key => !['signal', 'executionRecordLimit', 'diagnosticLimit', 'timeoutMs'].includes(key))) throw new FlowError('INVALID_ARGUMENT');
+  if (Object.keys(fields).some(key => !['signal', 'executionRecordLimit', 'diagnosticLimit', 'timeoutMs', 'trace'].includes(key))) throw new FlowError('INVALID_ARGUMENT');
   const recordLimit = Object.hasOwn(fields, 'executionRecordLimit') ? fields.executionRecordLimit : 65536;
   const diagnosticLimit = Object.hasOwn(fields, 'diagnosticLimit') ? fields.diagnosticLimit : 100;
   if (!Number.isSafeInteger(recordLimit) || (recordLimit as number) < 1 || (recordLimit as number) > 1048576 ||
@@ -52,7 +57,9 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
   }
   const scope = createTaskScope();
   const signal = fields.signal as AbortSignal | undefined;
-  const runId = randomUUID(), channels = new Map<string, Channel>();
+  const runId = randomUUID();
+  const trace = Object.hasOwn(fields, 'trace') ? createExecutionTrace(runId, fields.trace) : undefined;
+  const channels = new Map<string, Channel>();
   const inputs = new Map<string, Port>(), outputs = new Map<string, Port>();
   const nodeInputs = new Map<string, Map<string, Port>>(), nodeOutputs = new Map<string, Map<string, Port>>();
   const destinations = new Map<Channel, Port>();
@@ -62,20 +69,20 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
     const spec = definition.spec.nodes.find(node => node.id === endpoint.node)!;
     return { channel, nodeId: endpoint.node, port: endpoint.port, component: definition.registry[spec.component]! };
   }
-  function channel(id: string, capacity = 16): Channel {
-    const result = createChannel<Packet>(capacity); channels.set(id, result); return result;
+  function channel(id: string, capacity = 16, from: Endpoint | null = null, to: Endpoint | null = null): Channel {
+    const result = createChannel<Packet>(capacity, trace && ((kind, packet) => trace.record(kind, { channelId: id, from, to }, packet))); channels.set(id, result); return result;
   }
   definition.spec.edges.forEach((edge, index) => {
-    const queue = channel(`edge:${index}`, edge.capacity), from = port(edge.from, queue), to = port(edge.to, queue);
+    const queue = channel(`edge:${index}`, edge.capacity, edge.from, edge.to), from = port(edge.from, queue), to = port(edge.to, queue);
     nodeOutputs.get(from.nodeId)!.set(from.port, from); nodeInputs.get(to.nodeId)!.set(to.port, to);
     destinations.set(queue, to);
   });
   for (const [name, endpoint] of Object.entries(definition.spec.inputs)) {
-    const target = port(endpoint, channel(`input:${name}`));
+    const target = port(endpoint, channel(`input:${name}`, 16, null, endpoint));
     inputs.set(name, target); nodeInputs.get(target.nodeId)!.set(target.port, target);
   }
   for (const [name, endpoint] of Object.entries(definition.spec.outputs)) {
-    const target = port(endpoint, channel(`output:${name}`));
+    const target = port(endpoint, channel(`output:${name}`, 16, endpoint, null));
     outputs.set(name, target); nodeOutputs.get(target.nodeId)!.set(target.port, target);
   }
   const ledger = new Set<string>();
@@ -105,6 +112,11 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
     inputIterator(target.channel, state, () => { drained.add(name); complete(); }, () => fail(new FlowError('INPUT_ABANDONED')), () => scope.guard()),
   ])));
   const run: NetworkRun = Object.freeze({
+    trace: () => trace?.snapshot() ?? null, clearTrace: () => { trace?.clear(); },
+    onTrace(listener: () => void) {
+      if (typeof listener !== 'function') throw new TypeError('Trace observer must be a function');
+      return trace?.subscribe(listener) ?? (() => {});
+    },
     runId, outputs: publicOutputs, done: state.done, cancel: () => { scope.guard(); state.cancel(); }, closeInput, snapshot: state.snapshot,
     send(name: string, packet: Packet): Promise<void> {
       let result: Promise<void>;

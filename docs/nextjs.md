@@ -9,7 +9,7 @@ npm ci
 npm run demo:next
 ```
 
-The command builds/packs the library, copies the fixture into a unique temporary application, installs its locked dependencies, builds a production Next server and prints its localhost URL. Open that URL, submit a number and see the server result.2 becomes4. Ctrl+C stops the child server. This does not deploy anything or change your global Node/browser configuration. The first setup needs network access for dependencies; the app itself uses only local fakes.
+The command builds/packs the library, copies the fixture into a unique temporary application, installs its locked dependencies, builds a production Next server and prints **http://localhost:54545**. Open that URL, submit a number and see the server result.2 becomes4. Ctrl+C stops the child server. This does not deploy anything or change your global Node/browser configuration. The first setup needs network access for dependencies; the app itself uses only local fakes.
 
 For automated acceptance:
 
@@ -46,7 +46,7 @@ This proves package installation, Node server execution and browser isolation. I
 
 ## Live graph and event inspector
 
-Run `npm run demo:next`, open the printed URL and follow **Inspect graphs and events** (or visit `/inspector`). Select account-flow, idle-definition or account-events. The SVG shows directed wiring and distinguishes defined, declared and active relationships with solid/dashed/dotted strokes. Keyboard-focus a graphic entity and press Enter/Space, or use the equivalent text buttons, to inspect component versions, ports, contract/schema descriptors and attribution. Full names remain in titles, details and the relationship table; SVG labels are shortened to fit cards. The graph's backend run state comes from the real inspection snapshot. The original flow page still echoes actual backend payload-validation verdicts.
+Run `npm run demo:next`, open **http://localhost:54545** and follow **Inspect graphs and events** (or visit `/inspector`). Select account-flow, idle-definition or account-events. The SVG shows directed wiring and distinguishes defined, declared and active relationships with solid/dashed/dotted strokes. Keyboard-focus a graphic entity and press Enter/Space, or use the equivalent text buttons, to inspect component versions, ports, contract/schema descriptors and attribution. Full names remain in titles, details and the relationship table; SVG labels are shortened to fit cards. The graph's backend run state comes from the real inspection snapshot. The original flow page still echoes actual backend payload-validation verdicts.
 
 Relationships update automatically without a refresh button. The local event demonstration removes a once subscriber, unsubscribes the ordinary subscriber, disposes the publisher, registers a new subscriber and emits again. It includes deliberately hostile-looking names to demonstrate safe text rendering; no label is HTML or executable code. Graph definitions remain present while idle. A disappeared selection shows the selection prompt rather than stale entity details.
 
@@ -59,3 +59,17 @@ Acceptance uses a server-only short-lease mode to prove real stream closure and 
 The UI is read-only. Drag/drop editing, durable graph revisions, readable code export and persistent execution are separate roadmap features. SSE hosting requires a Node deployment that supports streaming requests; a production integration must define authentication, source registration, proxy limits and appropriate lifetimes.
 
 Coverage source-map alignment uses an in-memory generated padding column to neutralize the converter’s Babel-specific cross-file column-zero heuristic. Runtime assets and authored source mappings remain intact; a regression proves an unexecuted authored function stays uncovered and different-file locations stay distinct. The private invalid-definition startup test proves refusal before streaming, and a server-conditioned fixture test proves cancellation/disposal before run settlement.
+
+## S18A: meaningful account execution
+
+The inspector now runs accountId → sample lookup → summary with explicit versioned contracts. It looks up three invented records, awaits actual local service delays and derives same-job child packets; it is not a pass-through graph disguised as account loading. Node cards show purpose, component identity, port types, actual process state and channel counts. External ports explain what they feed or expose. Hostile labels remain in separate browser fixtures instead of the main example.
+
+Packet markers and the selectable timeline use the runtime's real sent/received observations, full packet/job/run IDs, immediate lineage and elapsed time. They never resubmit data to simulate movement. The connected status is labeled Connection, separately from execution progress. Capture sample payloads is off by default; opting in starts a new local example and exposes only bounded public sample JSON. Restart or changing capture closes the previous stream and clears old results. Process/run state and counters remain authoritative; a received observation is not a business-success verdict. See [execution inspection](architecture/execution-inspection.md) for the optional base API and bounds.
+
+Manual demos bind only localhost, with stable default port54545. An explicit override is supported:
+
+```sh
+npm run demo:next -- --port 54546
+```
+
+Invalid arguments fail before building. If the requested port is occupied, startup fails clearly; it never silently changes ports or terminates another application. Automated acceptance continues using ephemeral loopback ports, with separate localhost/bind/collision/cleanup proofs. This change does not configure your global host or network settings.

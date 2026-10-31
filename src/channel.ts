@@ -4,7 +4,7 @@ type Reader<T> = { resolve: (value: IteratorResult<T, undefined>) => void; rejec
 type Sender<T> = { value: T; resolve: () => void; reject: (error: Error) => void };
 
 /** Internal FIFO; admission/identity/representation policy belongs to its caller. */
-export function createChannel<T>(capacity: number) {
+export function createChannel<T>(capacity: number, observe?: (kind: 'sent' | 'received', value: T) => void) {
   if (!Number.isSafeInteger(capacity) || capacity < 1) {
     throw new FlowError('INVALID_ARGUMENT', 'Channel capacity must be a positive safe integer');
   }
@@ -16,6 +16,10 @@ export function createChannel<T>(capacity: number) {
   let received = 0;
   let discarded = 0;
 
+  function notify(kind: 'sent' | 'received', value: T): void {
+    try { observe?.(kind, value); } catch { /* Observation cannot change channel delivery. */ }
+  }
+
   return {
     send(value: T): Promise<void> {
       if (state === 'aborted') return Promise.reject(new FlowError('RUN_TERMINATED'));
@@ -25,12 +29,13 @@ export function createChannel<T>(capacity: number) {
         const waiting = reader;
         reader = undefined;
         sent++; received++;
+        notify('sent', value); notify('received', value);
         waiting.resolve({ done: false, value });
         return Promise.resolve();
       }
       if (queue.length < capacity) {
         queue.push(value);
-        sent++;
+        sent++; notify('sent', value);
         return Promise.resolve();
       }
       return new Promise<void>((resolve, reject) => { sender = { value, resolve, reject }; });
@@ -41,12 +46,12 @@ export function createChannel<T>(capacity: number) {
       if (reader) return Promise.reject(new FlowError('CONCURRENT_READ'));
       if (queue.length > 0) {
         const value = queue.shift()!;
-        received++;
+        received++; notify('received', value);
         if (sender) {
           const waiting = sender;
           sender = undefined;
           queue.push(waiting.value);
-          sent++;
+          sent++; notify('sent', waiting.value);
           waiting.resolve();
         }
         return Promise.resolve({ done: false, value });

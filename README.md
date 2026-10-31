@@ -19,9 +19,9 @@ The current runtime executes node graphs; these application examples still need 
 
 ## Current progress
 
-**Implemented through S18 on this review branch.** S00–S17 have merged. S18 adds a read-only graphical inspector with automatic graph/event relationship updates, source selection, metadata details and keyboard/text equivalents. S19 will accept the complete developer story after this slice merges.
+**Implemented through S18A on this review branch.** S00–S18 have merged. S18A adds real packet activity, meaningful typed account lookup/summary nodes, useful cards and explicit bounded payload capture to the live inspector. S19 will accept the complete developer story after this slice merges.
 
-You can now build and run real, typed, asynchronous pipelines locally. The inspector now visualizes registered graphs and event relationships; editing and optional durable execution remain on the roadmap below. You can now try the small Next.js example with `npm run demo:next`; its printed localhost URL runs a production build. Follow **Inspect graphs and events** to watch subscriptions change without refreshing.
+You can now build and run real, typed, asynchronous pipelines locally. The inspector now visualizes registered graphs and event relationships; editing and optional durable execution remain on the roadmap below. You can now try the small Next.js example with `npm run demo:next`; it runs a production build at **http://localhost:54545**. Follow **Inspect graphs and events** to watch packets and subscriptions change without refreshing.
 
 ## What exists in this revision
 
@@ -56,7 +56,7 @@ node examples/07-external-feed.cjs
 
 The first doubles1/2/3/4 and filters the results to6/8. The second splits one account request into independent asynchronous profile/settings operations, then brings their separate results into one stream. The third collates those branches into one typed result. The fourth prints a graph/event diagram inventory. The fifth demonstrates a service-injected JavaScript lookup with a local fake service. The sixth tests one node and a complete graph using the public testing helpers. The seventh demonstrates external feeding, backpressure and cancellation. All run offline. See [examples and expected output](examples/README.md).
 
-For the Next.js application, run `npm run demo:next` (Ctrl+C to stop) or `npm run test:next` for production HTTP/browser acceptance. See [the Next.js guide](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/nextjs.md). Dependency/browser installation is setup; demo requests use local fakes.
+For the Next.js application at `http://localhost:54545`, run `npm run demo:next` (Ctrl+C to stop) or `npm run test:next` for production HTTP/browser acceptance. See [the Next.js guide](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/nextjs.md). Dependency/browser installation is setup; demo requests use local fakes.
 
 ## Try the current APIs
 

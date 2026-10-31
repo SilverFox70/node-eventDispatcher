@@ -46,7 +46,7 @@ test('inspection stream coalesces slow readers and releases all owned resources'
   const abort = new globalThis.AbortController(); abort.abort();
   const pre = openInspectionStream(inventory, abort.signal, 'pre-aborted');
   assert((await pre.getReader().read()).done);
-  const cancelled = openInspectionStream(inventory, new globalThis.AbortController().signal, 'cancel');
+  const cancelled = openInspectionStream({ ...inventory, trace: () => null }, new globalThis.AbortController().signal, 'cancel');
   await cancelled.cancel(); assert.equal(disposed, 3);
   const aborted = new globalThis.AbortController();
   const pending = openInspectionStream(inventory, aborted.signal, 'abort');
@@ -78,6 +78,9 @@ test('diagram uses model edges and safe synthetic IDs, including unattributed su
     inputs: { request: { node: 'first', port: 'in' } }, outputs: { result: { node: 'second', port: 'out' } } } };
   assert.equal(inspectionDiagram(graph).edges[0].label, 'out → in · capacity default');
   graph.spec.edges[0].capacity = 2; assert.equal(inspectionDiagram(graph).edges[0].label, 'out → in · capacity 2');
+  component.in.in = { contractId: 'union@1', representationId: 'json@1', schema: { type: ['string', 'null'] } };
+  component.out.out = component.in.in;
+  assert(inspectionDiagram(graph).vertices[0].lines.some(line => line.includes('string | null')));
   graph.spec.inputs.request.port = 'missing'; assert.equal(inspectionDiagram(graph), null);
 });
 
@@ -113,4 +116,39 @@ test('disposing an inspection fixture before run settlement releases callbacks a
     assert.deepEqual(inventory.snapshot().sources, []);
   `], { cwd: app, env: { NODE_V8_COVERAGE: join(process.env.FBP_NEXT_EVIDENCE, 'v8-test') } });
   assert.equal(result.code, 0, result.output);
+});
+
+
+test('default connection constructor is disposable and rejects mismatched run/channel trace frames', async () => {
+  const { connectInspection } = await moduleAt('inspection-connection.ts');
+  const previous = globalThis.EventSource; let source;
+  try {
+    globalThis.EventSource = class {
+      constructor(url) { assert.equal(url, '/api/inspection'); source = this; }
+      close() { this.closed = true; }
+    };
+    const states = [];
+    const stop = connectInspection(() => assert.fail('mismatched trace published'), value => states.push(value));
+    source.onmessage({ data: JSON.stringify({ sequence: 1, snapshot, execution: { version: 2 } }) });
+    assert.equal(states.at(-1), 'Invalid inspection data'); assert(source.closed); stop();
+  } finally { globalThis.EventSource = previous; }
+});
+
+
+test('execution frames require current run and actual graph channels, and accept a matching trace', async () => {
+  const { connectInspection } = await moduleAt('inspection-connection.ts');
+  const port = { contractId: 'json@1', representationId: 'json@1', schema: {} };
+  const snapshot = { version: 1, sources: [{ id: 'graph', kind: 'graph', spec: { version: 1,
+    nodes: [{ id: 'n', component: 'echo@1' }], edges: [], inputs: { in: { node: 'n', port: 'in' } }, outputs: { out: { node: 'n', port: 'out' } } },
+    catalog: { version: 1, components: [{ id: 'echo', version: 1, title: 'Echo', description: '', in: { in: port }, out: { out: port } }] },
+    run: { runId: 'r', status: 'running', nodes: [], channels: [], diagnostics: [] } }] };
+  const execution = { version: 1, runId: 'r', total: 1, dropped: 0, payloads: false, events: [{ sequence: 1, timeMs: 0,
+    kind: 'sent', channelId: 'input:in', from: null, to: { node: 'n', port: 'in' }, packetId: 'p', jobId: 'j', parentPacketIds: [], payloadState: 'omitted' }] };
+  for (const [value, valid] of [[execution, true], [{ ...execution, runId: 'other' }, false],
+    [{ ...execution, events: [{ ...execution.events[0], channelId: 'invented' }] }, false], [false, false]]) {
+    const source = { close() {} }, updates = [], statuses = [];
+    const stop = connectInspection((snapshot, trace) => updates.push({ snapshot, trace }), status => statuses.push(status), () => source);
+    source.onmessage({ data: JSON.stringify({ sequence: 1, snapshot, execution: value }) });
+    assert.equal(updates.length, valid ? 1 : 0); assert.equal(statuses.at(-1), valid ? 'Live' : 'Invalid inspection data'); stop();
+  }
 });

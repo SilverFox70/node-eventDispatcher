@@ -12,3 +12,6 @@ export type { GraphSpec, Endpoint } from './graph.js';
 export type { TaskPolicy, RetryPolicy } from './graph/task-policy.js';
 export type { InspectionSnapshot, InspectionSource, Snapshot, Diagnostic, ValidationReport } from './inspection.js';
 export { toMermaid } from './mermaid.js';
+
+export type { ExecutionTraceEvent, ExecutionTraceSnapshot } from './execution-trace.js';
+export { validateExecutionTrace } from './execution-trace.js';
