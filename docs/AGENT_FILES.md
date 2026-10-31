@@ -13,6 +13,7 @@ This map is the repository's cross-tool navigation source. No personal home-dire
 | [Verification](agent-rules/verification.md) | Proof strength, coverage and baseline meaning | Behavioral/tooling changes |
 | [Architecture index](architecture/README.md) | Current vs target map and topic routing | Architecture context |
 | [Runnable demos](../examples/README.md) | Offline map/filter and asynchronous branch/merge checkout examples | Trying or demonstrating the delivered runtime |
+| [Inspection](architecture/inspection.md) | S12 explicit graph/run/dispatcher inventory and browser-safe diagram export | Registering sources, exporting topology or implementing later graphical inspection |
 | [Keyed joins](architecture/keyed-joins.md) | S11 typed result products, job/key groups, bounds and terminal refusal semantics | Collating asynchronous results or implementing downstream inspection/testing |
 | [Stream components](architecture/stream-components.md) | S10 map/filter/broadcast/merge, naming, bounded fan-out/fan-in and runnable example | Composing streams or implementing S11 keyed join |
 | [Function nodes](architecture/function-nodes.md) | S09B typed ordinary handlers, automatic task policy and runnable example | Authoring simple nodes or implementing mapping/cookbook/testing consumers |

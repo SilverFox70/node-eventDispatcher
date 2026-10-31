@@ -2,7 +2,7 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: S11 keyed collation complete and verified; [PR #20](https://github.com/SilverFox70/node-eventDispatcher/pull/20) is open for review.** S10 [PR #19](https://github.com/SilverFox70/node-eventDispatcher/pull/19) merged at b2385726a814e76c54ff2a7657b72ea3e990d16a. See [S11 receipt](S11-execution.md); S12 remains unstarted.
+**Current work: S12 inspection/export complete and verified; publication follows.** S11 [PR #20](https://github.com/SilverFox70/node-eventDispatcher/pull/20) merged at af0cea1ac0ced8f90805c0f1eeb38862f6661966. See [S12 receipt](S12-execution.md); S13 remains unstarted.
 
 **Always execute in manifest order (including approved insertion suffixes). Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
 
@@ -30,7 +30,7 @@ User requested active-operation node/function deadlines before combinators, then
 | 09B | [S09B — Automatic function-node timing](09b-function-task-deadlines-plan.md) | `codex/fbp-09b-function-task-deadlines` | ready-for-review | S09A |
 | 10 | [S10 — Transform, branch and merge typed streams](10-stream-components-plan.md) | `codex/fbp-10-stream-components` | ready-for-review | S09B |
 | 11 | [S11 — Collate asynchronous branch results by key](11-keyed-join-plan.md) | `codex/fbp-11-keyed-join` | ready-for-review | S10 |
-| 12 | [S12 — Inspect all registered graphs and event relationships](12-inspection-export-plan.md) | `codex/fbp-12-inspection-export` | blocked-on-decision | S11 |
+| 12 | [S12 — Inspect all registered graphs and event relationships](12-inspection-export-plan.md) | `codex/fbp-12-inspection-export` | ready-for-review | S11 |
 | 13 | [S13 — Write useful nodes as ordinary typed functions](13-function-authoring-plan.md) | `codex/fbp-13-function-authoring` | blocked-on-decision | S12 |
 | 14 | [S14 — Test nodes and whole graphs with the real runtime](14-public-test-sdk-plan.md) | `codex/fbp-14-public-test-sdk` | blocked-on-decision | S13 |
 | 15 | [S15 — Prove composed flows and sustained bounded execution](15-reliability-load-plan.md) | `codex/fbp-15-reliability-load` | blocked-on-decision | S14 |

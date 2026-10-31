@@ -3,7 +3,8 @@ import { getGraphDefinition } from './graph.js';
 import type { CompiledGraph, GraphDefinition } from './graph.js';
 import { createChannel } from './channel.js';
 import type { Packet } from './packet.js';
-import type { ContractIssue } from './model/contracts.js';
+import type { Snapshot } from './model/inspection.js';
+export type { Snapshot, Diagnostic, ValidationReport } from './model/inspection.js';
 import { FlowError } from './errors.js';
 import { readRecord } from './packet/data.js';
 import { createRunState } from './runtime/state.js';
@@ -18,19 +19,6 @@ export { RuntimeValidationError } from './runtime/validation.js';
 
 export type Terminal = Readonly<{ status: 'completed' } | { status: 'cancelled'; code: 'CANCELLED' } |
   { status: 'failed'; code: string; nodeId?: string }>;
-export type ValidationReport = Readonly<{
-  runId: string; nodeId: string; port: string; direction: 'input' | 'output';
-  componentId: string; componentVersion: number; contractId: string; representationId: string;
-  issues: readonly ContractIssue[]; truncated: boolean;
-}>;
-export type Diagnostic = Readonly<{ sequence: number; code: string; nodeId?: string; validation?: ValidationReport }>;
-export type Snapshot = Readonly<{
-  runId: string; status: 'running' | 'draining' | Terminal['status'];
-  nodes: readonly Readonly<{ id: string; status: 'running' | 'completed' | 'failed' | 'cancelled' }>[];
-  channels: readonly Readonly<{ id: string; queued: number; capacity: number; pendingSend: boolean;
-    sent: number; received: number; discarded: number }>[];
-  diagnostics: readonly Diagnostic[];
-}>;
 export type StartOptions = Readonly<{ signal?: AbortSignal; executionRecordLimit?: number; diagnosticLimit?: number; timeoutMs?: number }>;
 export type NetworkRun = Readonly<{
   runId: string; outputs: Readonly<Record<string, AsyncIterable<Packet>>>;

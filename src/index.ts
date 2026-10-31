@@ -30,3 +30,6 @@ export type { FunctionContext, FunctionSpec } from './function.js';
 export { map, filter, broadcast, merge } from './components/index.js';
 export { joinByKey } from './components/index.js';
 export type { JoinOptions } from './components/join-by-key.js';
+export { createInspectionScope } from './inspection.js';
+export type { InspectionScope } from './inspection.js';
+export type { InspectionSnapshot, InspectionSource } from './model/inspection.js';

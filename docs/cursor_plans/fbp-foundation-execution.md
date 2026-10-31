@@ -62,3 +62,7 @@ User authorized S10 after S09B merged. See [S10 execution receipt](fbp-slices/S1
 ## S11 — typed keyed collation
 
 User authorized S11 after verified S10 merge. See [S11 execution receipt](fbp-slices/S11-execution.md) for implementation, condition proofs and actual verification/publication evidence. S12 remains unstarted.
+
+## S12 — scoped inspection/export
+
+User authorized S12 after verified S11 merge. See [S12 receipt](fbp-slices/S12-execution.md) for bounded implementation, condition proofs and verification/publication. S13 remains unstarted.

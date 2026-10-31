@@ -8,6 +8,7 @@ npm run build
 node examples/01-map-filter.cjs
 node examples/02-async-branches.cjs
 node examples/03-keyed-collation.cjs
+node examples/04-inspection.cjs
 ```
 
 All examples run offline against the built library. They use the real graph compiler/runtime and finish on their own. No application server, credentials or external repositories are needed. Rebuild after changing library source. These checkout demos are distinct from the historical server/src scripts.
@@ -17,6 +18,7 @@ All examples run offline against the built library. They use the real graph comp
 | [01-map-filter.cjs](01-map-filter.cjs) | Async transformation, serial predicate and a capacity1 connection | Input1/2/3/4 becomes6/8; completed. |
 | [02-async-branches.cjs](02-async-branches.cjs) | One request branches into profile/settings operations, with distinct stable component names, operation budgets, cancellation signals and merged result streams | Two results for demo-signup-42: Saved Ada and Saved dark; completed. |
 | [03-keyed-collation.cjs](03-keyed-collation.cjs) | Async branches with heterogeneous results and a job/key join | One object containing profile and settings, with two immediate parents; completed. |
+| [04-inspection.cjs](04-inspection.cjs) | Explicit live/idle graph and dispatcher registrations, scoped snapshots and Mermaid export | Three source subgraphs; once listener disappears on the next snapshot. |
 
 The second and third examples' save functions are asynchronous local stand-ins. They do not persist data. Both branches retain job/key correlation while derived packets record immediate lineage. The output shows results as they arrive; cross-branch arrival order is not guaranteed.
 
