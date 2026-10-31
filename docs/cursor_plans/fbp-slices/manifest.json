@@ -417,7 +417,9 @@
         "S10.C"
       ],
       "execution_receipt": "S10-execution.md",
-      "review_status": "pending-publication"
+      "review_status": "open",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/19",
+      "implementation_commit": "3eb1634"
     },
     {
       "id": "S11",
