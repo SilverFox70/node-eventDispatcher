@@ -45,3 +45,5 @@ Repository root; command-local PATH=/tmp/node-v26.13.0-darwin-arm64/bin:$PATH. N
 Readability reviewed: scope69 lines, wire model27, exporter36, graph/dispatcher/label/writer helpers10–28, topology41, identity11; runtime shrinks to177 lines through unchanged type relocation. Focused inspection tests127, model tests137, import-tree test27 and demo52 remain cohesive and below the strong200-line guideline. Shared capture/identity/label/writer responsibilities are named; no utility dumping ground, hidden execution registry or second interpreter.
 
 Implementation complete; C52/C53/C65 proofs verified; quality/required coverage passed. No Next/browser/provider/store/hosted-CI or durable execution proof claimed. User files/logs remain untouched. Publication follows; S13 remains unstarted and requires actual S12 merge.
+
+Publication: implementation commit9231ac7 pushed to origin/codex/fbp-12-inspection-export; [PR #21](https://github.com/SilverFox70/node-eventDispatcher/pull/21) created against master. This follow-up records publication only; no merge claimed. S13 still requires actual merge.

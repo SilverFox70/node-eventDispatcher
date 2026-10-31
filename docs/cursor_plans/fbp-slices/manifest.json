@@ -477,7 +477,9 @@
         "S12.C"
       ],
       "execution_receipt": "S12-execution.md",
-      "review_status": "pending-publication"
+      "review_status": "open",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/21",
+      "implementation_commit": "9231ac7"
     },
     {
       "id": "S13",
