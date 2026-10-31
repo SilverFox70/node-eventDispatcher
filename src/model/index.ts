@@ -8,3 +8,5 @@ export { validateCatalog } from './catalog.js';
 export type { ContractIssue } from './contracts.js';
 export { validateGraph } from './graph.js';
 export type { GraphSpec, Endpoint } from './graph.js';
+
+export type { TaskPolicy, RetryPolicy } from './graph/task-policy.js';

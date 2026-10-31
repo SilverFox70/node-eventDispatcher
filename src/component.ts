@@ -9,10 +9,12 @@ import { canonicalSchema, snapshotJsonMetadata } from './model/contracts.js';
 
 export type PortMap = Readonly<Record<string, ContractBase>>;
 export type Values<P> = { [K in keyof P]: P[K] extends Contract<infer T> ? T : unknown };
+import type { TaskContext } from './runtime/tasks.js';
 export type ProcessContext<I extends PortMap, O extends PortMap> = Readonly<{
   inputs: { readonly [K in keyof I]: AsyncIterable<Packet<Values<I>[K]>> };
   send<K extends keyof O>(port: K, packet: Packet<Values<O>[NoInfer<K>]>): Promise<void>;
   signal: AbortSignal;
+  task<T>(handler: (context: TaskContext) => T | PromiseLike<T>): Promise<T>;
 }>;
 export type ComponentBase = Readonly<{
   id: string; version: number; title: string; description: string;

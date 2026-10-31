@@ -53,7 +53,7 @@ The collector starts before the feeder and keeps consuming until EOF. Waiting fo
 - Completion requires closed ingress, normal process returns after reading EOF on every input, and every exposed output consumed to EOF. Processes await sends and close outputs on normal completion. Incomplete input consumption fails INPUT_ABANDONED; returning with a parked output send fails UNAWAITED_SEND.
 - Input iterator cleanup records that EOF was not reached; abandonment is decided on normal process return. If the loop body throws, preserve its actual failure rather than replacing it during iterator cleanup. Returning an external output iterator early fails the live run immediately.
 - cancel() or parent AbortSignal produces cancelled/CANCELLED, aborts owned channel waits and suppresses future sends. Pre-abort calls no factory. Failure/cancel does not wait for uncooperative user promises. Late outcomes cannot replace the first terminal result; ignored owned waits have rejection observers. User code must pass ctx.signal to its own I/O and stop its effects cooperatively.
-- Factory/process exceptions yield failed/COMPONENT_FAILED with nodeId; specific runtime refusals retain their code. Output envelope/schema validation precedes delivery. done resolves once with completed/cancelled/failed; it never rejects. Earlier outputs/effects are not rolled back and no work is retried automatically.
+- Factory/process exceptions yield failed/COMPONENT_FAILED with nodeId; specific runtime refusals retain their code. Output envelope/schema validation precedes delivery. done resolves once with completed/cancelled/failed; it never rejects. Earlier outputs/effects are not rolled back. Packet delivery/process execution is never retried automatically; S09A permits only explicit scoped-operation retries under its declared policy.
 
 ## Bounded duplicate protection and options
 
@@ -61,7 +61,7 @@ S08 adopts IC1-r2's proposed settings for this slice. executionRecordLimit defau
 
 External refusal leaves the run usable; an uncaught refusal inside a process fails it. Distinct nodes and runs may receive the same identity; intentional new work requires a fresh packet identity. This is in-memory protection, not restart-safe deduplication or external-effect exactly-once execution. Long streams may require an explicit larger limit or a future durable/retention profile. Boundary outputs have no destination node and do not reserve another execution record.
 
-Options are signal, executionRecordLimit and diagnosticLimit (default100, integer0–1000). Invalid/unknown options fail INVALID_ARGUMENT before factories. S09 now adds timeoutMs and verifies cleanup/diagnostics; see [the lifecycle guide](lifecycle.md). No background host, persistence, retry engine or result lookup is provided here.
+Options are signal, executionRecordLimit and diagnosticLimit (default100, integer0–1000). Invalid/unknown options fail INVALID_ARGUMENT before factories. S09 now adds timeoutMs and verifies cleanup/diagnostics; see [the lifecycle guide](lifecycle.md). S09A adds [scoped node-operation deadlines and explicit retry policy](node-operations.md); there is no background host, persistence or result lookup.
 
 ## Backend verdicts and safe inspection
 

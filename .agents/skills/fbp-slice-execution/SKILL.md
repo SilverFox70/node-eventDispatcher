@@ -1,9 +1,11 @@
 ---
 name: fbp-slice-execution
-description: Execute or resume one saved S00–S19 FBP feature slice in node-eventDispatcher, checking its predecessor, contract readiness and proof handoff. Use for a named slice execution request; not for generic repository edits or permission to implement the whole roadmap.
+description: Execute or resume one saved FBP feature slice in node-eventDispatcher, including approved insertion slices, checking its predecessor, contract readiness and proof handoff. Use for a named slice execution request; not for generic repository edits or permission to implement the whole roadmap.
 ---
 
 # Execute one FBP slice
+
+Follow the ordered manifest, including approved suffix IDs such as S09A/S09B. Slice identifiers stay stable; they are not numeric execution positions.
 
 Resolve paths relative to this skill's repository, not the caller's home folder. Read [AGENTS.md](../../../AGENTS.md), [the slice index](../../../docs/cursor_plans/fbp-slices/INDEX.md), [SP1](../../../docs/cursor_plans/fbp-slices/shared-execution.md) and the named slice plus existing journal. Follow [the local execution runbook](../../../docs/runbooks/execute-slice.md).
 

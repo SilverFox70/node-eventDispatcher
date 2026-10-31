@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S09 deadlines/lifecycle; S10 requires actual S09 merge",
+  "next_planning_action": "Review S09A node operations/retries; S09B requires actual S09A merge",
   "slices": [
     {
       "id": "S00",
@@ -296,9 +296,9 @@
       "readiness": "ready-for-review",
       "execution_status": "complete",
       "previous": "S08",
-      "next": "S10",
+      "next": "S09A",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "2ee5ac5ff8a28bd525a03e3e0a7d839c9737d1c3",
       "conditions": [
         "C21",
         "C22",
@@ -314,19 +314,80 @@
         "S09.C"
       ],
       "execution_receipt": "S09-execution.md",
-      "review_status": "submitted",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/16",
       "implementation_commit": "9676ad7"
     },
     {
-      "id": "S10",
+      "id": "S09A",
+      "title": "Coordinate node-operation deadlines and bounded retries",
+      "plan": "09a-node-task-deadlines-plan.md",
+      "branch": "codex/fbp-09a-node-task-deadlines",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
+      "merge_sha": null,
+      "conditions": [
+        "NT01",
+        "NT02",
+        "NT03",
+        "NT04",
+        "NT05",
+        "NT06",
+        "NT07",
+        "NT08",
+        "NT09",
+        "NT10",
+        "NT15",
+        "NT16",
+        "NT17",
+        "NT18"
+      ],
+      "blocked_by": [],
+      "base": "master after previous slice merge",
       "order": 10,
+      "previous": "S09",
+      "next": "S09B",
+      "execution_receipt": "S09A-execution.md",
+      "authorized_tasks": [
+        "S09A.A",
+        "S09A.B",
+        "S09A.C"
+      ],
+      "review_status": "pending-publication"
+    },
+    {
+      "id": "S09B",
+      "title": "Automatically time ordinary function nodes",
+      "plan": "09b-function-task-deadlines-plan.md",
+      "branch": "codex/fbp-09b-function-task-deadlines",
+      "readiness": "ready-for-review",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "conditions": [
+        "NT11",
+        "NT12",
+        "NT13",
+        "NT14",
+        "C32",
+        "C35",
+        "C36",
+        "C58"
+      ],
+      "blocked_by": [],
+      "base": "master after previous slice merge",
+      "order": 11,
+      "previous": "S09A",
+      "next": "S10"
+    },
+    {
+      "id": "S10",
+      "order": 12,
       "title": "Transform, branch and merge typed streams",
       "plan": "10-stream-components-plan.md",
       "branch": "codex/fbp-10-stream-components",
       "readiness": "blocked-on-decision",
       "execution_status": "not-started",
-      "previous": "S09",
+      "previous": "S09B",
       "next": "S11",
       "base": "master after previous slice merge",
       "merge_sha": null,
@@ -345,7 +406,7 @@
     },
     {
       "id": "S11",
-      "order": 11,
+      "order": 13,
       "title": "Collate asynchronous branch results by key",
       "plan": "11-keyed-join-plan.md",
       "branch": "codex/fbp-11-keyed-join",
@@ -369,7 +430,7 @@
     },
     {
       "id": "S12",
-      "order": 12,
+      "order": 14,
       "title": "Inspect all registered graphs and event relationships",
       "plan": "12-inspection-export-plan.md",
       "branch": "codex/fbp-12-inspection-export",
@@ -391,7 +452,7 @@
     },
     {
       "id": "S13",
-      "order": 13,
+      "order": 15,
       "title": "Write useful nodes as ordinary typed functions",
       "plan": "13-function-authoring-plan.md",
       "branch": "codex/fbp-13-function-authoring",
@@ -415,7 +476,7 @@
     },
     {
       "id": "S14",
-      "order": 14,
+      "order": 16,
       "title": "Test nodes and whole graphs with the real runtime",
       "plan": "14-public-test-sdk-plan.md",
       "branch": "codex/fbp-14-public-test-sdk",
@@ -438,7 +499,7 @@
     },
     {
       "id": "S15",
-      "order": 15,
+      "order": 17,
       "title": "Prove composed flows and sustained bounded execution",
       "plan": "15-reliability-load-plan.md",
       "branch": "codex/fbp-15-reliability-load",
@@ -460,7 +521,7 @@
     },
     {
       "id": "S16",
-      "order": 16,
+      "order": 18,
       "title": "Install the framework and author/test nodes outside the repo",
       "plan": "16-package-cookbook-plan.md",
       "branch": "codex/fbp-16-package-cookbook",
@@ -485,7 +546,7 @@
     },
     {
       "id": "S17",
-      "order": 17,
+      "order": 19,
       "title": "Run a packaged flow inside a Next.js application",
       "plan": "17-next-server-consumer-plan.md",
       "branch": "codex/fbp-17-next-server-consumer",
@@ -508,7 +569,7 @@
     },
     {
       "id": "S18",
-      "order": 18,
+      "order": 20,
       "title": "See graph wiring and event relationships in Next.js",
       "plan": "18-graphical-inspector-plan.md",
       "branch": "codex/fbp-18-graphical-inspector",
@@ -530,7 +591,7 @@
     },
     {
       "id": "S19",
-      "order": 19,
+      "order": 21,
       "title": "Accept the complete application/developer story",
       "plan": "19-adoption-acceptance-plan.md",
       "branch": "codex/fbp-19-adoption-acceptance",
@@ -615,12 +676,31 @@
     "C62": "S11",
     "C63": "S08",
     "C64": "S14",
-    "C65": "S12"
+    "C65": "S12",
+    "NT01": "S09A",
+    "NT02": "S09A",
+    "NT03": "S09A",
+    "NT04": "S09A",
+    "NT05": "S09A",
+    "NT06": "S09A",
+    "NT07": "S09A",
+    "NT08": "S09A",
+    "NT09": "S09A",
+    "NT10": "S09A",
+    "NT11": "S09B",
+    "NT12": "S09B",
+    "NT13": "S09B",
+    "NT14": "S09B",
+    "NT15": "S09A",
+    "NT16": "S09A",
+    "NT17": "S09A",
+    "NT18": "S09A"
   },
   "identity_contract": {
     "path": "../fbp-identity-contract.md",
     "revision": "IC1-r1",
     "status": "proposed-for-review",
     "accepted_by": null
-  }
+  },
+  "extension_contract": "../fbp-node-timeout-contract.md"
 }

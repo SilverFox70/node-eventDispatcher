@@ -4,6 +4,8 @@ import type { Endpoint, GraphSpec } from './model/graph.js';
 import { snapshotJsonMetadata } from './model/contracts.js';
 import { isName } from './model/graph/structure.js';
 import { readRecord } from './packet/data.js';
+import { readTaskPolicy } from './model/graph/task-policy.js';
+import type { TaskPolicy } from './model/graph/task-policy.js';
 import { FlowError } from './errors.js';
 
 declare const nodeType: unique symbol;
@@ -16,7 +18,7 @@ type CompatibleInputs<Value, Inputs extends PortMap> = {
 }[keyof Inputs] & string;
 
 export type GraphBuilder = Readonly<{
-  add<const C extends ComponentBase>(id: string, component: C): NodeHandle<C['in'], C['out']>;
+  add<const C extends ComponentBase>(id: string, component: C, options?: TaskPolicy): NodeHandle<C['in'], C['out']>;
   connect<I extends PortMap, O extends PortMap, DI extends PortMap, DO extends PortMap,
     F extends keyof O & string>(
     from: NodeHandle<I, O>, fromPort: F, to: NodeHandle<DI, DO>,
@@ -31,7 +33,7 @@ export type GraphBuilder = Readonly<{
 /** Build portable wiring; compileGraph remains authoritative for contracts and topology. */
 export function createGraph(): GraphBuilder {
   const handles = new WeakMap<object, { id: string; component: ComponentBase }>();
-  const nodes = new Map<string, string>();
+  const nodes = new Map<string, Readonly<{ id: string; component: string }> & TaskPolicy>();
   const edges: { from: Endpoint; to: Endpoint; capacity?: number }[] = [];
   const inputs = new Map<string, Endpoint>(), outputs = new Map<string, Endpoint>();
 
@@ -47,7 +49,7 @@ export function createGraph(): GraphBuilder {
     target.set(name, endpoint(handle, port, side));
   }
   return Object.freeze({
-    add(id, component) {
+    add(id, component, options = {}) {
       if (!isName(id)) throw new FlowError('INVALID_ARGUMENT');
       if (nodes.has(id)) throw new FlowError('DUPLICATE_ID');
       const fields = readRecord(component, 'INVALID_ARGUMENT');
@@ -55,7 +57,8 @@ export function createGraph(): GraphBuilder {
       const identity = `${fields.id}@${fields.version}`;
       describeRegistry({ [identity]: component });
       const handle = Object.freeze({}) as NodeHandle<typeof component.in, typeof component.out>;
-      nodes.set(id, identity);
+      const policy = readTaskPolicy(options);
+      nodes.set(id, { id, component: identity, ...policy });
       handles.set(handle, { id, component });
       return handle;
     },
@@ -70,7 +73,7 @@ export function createGraph(): GraphBuilder {
     exposeOutput(name, node, port) { expose(outputs, name, node, port, 'out'); },
     toSpec() {
       return snapshotJsonMetadata({ version: 1,
-        nodes: [...nodes].map(([id, component]) => ({ id, component })), edges,
+        nodes: [...nodes.values()], edges,
         inputs: Object.fromEntries(inputs), outputs: Object.fromEntries(outputs),
       }) as unknown as GraphSpec;
     },

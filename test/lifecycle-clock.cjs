@@ -17,8 +17,8 @@ function clock(t, signal) {
       if (name === 'abort') listeners.delete(handler); return remove(name, handler, options);
     });
   }
-  return { timers, listeners, fire(elapsed) {
-    const timer = timers.values().next().value;
+  return { timers, listeners, advance(elapsed) { now += elapsed; }, fire(elapsed, selected) {
+    const timer = selected ?? timers.values().next().value;
     if (!timer) throw Error('No deadline scheduled');
     timers.delete(timer); now += elapsed ?? timer.delay; timer.callback();
   } };
