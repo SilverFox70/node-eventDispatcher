@@ -46,3 +46,7 @@ User authorized S08 after S07 merged. [S08 receipt](fbp-slices/S08-execution.md)
 ## S09 — deadlines and lifecycle verification
 
 User authorized S09 after S08 merged. [S09 receipt](fbp-slices/S09-execution.md) records deadline scheduling, first-terminal cleanup, adversarial lifecycle/diagnostic proof and publication. S10 remains separate and requires the actual S09 merge.
+
+## S09A — scoped operations and bounded opt-in retries
+
+User inserted node/function deadline work, accepted active-operation timing and0-default/configurable1–5 retries, then requested execution. [S09A receipt](fbp-slices/S09A-execution.md) records NT1-r2, insertion-order migration, runtime policy/proofs and publication. S09B remains the next separate function-adapter branch, then original S10.

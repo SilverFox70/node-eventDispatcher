@@ -71,7 +71,10 @@ async function main() {
     const ids = new Set();
     const branches = new Set();
     const master = await readFile(path.join(root, 'docs/cursor_plans/fbp-foundation-plan.md'), 'utf8');
-    const conditions = new Set([...master.matchAll(/^\| (C\d+) \|/gm)].map((m) => m[1]));
+    const extension = manifest.extension_contract
+      ? await readFile(path.resolve(dir, manifest.extension_contract), 'utf8') : '';
+    const conditions = new Set([...`${master}\n${extension}`.matchAll(/^\| ((?:C|NT)\d+) \|/gm)].map((m) => m[1]));
+    let baseOrder = -1, insertion = 0;
     const referenced = new Set();
     for (let i = 0; i < slices.length; i++) {
       const slice = slices[i];
@@ -79,7 +82,15 @@ async function main() {
       ids.add(slice.id);
       if (branches.has(slice.branch)) problem(`Duplicate branch: ${slice.branch}`);
       branches.add(slice.branch);
-      if (slice.order !== i || slice.id !== `S${String(i).padStart(2, '0')}`) problem(`Invalid slice order/ID: ${slice.id}`);
+      const identity = /^S(\d{2})([A-Z]?)$/.exec(slice.id);
+      if (!identity || slice.order !== i) problem(`Invalid slice order/ID: ${slice.id}`);
+      else if (!identity[2]) {
+        if (Number(identity[1]) !== baseOrder + 1) problem(`Skipped/reordered base slice: ${slice.id}`);
+        baseOrder = Number(identity[1]); insertion = 0;
+      } else {
+        insertion++;
+        if (Number(identity[1]) !== baseOrder || identity[2].charCodeAt(0) !== 64 + insertion) problem(`Invalid insertion order: ${slice.id}`);
+      }
       if (slice.previous !== (slices[i - 1]?.id ?? null)) problem(`Wrong predecessor: ${slice.id}`);
       if (slice.next !== (slices[i + 1]?.id ?? null)) problem(`Wrong next slice: ${slice.id}`);
       if (!slice.branch?.startsWith('codex/')) problem(`Unexpected branch prefix: ${slice.id}`);
@@ -89,7 +100,7 @@ async function main() {
       const plan = await readFile(planFile, 'utf8');
       if (!plan.includes(slice.branch)) problem(`Branch mismatch in ${slice.plan}`);
       if (!index.includes(slice.plan) || !index.includes(slice.branch)) problem(`Index missing slice plan/branch: ${slice.id}`);
-      const tasks = [...plan.matchAll(/^### (S\d+\.[A-Z]) — /gm)].map((m) => m[1]);
+      const tasks = [...plan.matchAll(/^### (S\d+[A-Z]?\.[A-Z]) — /gm)].map((m) => m[1]);
       if (!tasks.length || new Set(tasks).size !== tasks.length || tasks.some((t) => !t.startsWith(`${slice.id}.`))) problem(`Invalid task IDs: ${slice.id}`);
       for (const condition of slice.conditions ?? []) {
         referenced.add(condition);

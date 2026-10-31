@@ -20,7 +20,7 @@ function endpoint(value: unknown): asserts value is Endpoint {
 export function assertGraphShape(value: unknown): asserts value is GraphSpec {
   const graph = fields(value, ['version', 'nodes', 'edges', 'inputs', 'outputs']);
   if (graph.version !== 1 || !Array.isArray(graph.nodes) || !Array.isArray(graph.edges)) throw Error('INVALID_GRAPH');
-  for (const node of graph.nodes) fields(node, ['id', 'component']);
+  for (const node of graph.nodes) fields(node, ['id', 'component'], ['taskTimeoutMs', 'retry']);
   for (const edge of graph.edges) {
     const record = fields(edge, ['from', 'to'], ['capacity']);
     endpoint(record.from);

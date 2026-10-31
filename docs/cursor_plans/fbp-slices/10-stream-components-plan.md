@@ -120,3 +120,7 @@ Additional master condition contributions: **C58, C59, C60**. Final owners are S
 | G7 integration | Proposed; release blocked by S00 | Acceptance demonstration + handoff + next-merge condition; parent T labels do not hide owner |
 
 Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.
+
+## NT1-r2 priority/dependency amendment — 2026-10-30
+
+User inserted S09A (node operations/retries) and S09B (automatic function nodes) before S10. The actual required predecessor is now S09B, not S09. Reuse [NT1](../fbp-node-timeout-contract.md) and its delivered ctx.task/defineFunction APIs: map/filter callbacks use the same scoped-operation owner; broadcast/merge transport waits do not become operation timers. Preserve per-node explicit retry policy and no-default-retry behavior; do not implement another timer/retry loop in combinators. Existing condition/identity owners remain unchanged.

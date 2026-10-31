@@ -518,3 +518,7 @@ User requested that the display echo actual backend/runtime validation. S05 supp
 ### S08 backend-verdict protocol handoff — 2026-10-30
 
 S08 freezes the bounded runtime validation report and per-run immutable definition association in [the runtime guide](../architecture/runtime.md) and [execution receipt](fbp-slices/S08-execution.md). RuntimeValidationError.validation and bounded diagnostic validation details carry actual S05 code/path verdicts, run/node/port/direction and component/contract version attribution without rejected values. runId binds the exact in-memory graph definition; future application transport still supplies durable graph-release/request identity and current-response UI policy. S09/S12/S17/S18 consume this protocol rather than invent a second payload evaluator or assume historical diagnostics describe current form state. No endpoint or rendered display is delivered by S08.
+
+## NT1-r2 priority extension — 2026-10-30
+
+User inserted S09A and S09B after S09 and before original S10. [NT1](fbp-node-timeout-contract.md) owns NT01–NT18 as an additive authoritative condition ledger, plus operation-policy producer/consumer signatures. Default retries remain0; explicitly configured1–5 retries repeat only scoped attempts, never packet delivery or process creation. Existing C00–C65/IC1 constraints remain, with retry behavior amended only by NT1's explicit opt-in. S13 retains cookbook/aggregate proof and reuses S09B's adapter.

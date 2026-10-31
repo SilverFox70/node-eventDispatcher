@@ -102,3 +102,5 @@ For typed graph construction, see [the S07 builder example](docs/architecture/gr
 Graphs can now process packets: [run the S08 streaming example](docs/architecture/runtime.md) to send1/2/3 through double→plus-one and receive3/5/7. Run instances have isolated state, bounded queues, duplicate protection and baseline cancellation.
 
 S09 adds [run deadlines and verified cleanup/diagnostics](docs/architecture/lifecycle.md): set timeoutMs when starting a graph to bound stalled asynchronous work.
+
+Node-operation deadlines and bounded opt-in retries are now available through [ctx.task and graph policy](docs/architecture/node-operations.md). Retries default to0; configured1–5 retries retain the original flow deadline and packet identity protections. Automatic ordinary-function integration is the next S09B feature.

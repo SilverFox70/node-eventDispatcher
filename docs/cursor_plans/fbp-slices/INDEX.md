@@ -2,11 +2,15 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: S09 deadlines/lifecycle verification complete; [PR #16](https://github.com/SilverFox70/node-eventDispatcher/pull/16) submitted for review.** S08 [PR #15](https://github.com/SilverFox70/node-eventDispatcher/pull/15) merged at185f30326092b1d920b0b55449b3195d30757f59. See [S09 receipt](S09-execution.md); S10 remains unstarted.
+**Current work: S09A node-operation deadlines/retries complete and verified; [PR #17](https://github.com/SilverFox70/node-eventDispatcher/pull/17) submitted for review.** S09 PR16 merged at2ee5ac5ff8a28bd525a03e3e0a7d839c9737d1c3. [S09A plan](09a-node-task-deadlines-plan.md) owns the inserted feature; S09B/S10 remain unstarted.
 
-**Always execute in numeric order. Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
+**Always execute in manifest order (including approved insertion suffixes). Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
 
 The choice to retain FIFO and use job/correlation/packet/lineage identity is compatible, but r4 did not freeze an exact metadata API or result-lookup lifetime. IC1-r2 now supplies one concrete proposal with downstream amendments, pending human acceptance. It does not implement a durable store. No current slice expands into rich public packet codecs, cycles, hosted agents or a drag/drop editor; the extension seams and graphical inspection remain included.
+
+## Approved priority insertion — 2026-10-30
+
+User requested active-operation node/function deadlines before combinators, then added explicit0-default/1–5 retries and authorized execution. [NT1-r2](../fbp-node-timeout-contract.md) owns the shared policy and NT conditions. Execution order is S09 → S09A → S09B → S10; stable original IDs/branches are preserved. Manifest order is the execution position, independent of the slice identifier. S13 reuses the S09B function adapter for recipes/templates rather than rebuilding it.
 
 ## Branch features and exact order
 
@@ -22,7 +26,9 @@ The choice to retain FIFO and use job/correlation/packet/lineage identity is com
 | 07 | [S07 — Compose graphs with checked node and port handles](07-typed-graph-builder-plan.md) | `codex/fbp-07-typed-graph-builder` | ready-for-review | S06 |
 | 08 | [S08 — Execute a real multi-packet streaming graph](08-stream-runtime-plan.md) | `codex/fbp-08-stream-runtime` | ready-for-review | S07 |
 | 09 | [S09 — Finish, cancel and diagnose every owned wait safely](09-lifecycle-diagnostics-plan.md) | `codex/fbp-09-lifecycle-diagnostics` | ready-for-review | S08 |
-| 10 | [S10 — Transform, branch and merge typed streams](10-stream-components-plan.md) | `codex/fbp-10-stream-components` | blocked-on-decision | S09 |
+| 09A | [S09A — Node-operation deadlines and bounded retries](09a-node-task-deadlines-plan.md) | `codex/fbp-09a-node-task-deadlines` | ready-for-review | S09 |
+| 09B | [S09B — Automatic function-node timing](09b-function-task-deadlines-plan.md) | `codex/fbp-09b-function-task-deadlines` | ready-for-review | S09A |
+| 10 | [S10 — Transform, branch and merge typed streams](10-stream-components-plan.md) | `codex/fbp-10-stream-components` | blocked-on-decision | S09B |
 | 11 | [S11 — Collate asynchronous branch results by key](11-keyed-join-plan.md) | `codex/fbp-11-keyed-join` | blocked-on-decision | S10 |
 | 12 | [S12 — Inspect all registered graphs and event relationships](12-inspection-export-plan.md) | `codex/fbp-12-inspection-export` | blocked-on-decision | S11 |
 | 13 | [S13 — Write useful nodes as ordinary typed functions](13-function-authoring-plan.md) | `codex/fbp-13-function-authoring` | blocked-on-decision | S12 |

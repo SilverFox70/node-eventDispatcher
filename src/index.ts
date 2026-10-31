@@ -21,3 +21,7 @@ export { createGraph } from './builder.js';
 export type { GraphBuilder, NodeHandle } from './builder.js';
 export { startNetwork, RuntimeValidationError } from './runtime.js';
 export type { NetworkRun, StartOptions, Terminal, Snapshot, Diagnostic, ValidationReport } from './runtime.js';
+
+export { NodeTimeoutError } from './runtime/tasks.js';
+export type { TaskContext } from './runtime/tasks.js';
+export type { TaskPolicy, RetryPolicy } from './model/graph/task-policy.js';

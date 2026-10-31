@@ -65,11 +65,15 @@ test('both distribution entries load', () => {
       const load = mode === 'commonjs' ? "const f = require('event-driven-design');" : "import * as f from 'event-driven-design';";
       const output = run(process.execPath, ['--input-type=' + mode, '-e', load + `
         (async () => {
+          let attempts = 0;
           const node = f.defineComponent({ id: 'double', version: 1, title: 'Double', description: '',
             in: { in: f.jsonContract }, out: { out: f.jsonContract }, create: () => async ctx => {
-              for await (const p of ctx.inputs.in) await ctx.send('out', f.derivePacket(p.value * 2, [p]));
+              for await (const p of ctx.inputs.in) {
+                const value = await ctx.task(({ attempt }) => { attempts++; if (attempt === 1) throw new f.FlowError('TEMPORARY'); return p.value * 2; });
+                await ctx.send('out', f.derivePacket(value, [p]));
+              }
             } });
-          const builder = f.createGraph(), n = builder.add('n', node);
+          const builder = f.createGraph(), n = builder.add('n', node, { taskTimeoutMs: 1000, retry: { maxRetries: 1, codes: ['TEMPORARY'], delayMs: 0, idempotent: true } });
           builder.exposeInput('in', n, 'in'); builder.exposeOutput('out', n, 'out');
           const graph = f.compileGraph(builder.toSpec(), { 'double@1': node }).graph;
           const network = f.startNetwork(graph, { timeoutMs: 1000 });
@@ -77,6 +81,7 @@ test('both distribution entries load', () => {
           await network.send('in', f.packet(2));
           if ((await network.finish()).status !== 'completed') throw Error('Runtime did not complete');
           console.log('stream:' + (await collected).join(','));
+          console.log('attempts:' + attempts);
           const slow = f.defineComponent({ id: 'slow', version: 1, title: 'Slow', description: '',
             in: {}, out: {}, create: () => async () => { await new Promise(() => {}); } });
           const slowGraph = f.compileGraph({ version: 1, nodes: [{ id: 's', component: 'slow@1' }],
@@ -84,9 +89,15 @@ test('both distribution entries load', () => {
           const terminal = await f.startNetwork(slowGraph, { timeoutMs: 1 }).done;
           if (terminal.code !== 'TIMEOUT') throw Error('Deadline result missing');
           console.log('deadline:' + terminal.code);
+          const local = f.defineComponent({ id: 'local', version: 1, title: 'Local', description: '', in: {}, out: {},
+            create: () => async ctx => { await ctx.task(() => new Promise(() => {})); } });
+          const localGraph = f.compileGraph({ version: 1, nodes: [{ id: 'local', component: 'local@1', taskTimeoutMs: 1 }],
+            edges: [], inputs: {}, outputs: {} }, { 'local@1': local }).graph;
+          const localTerminal = await f.startNetwork(localGraph, { timeoutMs: 1000 }).done;
+          console.log('node-deadline:' + localTerminal.code);
         })().catch(error => { console.error(error); process.exitCode = 1; });
       `]);
-      assert.equal(output.trim(), 'stream:4\ndeadline:TIMEOUT');
+      assert.equal(output.trim(), 'stream:4\nattempts:2\ndeadline:TIMEOUT\nnode-deadline:NODE_TIMEOUT');
     }
     for (const file of ['entries.mts', 'entries.cts', 'tsconfig.json']) cpSync(join(root, 'test/types', file), join(fixture, file));
     run(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', join(fixture, 'tsconfig.json')]);

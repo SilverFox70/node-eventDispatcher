@@ -28,3 +28,5 @@ S07 adds [typed graph construction](graph-builder.md), emitting the same GraphSp
 S08 adds [streaming execution](runtime.md): per-run processes/channels, real packet flow, bounded duplicate protection, baseline cancellation and safe backend verdicts. Deadlines remain S09.
 
 S09 adds [deadlines and lifecycle verification](lifecycle.md), preserving the same streaming runtime and bounded backend verdicts.
+
+S09A adds [node-operation deadlines and explicit retries](node-operations.md). S09B will supply automatic function-node operation scoping before S10.

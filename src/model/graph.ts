@@ -3,9 +3,11 @@ import { validateCatalog } from './catalog.js';
 import { contractsCompatible, snapshotJsonMetadata } from './contracts.js';
 import type { ValidationResult } from './contracts.js';
 import { assertGraphShape, isName } from './graph/structure.js';
+import { readTaskPolicy } from './graph/task-policy.js';
+import type { TaskPolicy } from './graph/task-policy.js';
 export type Endpoint = Readonly<{ node: string; port: string }>;
 export type GraphSpec = Readonly<{
-  version: 1; nodes: readonly Readonly<{ id: string; component: string }>[];
+  version: 1; nodes: readonly (Readonly<{ id: string; component: string }> & TaskPolicy)[];
   edges: readonly Readonly<{ from: Endpoint; to: Endpoint; capacity?: number }>[];
   inputs: Readonly<Record<string, Endpoint>>; outputs: Readonly<Record<string, Endpoint>>;
 }>;
@@ -33,6 +35,12 @@ export function validateGraph(value: unknown, catalog: Catalog): ValidationResul
       if (!isName(node.id) || typeof node.component !== 'string' || node.component.length === 0) {
         issue('INVALID_GRAPH', path);
         return;
+      }
+      for (const field of ['taskTimeoutMs', 'retry'] as const) {
+        if (Object.hasOwn(node, field)) {
+          try { readTaskPolicy({ [field]: node[field] }); }
+          catch { issue('INVALID_TIMEOUT_POLICY', `${path}.${field}`); }
+        }
       }
       if (ids.has(node.id)) issue('DUPLICATE_ID', `${path}.id`);
       ids.add(node.id);

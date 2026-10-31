@@ -121,3 +121,7 @@ Additional master condition contributions: **C58**. Final owners are SP1-r2/mani
 | G7 integration | Proposed; release blocked by S00 | Acceptance demonstration + handoff + next-merge condition; parent T labels do not hide owner |
 
 Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.
+
+## NT1-r2 producer handoff — 2026-10-30
+
+User moved the minimal production defineFunction adapter and essential deadline/type proofs to S09B, before S10. S13 now consumes that delivered adapter for cookbook/templates/dependency recipes and final C32/C35/C36/C50/C58 aggregate acceptance; it does not reimplement timers, ctx.task or the function adapter. FunctionContext includes scoped signal, attempt/attemptId and frozen packet metadata. See [NT1](../fbp-node-timeout-contract.md) and [S09B](09b-function-task-deadlines-plan.md). Original S12→S13→S14 branch order for the remaining authoring story is preserved.

@@ -30,13 +30,14 @@ export function createAdmission(runId: string, limit: number, ledger: Set<string
   return { send };
 }
 
-export function inputIterator(channel: Channel, state: RunState, onEof: () => void, onAbandon?: () => void): AsyncIterableIterator<Packet> {
+export function inputIterator(channel: Channel, state: RunState, onEof: () => void, onAbandon?: () => void, guard: () => void = () => {}): AsyncIterableIterator<Packet> {
   let eof = false;
   async function read(): Promise<IteratorResult<Packet, undefined>> {
+    guard();
     if (eof) return { done: true, value: undefined };
-    if (!state.live()) throw new FlowError('RUN_TERMINATED');
+    if (!state.check()) throw new FlowError('RUN_TERMINATED');
     const result = await channel.receive();
-    if (!state.live()) throw new FlowError('RUN_TERMINATED');
+    if (!state.check()) throw new FlowError('RUN_TERMINATED');
     if (result.done) { eof = true; onEof(); }
     return result;
   }
@@ -47,10 +48,15 @@ export function inputIterator(channel: Channel, state: RunState, onEof: () => vo
       void result.catch(() => {});
       return result;
     },
-    async return() {
-      if (!eof && state.live()) onAbandon?.();
-      eof = true;
-      return { done: true, value: undefined };
+    return() {
+      const result = (async (): Promise<IteratorResult<Packet, undefined>> => {
+        guard();
+        if (!eof && state.check()) onAbandon?.();
+        eof = true;
+        return { done: true, value: undefined };
+      })();
+      void result.catch(() => {});
+      return result;
     },
   };
 }

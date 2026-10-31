@@ -10,6 +10,8 @@ import { createRunState } from './runtime/state.js';
 import type { Channel, NodeState } from './runtime/state.js';
 import { createAdmission, inputIterator } from './runtime/ports.js';
 import type { Port } from './runtime/ports.js';
+import { createTasks } from './runtime/tasks.js';
+import { createTaskScope } from './runtime/task-scope.js';
 import { RuntimeValidationError } from './runtime/validation.js';
 export { RuntimeValidationError } from './runtime/validation.js';
 
@@ -38,7 +40,7 @@ export type NetworkRun = Readonly<{
 const definitions = new WeakMap<NetworkRun, GraphDefinition>();
 const internalCodes = new Set(['INVALID_PACKET', 'OUTPUT_CONTRACT', 'UNKNOWN_PORT', 'CONCURRENT_SEND',
   'CONCURRENT_READ', 'CHANNEL_CLOSED', 'RUN_TERMINATED', 'DUPLICATE_PACKET', 'EXECUTION_CAPACITY',
-  'INPUT_ABANDONED', 'UNAWAITED_SEND']);
+  'UNAWAITED_TASK', 'NODE_TIMEOUT', 'TASK_ACTIVE', 'TASK_IO_ACCESS', 'TASK_TERMINATED', 'INPUT_ABANDONED', 'UNAWAITED_SEND']);
 
 /** Start independent stream processes; callers must consume outputs concurrently with feeding inputs. */
 export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): NetworkRun {
@@ -52,6 +54,13 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
   if (Object.hasOwn(fields, 'timeoutMs') && (!Number.isSafeInteger(fields.timeoutMs) || (fields.timeoutMs as number) < 1)) {
     throw new FlowError('INVALID_ARGUMENT');
   }
+  for (const node of definition.spec.nodes) {
+    const budgets = [node.taskTimeoutMs, node.retry?.delayMs, node.retry?.settleTimeoutMs];
+    if (typeof fields.timeoutMs === 'number' && budgets.some(ms => ms !== undefined && ms > (fields.timeoutMs as number))) {
+      throw new FlowError('INVALID_TIMEOUT_POLICY');
+    }
+  }
+  const scope = createTaskScope();
   const signal = fields.signal as AbortSignal | undefined;
   const runId = randomUUID(), channels = new Map<string, Channel>();
   const inputs = new Map<string, Port>(), outputs = new Map<string, Port>();
@@ -84,31 +93,33 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
   const admission = createAdmission(runId, recordLimit as number, ledger);
   const closed = new Set<string>(), drained = new Set<string>();
   function complete(): void {
-    if (state.live() && closed.size === inputs.size && drained.size === outputs.size &&
+    if (state.check() && closed.size === inputs.size && drained.size === outputs.size &&
       nodeStates.every(node => node.status === 'completed')) state.end({ status: 'completed' });
   }
   function fail(error: unknown, nodeId?: string): void {
     const code = error instanceof FlowError && internalCodes.has(error.code) ? error.code : 'COMPONENT_FAILED';
     if (error instanceof RuntimeValidationError) state.record(code, nodeId, error.validation);
-    if (!state.live()) { state.record(code, nodeId); return; }
+    if (!state.check()) { state.record(code, nodeId); return; }
     state.end({ status: 'failed', code, ...(nodeId === undefined ? {} : { nodeId }) });
   }
   function closeInput(name: string): void {
+    scope.guard();
     const target = inputs.get(name);
     if (!target) throw new FlowError('UNKNOWN_PORT');
-    if (!state.live() || closed.has(name)) return;
+    if (!state.check() || closed.has(name)) return;
     closed.add(name); target.channel.close(); state.record('INPUT_CLOSED');
     if (closed.size === inputs.size) state.drain();
     complete();
   }
   const publicOutputs = Object.freeze(Object.fromEntries([...outputs].map(([name, target]) => [name,
-    inputIterator(target.channel, state, () => { drained.add(name); complete(); }, () => fail(new FlowError('INPUT_ABANDONED'))),
+    inputIterator(target.channel, state, () => { drained.add(name); complete(); }, () => fail(new FlowError('INPUT_ABANDONED')), () => scope.guard()),
   ])));
   const run: NetworkRun = Object.freeze({
-    runId, outputs: publicOutputs, done: state.done, cancel: state.cancel, closeInput, snapshot: state.snapshot,
+    runId, outputs: publicOutputs, done: state.done, cancel: () => { scope.guard(); state.cancel(); }, closeInput, snapshot: state.snapshot,
     send(name: string, packet: Packet): Promise<void> {
       let result: Promise<void>;
-      if (!state.live()) result = Promise.reject(new FlowError('RUN_TERMINATED'));
+      try { scope.guard(); } catch (error) { result = Promise.reject(error); void result.catch(() => {}); return result; }
+      if (!state.check()) result = Promise.reject(new FlowError('RUN_TERMINATED'));
       else {
         const target = inputs.get(name);
         result = target ? admission.send(target, packet, 'input') : Promise.reject(new FlowError('UNKNOWN_PORT'));
@@ -119,8 +130,9 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
       return result;
     },
     finish(): Promise<Terminal> {
+      scope.guard();
       for (const name of inputs.keys()) closeInput(name);
-      if (state.live()) state.drain();
+      if (state.check()) state.drain();
       return state.done;
     },
   });
@@ -129,28 +141,32 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
     for (const node of nodeStates) {
       const inputPorts = nodeInputs.get(node.id)!, outputPorts = nodeOutputs.get(node.id)!;
       const eof = new Set<string>();
+      const nodeSpec = definition.spec.nodes.find(spec => spec.id === node.id)!;
+      const operations = createTasks(state, scope, node.id, nodeSpec);
       // EOF is checked on normal process return; iterator cleanup must preserve an original throw.
       const ctx = Object.freeze({
-        signal: state.controller.signal,
+        signal: state.controller.signal, task: operations.task,
         inputs: Object.freeze(Object.fromEntries([...inputPorts].map(([name, target]) => [name,
-          inputIterator(target.channel, state, () => { eof.add(name); }),
+          inputIterator(target.channel, state, () => { eof.add(name); }, undefined, () => scope.guard()),
         ]))),
         send(name: string, packet: Packet): Promise<void> {
+          try { scope.guard(); } catch (error) { const refused = Promise.reject<void>(error); void refused.catch(() => {}); return refused; }
           const target = outputPorts.get(name);
-          const result = !state.live() ? Promise.reject(new FlowError('RUN_TERMINATED')) : target
+          const result = !state.check() ? Promise.reject(new FlowError('RUN_TERMINATED')) : target
             ? admission.send(target, packet, 'output', destinations.get(target.channel)) : Promise.reject(new FlowError('UNKNOWN_PORT'));
           void result.catch(() => {});
           return result;
         },
       });
       void Promise.resolve().then(() => {
-        if (!state.live()) return;
+        if (!state.check()) return;
         const spec = definition.spec.nodes.find(spec => spec.id === node.id)!;
         const process = definition.registry[spec.component]!.create();
         if (typeof process !== 'function') throw new FlowError('COMPONENT_FAILED');
         return (process as (context: typeof ctx) => unknown)(ctx);
       }).then(() => {
-        if (!state.live()) return;
+        if (!state.check()) return;
+        if (operations.pending()) throw new FlowError('UNAWAITED_TASK');
         if ([...outputPorts.values()].some(target => target.channel.stats().pendingSend)) throw new FlowError('UNAWAITED_SEND');
         if (eof.size !== inputPorts.size) throw new FlowError('INPUT_ABANDONED');
         node.status = 'completed';

@@ -1,3 +1,4 @@
+import { performance } from 'node:perf_hooks';
 import { createDeadline } from './deadline.js';
 import { createChannel } from '../channel.js';
 import type { Packet } from '../packet.js';
@@ -8,6 +9,8 @@ export type NodeState = { id: string; status: Snapshot['nodes'][number]['status'
 /** One terminal owner; every observer sees the same immutable terminal result. */
 export function createRunState(runId: string, nodes: NodeState[], channels: Map<string, Channel>, limit: number,
   clearLedger: () => void, signal?: AbortSignal, timeoutMs?: number) {
+  const started = performance.now();
+  const cleanups = new Set<() => void>();
   const controller = new globalThis.AbortController();
   let terminal: Terminal | undefined;
   let stopDeadline: (() => void) | undefined;
@@ -26,6 +29,8 @@ export function createRunState(runId: string, nodes: NodeState[], channels: Map<
     if (terminal) return;
     terminal = Object.freeze(result);
     stopDeadline?.();
+    for (const cleanup of cleanups) cleanup();
+    cleanups.clear();
     signal?.removeEventListener('abort', cancel);
     if (result.status !== 'completed') {
       for (const channel of channels.values()) channel.abort();
@@ -43,6 +48,14 @@ export function createRunState(runId: string, nodes: NodeState[], channels: Map<
   const state = {
     controller, done, record, end, cancel,
     live: () => terminal === undefined,
+    check(): boolean {
+      if (!terminal && timeoutMs !== undefined && performance.now() - started >= timeoutMs) end({ status: 'failed', code: 'TIMEOUT' });
+      return terminal === undefined;
+    },
+    onEnd(cleanup: () => void): () => void {
+      cleanups.add(cleanup);
+      return () => { cleanups.delete(cleanup); };
+    },
     drain: () => { draining = true; },
     snapshot(): Snapshot {
       return Object.freeze({ runId, status: terminal?.status ?? (draining ? 'draining' : 'running'),
