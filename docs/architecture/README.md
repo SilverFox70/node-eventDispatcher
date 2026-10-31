@@ -30,3 +30,5 @@ S08 adds [streaming execution](runtime.md): per-run processes/channels, real pac
 S09 adds [deadlines and lifecycle verification](lifecycle.md), preserving the same streaming runtime and bounded backend verdicts.
 
 S09A adds [node-operation deadlines and explicit retries](node-operations.md). S09B adds [ordinary function nodes](function-nodes.md) with automatic operation scoping before S10.
+
+S10 adds [stream components](stream-components.md): serial map/filter callbacks, explicit bounded broadcast and readiness-ordered merge. Keyed result collation remains S11.

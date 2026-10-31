@@ -124,3 +124,13 @@ Two-executor counterexample: an executor cannot change the numbered behavior, er
 ## NT1-r2 priority/dependency amendment — 2026-10-30
 
 User inserted S09A (node operations/retries) and S09B (automatic function nodes) before S10. The actual required predecessor is now S09B, not S09. Reuse [NT1](../fbp-node-timeout-contract.md) and its delivered ctx.task/defineFunction APIs: map/filter callbacks use the same scoped-operation owner; broadcast/merge transport waits do not become operation timers. Preserve per-node explicit retry policy and no-default-retry behavior; do not implement another timer/retry loop in combinators. Existing condition/identity owners remain unchanged.
+
+## S10 execution adoption — 2026-10-30
+
+The user's explicit S10 request authorizes A–C after actual S09B PR18 merge4bad939d45f0f61e820a375dcea7b7a92a8a6f51. Earlier pending-language is historical: delivered S04/S08/S09A/S09B contracts and the accepted IC1-r2 identity direction are reused. No join/history policy is implemented here. Naming uses existing defineComponent({...factory(...),id}) when multiple definitions of the same helper are needed; no new configuration API is introduced. Ready ties mean reads settling in one microtask batch; earlier readiness is retained while output is blocked. Map/filter callbacks use the existing ctx.task owner; invalid JS predicate results fail OUTPUT_CONTRACT.
+
+Necessary distribution/declaration consumers test/package.test.js and test/types/entries.cts/.mts are included under the plan's public-export/declaration-consumer update allowance. Feature documentation includes architecture/stream-components.md and its navigation/README links. No scheduler/runtime/schema policy or dependencies are changed.
+
+User follow-up authorizes a current-progress README update and runnable demos in examples/. The two offline checkout demos use delivered S10 APIs and local async stand-ins; they introduce no provider, DB, packaging policy or S11 join. They are run directly with node after building.
+
+The examples follow-up also extends the existing lint command/config to examples/**/*.cjs. This is a lint-scope change only; engine/dependencies/lock/build/type/coverage policy stay unchanged.

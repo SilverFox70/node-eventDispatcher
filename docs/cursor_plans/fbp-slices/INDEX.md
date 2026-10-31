@@ -2,7 +2,7 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: S09B automatic function nodes complete and verified; [PR #18](https://github.com/SilverFox70/node-eventDispatcher/pull/18) is open for review.** S09A [PR #17](https://github.com/SilverFox70/node-eventDispatcher/pull/17) merged at d607bb69187df5b1cf95381ac362df394d933dfa. See [S09B receipt](S09B-execution.md); original S10 remains unstarted.
+**Current work: S10 stream components complete and verified; [PR #19](https://github.com/SilverFox70/node-eventDispatcher/pull/19) is open for review.** S09B [PR #18](https://github.com/SilverFox70/node-eventDispatcher/pull/18) merged at4bad939d45f0f61e820a375dcea7b7a92a8a6f51. See [S10 receipt](S10-execution.md); S11 remains unstarted.
 
 **Always execute in manifest order (including approved insertion suffixes). Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
 
@@ -28,7 +28,7 @@ User requested active-operation node/function deadlines before combinators, then
 | 09 | [S09 — Finish, cancel and diagnose every owned wait safely](09-lifecycle-diagnostics-plan.md) | `codex/fbp-09-lifecycle-diagnostics` | ready-for-review | S08 |
 | 09A | [S09A — Node-operation deadlines and bounded retries](09a-node-task-deadlines-plan.md) | `codex/fbp-09a-node-task-deadlines` | ready-for-review | S09 |
 | 09B | [S09B — Automatic function-node timing](09b-function-task-deadlines-plan.md) | `codex/fbp-09b-function-task-deadlines` | ready-for-review | S09A |
-| 10 | [S10 — Transform, branch and merge typed streams](10-stream-components-plan.md) | `codex/fbp-10-stream-components` | blocked-on-decision | S09B |
+| 10 | [S10 — Transform, branch and merge typed streams](10-stream-components-plan.md) | `codex/fbp-10-stream-components` | ready-for-review | S09B |
 | 11 | [S11 — Collate asynchronous branch results by key](11-keyed-join-plan.md) | `codex/fbp-11-keyed-join` | blocked-on-decision | S10 |
 | 12 | [S12 — Inspect all registered graphs and event relationships](12-inspection-export-plan.md) | `codex/fbp-12-inspection-export` | blocked-on-decision | S11 |
 | 13 | [S13 — Write useful nodes as ordinary typed functions](13-function-authoring-plan.md) | `codex/fbp-13-function-authoring` | blocked-on-decision | S12 |

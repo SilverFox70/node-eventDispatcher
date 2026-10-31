@@ -66,3 +66,12 @@ const functionNode = root.defineFunction({ id: 'function', version: 1, title: 'F
 void functionNode.in.in;
 // @ts-expect-error Function adapter output ports retain their exact literal name.
 void functionNode.out.missing;
+
+import { map, filter, broadcast, merge, jsonContract } from 'event-driven-design';
+const mapped = map(jsonContract, jsonContract, value => value);
+const filtered = filter(jsonContract, () => true);
+const branched = broadcast(jsonContract, ['left', 'right']);
+const merged = merge(jsonContract, ['left', 'right']);
+void [mapped, filtered, branched.out.left, merged.in.right];
+// @ts-expect-error Installed declarations retain exact port names.
+void branched.out.missing;

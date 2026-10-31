@@ -12,6 +12,8 @@ This map is the repository's cross-tool navigation source. No personal home-dire
 | [Readability and structure](agent-rules/readability-and-structure.md) | Cohesive small files, meaningful hierarchy/utilities and selective JSDoc | Planning, implementing or reviewing code |
 | [Verification](agent-rules/verification.md) | Proof strength, coverage and baseline meaning | Behavioral/tooling changes |
 | [Architecture index](architecture/README.md) | Current vs target map and topic routing | Architecture context |
+| [Runnable demos](../examples/README.md) | Offline map/filter and asynchronous branch/merge checkout examples | Trying or demonstrating the delivered runtime |
+| [Stream components](architecture/stream-components.md) | S10 map/filter/broadcast/merge, naming, bounded fan-out/fan-in and runnable example | Composing streams or implementing S11 keyed join |
 | [Function nodes](architecture/function-nodes.md) | S09B typed ordinary handlers, automatic task policy and runnable example | Authoring simple nodes or implementing mapping/cookbook/testing consumers |
 | [Node operations](architecture/node-operations.md) | S09A operation budgets, scoped capabilities and explicit bounded retry policy | Authoring advanced nodes or integrating function helpers/combinators |
 | [Lifecycle/deadlines](architecture/lifecycle.md) | S09 deadline, terminal cleanup and exact snapshot/event protocol | Configuring deadlines or implementing inspection/testing consumers |
