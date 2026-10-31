@@ -19,9 +19,9 @@ The current runtime executes node graphs; these application examples still need 
 
 ## Current progress
 
-**Implemented through S17 on this review branch.** S00–S16 have merged. S17 installs the package in a production Next.js fixture with server execution, current-result handling and browser isolation; it is awaiting review and merge. **S18 is next:** read-only graph/event visualization.
+**Implemented through S18 on this review branch.** S00–S17 have merged. S18 adds a read-only graphical inspector with automatic graph/event relationship updates, source selection, metadata details and keyboard/text equivalents. S19 will accept the complete developer story after this slice merges.
 
-You can now build and run real, typed, asynchronous pipelines locally. The graphical inspector UI and optional durable execution remain on the roadmap below. You can now try the small Next.js example with `npm run demo:next`; its printed localhost URL runs a production build.
+You can now build and run real, typed, asynchronous pipelines locally. The inspector now visualizes registered graphs and event relationships; editing and optional durable execution remain on the roadmap below. You can now try the small Next.js example with `npm run demo:next`; its printed localhost URL runs a production build. Follow **Inspect graphs and events** to watch subscriptions change without refreshing.
 
 ## What exists in this revision
 

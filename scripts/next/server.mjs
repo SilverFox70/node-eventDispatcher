@@ -4,9 +4,10 @@ import { writeFileSync } from 'node:fs';
 import { environment } from './process.mjs';
 
 /** A child production server, owned until finally/stop. Its ephemeral port is reported by Next. */
-export async function startServer(directory, { mode = 'success', badCatalog = false, coverage, log } = {}) {
+export async function startServer(directory, { mode = 'success', badCatalog = false, shortInspectionLease = false, coverage, log } = {}) {
   const child = spawn(process.execPath, [join(directory, 'node_modules/next/dist/bin/next'), 'start', '-H', '127.0.0.1', '-p', '0'], {
     cwd: directory, env: environment({ FBP_DEMO_MODE: mode, FBP_DEMO_BAD_CATALOG: badCatalog ? '1' : '0',
+      FBP_INSPECTION_SHORT_LEASE: shortInspectionLease ? '1' : '0',
       ...(coverage ? { NODE_V8_COVERAGE: coverage } : {}) }), stdio: ['ignore', 'pipe', 'pipe'],
   });
   let output = '';

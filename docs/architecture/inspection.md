@@ -48,6 +48,8 @@ node examples/04-inspection.cjs
 
 [The demo](../../examples/04-inspection.cjs) registers a live graph, an idle definition and a dispatcher. It prints the Mermaid inventory and shows a once listener disappearing after delivery. Everything runs offline. [S12 receipt](../cursor_plans/fbp-slices/S12-execution.md) records actual proof/publication; S13 follows after merge.
 
-## Planned live graphical inspector
+## Live graphical inspector
 
-User direction on 2026-10-31 requires S18’s open display to update relationships automatically without manual refresh. The existing scope API above remains point-in-time sampling; it has no delivered change subscription. [S18 LV1](../cursor_plans/fbp-slices/18-graphical-inspector-plan.md#lv1--automatic-relationship-updates-user-direction-2026-10-31) owns the notification/transport design checkpoint, bounded lifecycle, visible connection state, automatic reconnect/resynchronization and browser proofs. This does not introduce payload history or distributed durable observability.
+S18 adds a read-only SVG/text inspector to the packaged Next fixture. [The Next guide](../nextjs.md#live-graph-and-event-inspector) explains the runnable view and its owned SSE delivery. The scope API above remains point-in-time sampling. Dispatcher changes are observable through [onTopologyChange](dispatcher.md#s18--automatic-topology-notifications); the host subscribes before sampling, then transmits bounded safe snapshots.
+
+[LV2](../cursor_plans/fbp-slices/18-graphical-inspector-plan.md#lv2--execution-design-checkpoint-2026-10-31) records producer/transport ownership. Updates are automatic, connection interruptions are visible and reconnect resynchronizes. No packet history, inferred relationships, editing or distributed durable observability is added.

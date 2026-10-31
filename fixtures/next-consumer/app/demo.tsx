@@ -20,6 +20,7 @@ export default function Demo({ spec, catalog }: { spec: GraphSpec; catalog: Cata
       <button disabled={!valid}>Run flow</button>
     </form>
     <Link href="/finished">Leave demo</Link>
+    <p><Link href="/inspector">Inspect graphs and events</Link></p>
     <div role="status" aria-live="polite">
       {result === 'loading' && 'Running…'}
       {result === 'unavailable' && 'Request unavailable'}

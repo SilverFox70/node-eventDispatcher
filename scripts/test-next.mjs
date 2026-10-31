@@ -43,7 +43,11 @@ try {
       console.log('Expected server-only import rejection verified.');
     } finally { writeFileSync(client, original); rmSync(join(app, '.next'), { recursive: true, force: true }); }
   }
-  await checked(process.execPath, [next, 'build', '--webpack'], { cwd: app, env: { NODE_V8_COVERAGE: join(evidence, 'v8-server') }, log: join(evidence, 'next-build.log') });
+  await checked(process.execPath, [next, 'build', '--webpack'], { cwd: app,
+    env: { NODE_V8_COVERAGE: join(evidence, 'v8-server'),
+      NODE_OPTIONS: '--import=' + new globalThis.URL('./next/coverage-exit.mjs', import.meta.url).href },
+    log: join(evidence, 'next-build.log'),
+  });
   if (process.argv.includes('--serve')) {
     serving = await startServer(app);
     console.log('Demo ready:', serving.url, '(Ctrl+C to stop)');
@@ -52,7 +56,8 @@ try {
     await checked(process.execPath, [join(app, 'node_modules/playwright/cli.js'), 'install', ...(process.platform === 'linux' && process.env.CI ? ['--with-deps'] : []), 'chromium'], {
       cwd: app, env: { PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') }, log: join(evidence, 'browser-install.log'),
     });
-    const tested = await command(process.execPath, ['--test', '--test-reporter=tap', join(root, 'test/next/consumer.test.js')], {
+    const tests = ['consumer', 'inspector', 'inspector-state', 'coverage-signal'].map(name => join(root, `test/next/${name}.test.js`));
+    const tested = await command(process.execPath, ['--test', '--test-reporter=tap', ...tests], {
       cwd: root, env: { FBP_NEXT_APP: app, FBP_NEXT_EVIDENCE: evidence, NODE_V8_COVERAGE: join(evidence, 'v8-test'), PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') },
       log: join(evidence, 'consumer-tests.log'),
     });

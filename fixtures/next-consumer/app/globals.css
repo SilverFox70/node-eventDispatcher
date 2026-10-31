@@ -13,3 +13,22 @@ summary { cursor: pointer; }
 pre { font-size: .85rem; overflow: auto; padding: 1rem; background: #f1f4f9; }
 [role="status"] { margin-top: 1.25rem; border-top: 1px solid #d4dce7; padding-top: 1rem; }
 small { display: block; overflow-wrap: anywhere; color: #526174; }
+
+select { font: inherit; padding: .65rem; max-width: 100%; }
+.inspector { margin-top: 1rem; }
+.diagram-scroll { overflow: auto; margin: 1.5rem 0; border: 1px solid #d4dce7; background: #f8fafc; }
+.diagram-scroll svg { display: block; width: 100%; }
+.diagram-scroll rect { fill: white; stroke: #8b9bb2; stroke-width: 2; }
+.diagram-scroll .selected, .diagram-scroll g[role="button"]:focus rect { stroke: #224dc2; stroke-width: 4; }
+.diagram-scroll g[role="button"] { cursor: pointer; outline: none; }
+.diagram-scroll text { font: 14px system-ui, sans-serif; fill: #182332; pointer-events: none; }
+.diagram-scroll .port-label { font-size: 12px; fill: #526174; }
+.connection { stroke: #526174; stroke-width: 2; fill: none; }
+.connection.declared { stroke-dasharray: 9 5; }
+.connection.active { stroke-dasharray: 2 4; }
+marker path { fill: #526174; }
+table { width: 100%; border-collapse: collapse; font-size: .85rem; overflow-wrap: anywhere; }
+th, td { padding: .6rem; text-align: left; border-bottom: 1px solid #d4dce7; }
+caption { font-weight: 600; text-align: left; padding: .75rem 0; }
+.inspector li { margin: .5rem 0; overflow-wrap: anywhere; }
+.inspector button[aria-pressed="true"] { outline: 3px solid #8b9bb2; outline-offset: 2px; }

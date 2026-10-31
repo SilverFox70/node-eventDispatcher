@@ -2,6 +2,7 @@ import { readFileSync, readdirSync, existsSync, realpathSync, writeFileSync } fr
 import { join, resolve, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
+import { mappedFunctions } from './coverage-ranges.mjs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const convert = require('v8-to-istanbul');
@@ -54,8 +55,10 @@ export async function measureFixture(app, evidence) {
         if (!map.sources.some(source => owned.has(source))) continue;
         sourceMap = { sourcemap: map };
       } else if (!owned.has(canonical)) continue;
-      const converter = convert(canonical, 0, { source: script.source ?? readFileSync(path, 'utf8'), ...(sourceMap ? { sourceMap } : {}) }, path => !owned.has(path));
-      await converter.load(); converter.applyCoverage(script.functions);
+      const generated = script.source ?? readFileSync(path, 'utf8');
+      const converter = convert(canonical, 0, { source: generated, ...(sourceMap ? { sourceMap } : {}) }, path => !owned.has(path));
+      await converter.load();
+      converter.applyCoverage(sourceMap ? mappedFunctions(script.functions, generated, sourceMap.sourcemap) : script.functions);
       const mapped = converter.toIstanbul();
       for (const [source, data] of Object.entries(mapped)) contributions.push({ capture: file, script: canonical, source, coverage: data });
       coverage.merge(mapped);
