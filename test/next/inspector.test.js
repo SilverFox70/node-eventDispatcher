@@ -23,12 +23,15 @@ async function open() {
   await context.route('**/*', route => new globalThis.URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
   const page = await context.newPage();
   await page.coverage.startJSCoverage({ resetOnNavigation: false });
-  return { context, page, async close() {
+  async function capture() {
     const entries = (await page.coverage.stopJSCoverage()).filter(item => item.url.includes('/_next/static/')).map(item => ({ ...item,
       url: pathToFileURL(join(app, '.next', item.url.split('/_next/')[1])).href }));
     writeFileSync(join(evidence, `browser-inspector-${Date.now()}.json`), JSON.stringify({ result: entries }));
-    await context.close();
-  } };
+  }
+  return { context, page,
+    async checkpoint() { await capture(); await page.coverage.startJSCoverage({ resetOnNavigation: false }); },
+    async close() { await capture(); await context.close(); }
+  };
 }
 
 test('graphs and event relationships visualized: SVG/text parity, selection, inert labels and automatic updates', async () => {
@@ -55,6 +58,7 @@ test('graphs and event relationships visualized: SVG/text parity, selection, ine
     await view.page.getByLabel('Inspected source').selectOption('account-flow');
     assert((await view.page.getByTestId('inspection-run').textContent()).includes('runId'));
     // Establish a new demonstration after inspecting graphs; no refresh is used during mutations.
+    await view.checkpoint();
     await view.page.reload();
     await view.page.getByText('Inspection: Live', { exact: true }).waitFor();
     await view.page.getByLabel('Inspected source').selectOption('account-events');
@@ -107,6 +111,7 @@ test('schema and current request state: actual stream reconnect, invalid snapsho
     // The original shared model validator rejects this stream; no private/schema evaluator runs in the browser.
     await view.page.route('**/api/inspection', route => route.fulfill({ contentType: 'text/event-stream',
       body: 'data: {"sequence":1,"snapshot":{"version":99,"sources":[]}}\n\n' }));
+    await view.checkpoint();
     await view.page.reload();
     await view.page.getByText('Inspection: Invalid inspection data', { exact: true }).waitFor();
     assert.equal(await view.page.locator('[data-vertex]').count(), 0);

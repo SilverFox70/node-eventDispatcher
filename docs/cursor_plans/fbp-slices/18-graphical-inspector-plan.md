@@ -136,3 +136,5 @@ C54/S18 proofs now include observer coalescing/removal/refusals/reentrancy, real
 
 
 Execution tooling clarification: LV2’s necessary shared tooling includes `scripts/next/**`, `scripts/test-next.mjs` and `test/next/coverage-signal.test.js` for actual worker/source-map coverage, plus README/current architecture/master/SP1 updates. The inspection layout helper is within `lib/inspection-*.ts`. [S18 receipt](S18-execution.md) records red/green/gates and the adapted existing node:test/Playwright proof paths; no second browser runner was installed.
+
+CI follow-up allowance: `.github/workflows/ci.yml` changes only the existing failure-evidence uploader to supported v7.0.2/Node24 after the hosted deprecation warning, per the repository dependency policy. Core matrix and Next acceptance commands remain intact. The receipt records the actual failure, raw V8 replay and clean verification.

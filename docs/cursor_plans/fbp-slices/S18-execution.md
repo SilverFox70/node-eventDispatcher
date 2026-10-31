@@ -39,3 +39,12 @@ S18.A/B/C implementation, behavioral proof and local quality/coverage are comple
 
 
 Publication: implementation commit25cd77b pushed to origin/codex/fbp-18-graphical-inspector; [PR #28](https://github.com/SilverFox70/node-eventDispatcher/pull/28) created against master. Hosted core/Next checks are pending as of this publication receipt and are inspected separately. No merge claimed; S19 remains unstarted.
+
+
+## Hosted verification follow-up
+
+Published head581c8a4 run41241581609 passed all three core OS jobs and all14 Next behavioral tests, but the Next coverage gate failed on a switch range spanning fixture lines43–44. The retained failed artifact13057786720 supplies actual raw V8 reports. A complete demonstration executes every case; a short-lived connection reports a combined zero-count case range. Remapping each capture separately before Istanbul merging retains that overlapping zero range. Standard @bcoe/v8-coverage merging at the compiled-script level first correctly reconciles the actual failed CI captures:1 zero advance range before aggregation,0 afterward, with no branch exclusion. The collector now uses that merger already supplied by pinned c8 before remapping.
+
+Correct aggregation also exposed lost Chromium keyboard coverage across page.reload (the same-URL script entry is replaced despite resetOnNavigation:false). The browser harness now saves a coverage checkpoint before each reload, retaining actual earlier interactions. Focused browser tests pass; the clean full command `npm run test:next` passes again with14 tests,17 per-file gates and all negative controls (/tmp/fbp-s18-next-ci-fix.log; isolated fbp-next-3GUa5c/evidence). This is corrected evidence collection, not a lowered threshold or ignored authored condition. Core source/types remain unchanged;224-test coverage receipt stays applicable. Tooling lint and syntax checks pass. CI also explicitly warned the previous artifact uploader targeted deprecated Node20; replaced it with official upload-artifact v7.0.2 at immutable cf430e030ddbb5b0abf93d22962f4752f3646cd9, whose action declares Node24. Only the existing failure-evidence step changes, not the test matrix.
+
+An additional local mutation disables actual compiled notification delivery while retaining the API shape; both observer assertions fail. Exact bytes are restored (SHA256 verified), and focused tests pass. /tmp/fbp-s18-evidence retains mutation red/restored green and the actual CI raw-range replay. Updated hosted verification follows this fix; no merge is claimed.
