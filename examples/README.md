@@ -10,6 +10,7 @@ node examples/02-async-branches.cjs
 node examples/03-keyed-collation.cjs
 node examples/04-inspection.cjs
 node examples/05-node-authoring.cjs
+node examples/06-testing.cjs
 ```
 
 All examples run offline against the built library. They use the real graph compiler/runtime and finish on their own. No application server, credentials or external repositories are needed. Rebuild after changing library source. These checkout demos are distinct from the historical server/src scripts.
@@ -21,6 +22,7 @@ All examples run offline against the built library. They use the real graph comp
 | [03-keyed-collation.cjs](03-keyed-collation.cjs) | Async branches with heterogeneous results and a job/key join | One object containing profile and settings, with two immediate parents; completed. |
 | [04-inspection.cjs](04-inspection.cjs) | Explicit live/idle graph and dispatcher registrations, scoped snapshots and Mermaid export | Three source subgraphs; once listener disappears on the next snapshot. |
 | [05-node-authoring.cjs](05-node-authoring.cjs) | Compile the exact TypeScript lookup recipe and inject local async behavior | Found Ada, then missing; two service calls; completed. |
+| [06-testing.cjs](06-testing.cjs) | Public runNode/runGraph helpers with real execution and independent assertions | Node4/6, graph5/7, completed; wrong input rejects INPUT_CONTRACT. |
 
 The second and third examples' save functions are asynchronous local stand-ins. They do not persist data. Both branches retain job/key correlation while derived packets record immediate lineage. The output shows results as they arrive; cross-branch arrival order is not guaranteed.
 

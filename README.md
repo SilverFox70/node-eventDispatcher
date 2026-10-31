@@ -19,7 +19,7 @@ The current runtime executes node graphs; these application examples still need 
 
 ## Current progress
 
-**Implemented through S13 on this review branch.** S00–S12 have merged. S13 adds checked node-authoring recipes and templates; it is awaiting review and merge. **S14 is next:** public helpers for testing nodes and whole graphs on the real runtime.
+**Implemented through S14 on this review branch.** S00–S13 have merged. S14 adds typed public runNode/runGraph testing helpers using the real compiler/runtime, with bounded collection, deadlines and cleanup; it is awaiting review and merge. **S15 is next:** composed-flow and sustained-load reliability proofs.
 
 You can now build and run real, typed, asynchronous pipelines locally. The graphical inspector UI, the Next.js example, public test helpers and optional durable execution remain on the roadmap below.
 
@@ -49,6 +49,7 @@ node examples/02-async-branches.cjs
 node examples/03-keyed-collation.cjs
 node examples/04-inspection.cjs
 node examples/05-node-authoring.cjs
+node examples/06-testing.cjs
 ```
 
 The first doubles1/2/3/4 and filters the results to6/8. The second splits one account request into independent asynchronous profile/settings operations, then brings their separate results into one stream. The third collates those branches into one typed result. The fourth prints a graph/event diagram inventory. The fifth compiles the copyable lookup recipe and runs it with a local fake service. All run offline. See [examples and expected output](examples/README.md).

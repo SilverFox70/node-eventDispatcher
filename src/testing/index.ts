@@ -1,2 +1,3 @@
-// Reserved package entry; implementations arrive in their owning slices.
-export {};
+export { runGraph } from './run-graph.js';
+export { runNode } from './run-node.js';
+export type { TestOptions, TestResult } from './run-graph.js';
