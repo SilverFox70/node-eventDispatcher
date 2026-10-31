@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S07 typed builder; S08 requires actual S07 merge and its own runtime-contract readiness",
+  "next_planning_action": "Review S08 streaming runtime; S09 requires actual S08 merge",
   "slices": [
     {
       "id": "S00",
@@ -237,7 +237,7 @@
       "previous": "S06",
       "next": "S08",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "528e1aa1de176291c2adfe1f681b6b4981510a8a",
       "conditions": [
         "C32"
       ],
@@ -249,7 +249,7 @@
         "S07.C"
       ],
       "execution_receipt": "S07-execution.md",
-      "review_status": "submitted",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/14",
       "implementation_commit": "0cd3d07"
     },
@@ -259,8 +259,8 @@
       "title": "Execute a real multi-packet streaming graph",
       "plan": "08-stream-runtime-plan.md",
       "branch": "codex/fbp-08-stream-runtime",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S07",
       "next": "S09",
       "base": "master after previous slice merge",
@@ -275,10 +275,17 @@
         "C57",
         "C63"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T5 plus required safe baseline lifecycle",
+      "authorized_tasks": [
+        "S08.A",
+        "S08.B",
+        "S08.C"
       ],
-      "legacy_master_work": "T5 plus required safe baseline lifecycle"
+      "execution_receipt": "S08-execution.md",
+      "review_status": "submitted",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/15",
+      "implementation_commit": "fa62b5f"
     },
     {
       "id": "S09",

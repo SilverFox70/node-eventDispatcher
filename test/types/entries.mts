@@ -2,7 +2,7 @@ import * as root from 'event-driven-design';
 import * as model from 'event-driven-design/model';
 import * as testing from 'event-driven-design/testing';
 void [root, model, testing];
-// @ts-expect-error Future graph runtime APIs are not implemented yet.
+// @ts-expect-error Starting a network requires an actual compiled graph.
 root.startNetwork();
 
 const dispatcher: root.Dispatcher = root.createDispatcher({ logLimit: 2 });
@@ -46,3 +46,15 @@ if (compiledGraph.ok) { const handle: root.CompiledGraph = compiledGraph.graph; 
 const graphBuilder: root.GraphBuilder = root.createGraph();
 const builtGraphSpec: root.GraphSpec = graphBuilder.toSpec();
 void builtGraphSpec;
+
+if (compiledGraph.ok) {
+  const run: root.NetworkRun = root.startNetwork(compiledGraph.graph, { executionRecordLimit: 10, diagnosticLimit: 2 });
+  const done: Promise<root.Terminal> = run.finish(); void done;
+  // @ts-expect-error Timeout is not delivered until S09.
+  root.startNetwork(compiledGraph.graph, { timeoutMs: 1 });
+  // @ts-expect-error Network sends require complete packet envelopes.
+  run.send('in', 2);
+  // @ts-expect-error Snapshot metadata is readonly.
+  run.snapshot().nodes.push({ id: 'bad', status: 'running' });
+  run.cancel();
+}

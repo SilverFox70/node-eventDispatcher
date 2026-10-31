@@ -174,3 +174,7 @@ S05/S06/S07 adopt Packet/metadata declarations and representation invariants wit
 The user accepted separate packet/job/run identities, caller-supplied operation IDs, immediate-parent lineage, duplicate prevention per node/run, no automatic completed-group reuse,2–256 join inputs, and initial protection limited to one in-memory run. This supersedes IC1-r1 duplicate-forward/reuse defaults. Payload lookup, global deduplication and persistence remain deferred.
 
 Exact ledger option names/defaults, refusal ordering and raw-process integration in this revision are concrete proposed engineering details, not additional user-approved promises. S08/S11 own their executable proofs. Downstream implementation remains gated on contract review and normal predecessor merges; this amendment does not start another slice. No runtime assertions have passed merely because this design is written.
+
+## S08 execution adoption — 2026-10-30
+
+Following actual S07 merge and the explicit S08 execution request, the executionRecordLimit/reservation/refusal/cleanup settings in §3 are adopted for S08. Concrete implementation and proof are recorded in [the S08 receipt](fbp-slices/S08-execution.md) and [runtime guide](../architecture/runtime.md). This supersedes the historical pending label for those bounded settings; it does not adopt S11's proposed completedGroupLimit or claim a runtime merge, cross-run protection, persistence or external-effect exactly-once behavior.

@@ -61,6 +61,26 @@ test('both distribution entries load', () => {
       if (dispatcher.inspect().publishers[0].provenance !== 'declared') throw new Error('ESM publisher missing');
       dispose();
     `]);
+    for (const mode of ['commonjs', 'module']) {
+      const load = mode === 'commonjs' ? "const f = require('event-driven-design');" : "import * as f from 'event-driven-design';";
+      const output = run(process.execPath, ['--input-type=' + mode, '-e', load + `
+        (async () => {
+          const node = f.defineComponent({ id: 'double', version: 1, title: 'Double', description: '',
+            in: { in: f.jsonContract }, out: { out: f.jsonContract }, create: () => async ctx => {
+              for await (const p of ctx.inputs.in) await ctx.send('out', f.derivePacket(p.value * 2, [p]));
+            } });
+          const builder = f.createGraph(), n = builder.add('n', node);
+          builder.exposeInput('in', n, 'in'); builder.exposeOutput('out', n, 'out');
+          const graph = f.compileGraph(builder.toSpec(), { 'double@1': node }).graph;
+          const network = f.startNetwork(graph);
+          const collected = (async () => { const values = []; for await (const p of network.outputs.out) values.push(p.value); return values; })();
+          await network.send('in', f.packet(2));
+          if ((await network.finish()).status !== 'completed') throw Error('Runtime did not complete');
+          console.log('stream:' + (await collected).join(','));
+        })().catch(error => { console.error(error); process.exitCode = 1; });
+      `]);
+      assert.equal(output.trim(), 'stream:4');
+    }
     for (const file of ['entries.mts', 'entries.cts', 'tsconfig.json']) cpSync(join(root, 'test/types', file), join(fixture, file));
     run(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', join(fixture, 'tsconfig.json')]);
     assert.ok(existsSync(join(installed, 'server/src/eventDispatcher.js')));
