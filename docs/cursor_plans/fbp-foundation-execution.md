@@ -82,3 +82,7 @@ User authorized S15 after verified S14 merge. See [S15 receipt](fbp-slices/S15-e
 ## S16 — installed package and cookbook
 
 User authorized S16 after verified S15 merge. See [S16 receipt](fbp-slices/S16-execution.md) for actual tarball/installed authoring proof, legacy cleanup, distribution/CI configuration and verification/publication. S17 remains unstarted.
+
+## S17 — packaged production Next consumer
+
+User authorized S17 after verified S16 merge. See [S17 receipt](fbp-slices/S17-execution.md) for the fixed Node route, browser/server boundary, backend-result protocol and production HTTP/browser/source-map proofs. S18 remains unstarted.

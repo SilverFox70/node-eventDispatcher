@@ -9,3 +9,7 @@ node_modules/
 dist/
 coverage/
 .nyc_output/
+
+# Generated isolated Next fixture output
+fixtures/next-consumer/.next/
+fixtures/next-consumer/vendor/

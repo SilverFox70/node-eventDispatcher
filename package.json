@@ -8,10 +8,12 @@
     "test": "npm run build && node --test test/*.test.js",
     "build": "node scripts/build.mjs",
     "typecheck": "tsc -p tsconfig.check.json && tsc -p test/types/tsconfig.json",
-    "lint": "eslint src scripts test examples templates/node benchmark",
+    "lint": "eslint src scripts test examples templates/node benchmark fixtures/next-consumer/app fixtures/next-consumer/lib",
     "check": "npm run build && npm run typecheck && npm run lint",
     "coverage": "npm run build && c8 node --test test/*.test.js && node scripts/coverage-thresholds.mjs",
-    "test:package": "npm run build && node --test test/package.test.js test/package-contracts.test.js test/author-recipe.test.js test/examples.test.js"
+    "test:package": "npm run build && node --test test/package.test.js test/package-contracts.test.js test/author-recipe.test.js test/examples.test.js",
+    "test:next": "node scripts/test-next.mjs",
+    "demo:next": "node scripts/test-next.mjs --serve"
   },
   "keywords": [
     "EDD",

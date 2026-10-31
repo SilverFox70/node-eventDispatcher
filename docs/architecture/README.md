@@ -2,7 +2,7 @@
 
 ## Current state versus destination
 
-S02 delivers the synchronous TypeScript dispatcher and a legacy CommonJS shim; S03 adds safe current subscription/publisher topology. S04 adds immutable JSON packets and internal bounded channels; [packet/channel ownership](packets-and-channels.md) describes their boundaries. Legacy HTTP examples remain under server/src. S05–S09 now deliver typed contracts, graph validation/construction, streaming execution and deadlines. Guidance setup does not advance slice status, resolve S00 identity or certify current tests.
+S02 delivers the synchronous TypeScript dispatcher and a legacy CommonJS shim; S03 adds safe current subscription/publisher topology. S04 adds immutable JSON packets and internal bounded channels; [packet/channel ownership](packets-and-channels.md) describes their boundaries. Retained HTTP/scanner utilities now live under examples/legacy; the dispatcher shim remains under server/src. S05–S09 now deliver typed contracts, graph validation/construction, streaming execution and deadlines. Guidance setup does not advance slice status, resolve S00 identity or certify current tests.
 
 - [Dispatcher API and migration](dispatcher.md): instance ownership, synchronous delivery, bounded metadata logs and the legacy import.
 - [System boundaries](system-boundaries.md): proposed module responsibilities and present source map.
@@ -40,3 +40,5 @@ S12 adds [scoped inspection and Mermaid export](inspection.md): explicit live/id
 S13 adds [node-authoring recipes and templates](../node-authoring.md), reusing S09B rather than replacing the function adapter or runtime.
 
 S14 adds [public testing helpers](../node-authoring.md#test-one-node-or-a-complete-flow): typed one-node tests and dynamic compiled-graph tests on the same runtime, with bounded collection and cleanup.
+
+S17 adds [the packaged Next consumer](../nextjs.md): a fixed Node route, browser-safe metadata, backend verdict attribution, current-request suppression and production HTTP/browser/asset proof. S18 still owns the graphical inspector.

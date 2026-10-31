@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S16 installed cookbook; S17 requires actual S16 merge",
+  "next_planning_action": "Review S17 packaged Next consumer; S18 requires actual S17 merge",
   "slices": [
     {
       "id": "S00",
@@ -582,7 +582,7 @@
       "previous": "S15",
       "next": "S17",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "acb476b0cd9bf72a8fca3f6460a9f9fdf1beb165",
       "conditions": [
         "C28",
         "C29",
@@ -599,7 +599,7 @@
         "S16.C"
       ],
       "execution_receipt": "S16-execution.md",
-      "review_status": "open",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/25",
       "implementation_commit": "cbe1aea"
     },
@@ -609,8 +609,8 @@
       "title": "Run a packaged flow inside a Next.js application",
       "plan": "17-next-server-consumer-plan.md",
       "branch": "codex/fbp-17-next-server-consumer",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S16",
       "next": "S18",
       "base": "master after previous slice merge",
@@ -621,10 +621,17 @@
         "C43",
         "C46"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T11 server/packaging boundary",
+      "authorized_tasks": [
+        "S17.A",
+        "S17.B",
+        "S17.C"
       ],
-      "legacy_master_work": "T11 server/packaging boundary"
+      "execution_receipt": "S17-execution.md",
+      "review_status": "open",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/26",
+      "implementation_commit": "3865cb0"
     },
     {
       "id": "S18",
