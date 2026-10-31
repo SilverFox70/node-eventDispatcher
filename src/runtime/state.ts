@@ -1,3 +1,4 @@
+import { createDeadline } from './deadline.js';
 import { createChannel } from '../channel.js';
 import type { Packet } from '../packet.js';
 import type { Diagnostic, Snapshot, Terminal, ValidationReport } from '../runtime.js';
@@ -6,9 +7,10 @@ export type NodeState = { id: string; status: Snapshot['nodes'][number]['status'
 
 /** One terminal owner; every observer sees the same immutable terminal result. */
 export function createRunState(runId: string, nodes: NodeState[], channels: Map<string, Channel>, limit: number,
-  clearLedger: () => void, signal?: AbortSignal) {
+  clearLedger: () => void, signal?: AbortSignal, timeoutMs?: number) {
   const controller = new globalThis.AbortController();
   let terminal: Terminal | undefined;
+  let stopDeadline: (() => void) | undefined;
   let draining = false, sequence = 0;
   const diagnostics: Diagnostic[] = [];
   let resolve!: (value: Terminal) => void;
@@ -23,6 +25,7 @@ export function createRunState(runId: string, nodes: NodeState[], channels: Map<
   function end(result: Terminal): void {
     if (terminal) return;
     terminal = Object.freeze(result);
+    stopDeadline?.();
     signal?.removeEventListener('abort', cancel);
     if (result.status !== 'completed') {
       for (const channel of channels.values()) channel.abort();
@@ -54,6 +57,7 @@ export function createRunState(runId: string, nodes: NodeState[], channels: Map<
   record('RUN_STARTED');
   if (signal?.aborted) cancel();
   else signal?.addEventListener('abort', cancel, { once: true });
+  if (!terminal && timeoutMs !== undefined) stopDeadline = createDeadline(timeoutMs, () => end({ status: 'failed', code: 'TIMEOUT' }));
   return state;
 }
 export type RunState = ReturnType<typeof createRunState>;

@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S08 streaming runtime; S09 requires actual S08 merge",
+  "next_planning_action": "Review S09 deadlines/lifecycle; S10 requires actual S09 merge",
   "slices": [
     {
       "id": "S00",
@@ -264,7 +264,7 @@
       "previous": "S07",
       "next": "S09",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "185f30326092b1d920b0b55449b3195d30757f59",
       "conditions": [
         "C12",
         "C13",
@@ -283,7 +283,7 @@
         "S08.C"
       ],
       "execution_receipt": "S08-execution.md",
-      "review_status": "submitted",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/15",
       "implementation_commit": "fa62b5f"
     },
@@ -293,8 +293,8 @@
       "title": "Finish, cancel and diagnose every owned wait safely",
       "plan": "09-lifecycle-diagnostics-plan.md",
       "branch": "codex/fbp-09-lifecycle-diagnostics",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S08",
       "next": "S10",
       "base": "master after previous slice merge",
@@ -306,10 +306,17 @@
         "C24",
         "C25"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T7 lifecycle/diagnostics minus scope",
+      "authorized_tasks": [
+        "S09.A",
+        "S09.B",
+        "S09.C"
       ],
-      "legacy_master_work": "T7 lifecycle/diagnostics minus scope"
+      "execution_receipt": "S09-execution.md",
+      "review_status": "submitted",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/16",
+      "implementation_commit": "9676ad7"
     },
     {
       "id": "S10",

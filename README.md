@@ -15,7 +15,7 @@ Planned examples include:
 - **Background orchestration:** coordinate projections, notifications or integrations using application-supplied business identities and effect policies.
 - **Game services:** organize asynchronous game/server events and background jobs. Deterministic frame/tick execution needs a separate future execution profile.
 
-These are uses for the planned graph runtime. The current foundation does not yet execute complete node graphs or recover jobs after a crash.
+The current runtime executes node graphs; these application examples still need their own domain nodes and integration tests. Recovery after process loss remains a future optional extension.
 
 ## What exists in this revision
 
@@ -24,7 +24,8 @@ These are uses for the planned graph runtime. The current foundation does not ye
 - Immutable inspection metadata for active subscriptions, optional owners and explicitly declared publishers.
 - Typed reusable component definitions, Zod-backed runtime contracts and safe catalog metadata.
 - Immutable JSON packets with separate packet/job identities, immediate-parent lineage and optional correlation keys.
-- Internal bounded FIFO channels with backpressure, close/drain and abort semantics. These are building blocks for the future runtime, not a public channel API.
+- Internal bounded FIFO channels with backpressure, close/drain and abort semantics, used by the streaming runtime.
+- Typed graph construction and authoritative compilation, isolated streaming runs, bounded duplicate protection, cancellation, deadlines and safe diagnostics.
 - Offline tests, packed-package consumer/type checks and source-mapped per-file coverage gates.
 
 The [slice index](docs/cursor_plans/fbp-slices/INDEX.md) records review/merge status; a feature on a review branch is not automatically released. The package name remains `event-driven-design`. No new npm release is claimed here.
@@ -48,7 +49,7 @@ const result = derivePacket({ validated: true }, [request]);
 events.emit('ready', [result.jobId]);
 ```
 
-This demonstrates the dispatcher and packet factories, not a graph scheduler. Event delivery is synchronous; packet movement in the planned graph runtime will be asynchronous. See the [dispatcher API/migration guide](docs/architecture/dispatcher.md) and [identity contract](docs/cursor_plans/fbp-identity-contract.md).
+This demonstrates the dispatcher and packet factories, not a graph scheduler. Event delivery is synchronous; packet movement in the streaming graph runtime is asynchronous. See the [dispatcher API/migration guide](docs/architecture/dispatcher.md) and [identity contract](docs/cursor_plans/fbp-identity-contract.md).
 
 ## Build and verify
 
@@ -78,7 +79,7 @@ The initial graphical inspector is **read-only**. The interactive editor and cod
 
 Rich/custom payload types, controlled cyclic graphs and more capable agent-authored applications are extension goals. Initial public payloads are JSON-compatible and initial graph topology is acyclic. Most graphs should remain useful without a database.
 
-Duplicate execution prevention belongs to the planned runtime: repeated delivery of the same packet to the same node within one run is to be refused. The channel alone does not enforce that policy. Crash-safe execution and exactly-once external side effects are not current guarantees; a durable host still needs application/provider idempotency or reconciliation where effects are uncertain.
+The runtime refuses repeated delivery of the same packet to the same node within one run, using bounded protection records without live-run eviction. The channel alone does not enforce that policy. Crash-safe execution and exactly-once external side effects are not current guarantees; a durable host still needs application/provider idempotency or reconciliation where effects are uncertain.
 
 ## Where to go next
 
@@ -99,3 +100,5 @@ Graph validation/compilation is now available: see [the runnable S06 example](do
 For typed graph construction, see [the S07 builder example](docs/architecture/graph-builder.md). It checks port names and payload types while producing the same portable graph definition.
 
 Graphs can now process packets: [run the S08 streaming example](docs/architecture/runtime.md) to send1/2/3 through double→plus-one and receive3/5/7. Run instances have isolated state, bounded queues, duplicate protection and baseline cancellation.
+
+S09 adds [run deadlines and verified cleanup/diagnostics](docs/architecture/lifecycle.md): set timeoutMs when starting a graph to bound stalled asynchronous work.

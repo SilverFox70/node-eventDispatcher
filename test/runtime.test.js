@@ -57,7 +57,7 @@ test('independent process startup and real output drain participation', async ()
 test('options, definition admission and bounded metadata', async () => {
   const graph = single(component('echo', echo));
   for (const options of [{ executionRecordLimit: 0 }, { executionRecordLimit: 1048577 }, { executionRecordLimit: 1.5 },
-    { executionRecordLimit: null }, { diagnosticLimit: -1 }, { diagnosticLimit: 1001 }, { signal: {} }, { timeoutMs: 1 }]) {
+    { executionRecordLimit: null }, { diagnosticLimit: -1 }, { diagnosticLimit: 1001 }, { signal: {} }, { timeoutMs: 0 }, { unexpected: true }]) {
     assert.throws(() => startNetwork(graph, options), { code: 'INVALID_ARGUMENT' });
   }
   assert.throws(() => startNetwork({}), { code: 'INVALID_ARGUMENT' });

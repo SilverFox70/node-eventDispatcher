@@ -42,3 +42,7 @@ User authorized S07 after S06 merged. [S07 receipt](fbp-slices/S07-execution.md)
 ## S08 — streaming runtime
 
 User authorized S08 after S07 merged. [S08 receipt](fbp-slices/S08-execution.md) records adoption of bounded per-run ledger settings, backend verdict attribution, real graph execution, baseline cancellation and proof/publication. S09 retains deadlines and expanded lifecycle/resource verification.
+
+## S09 — deadlines and lifecycle verification
+
+User authorized S09 after S08 merged. [S09 receipt](fbp-slices/S09-execution.md) records deadline scheduling, first-terminal cleanup, adversarial lifecycle/diagnostic proof and publication. S10 remains separate and requires the actual S09 merge.
