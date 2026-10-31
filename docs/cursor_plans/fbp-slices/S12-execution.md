@@ -1,0 +1,49 @@
+# S12 execution receipt
+
+User requested “proceed with S12”, authorizing S12.A–C and the standing branch/commit/push/review workflow. Branch codex/fbp-12-inspection-export starts from verified S11 PR20 merge af0cea1ac0ced8f90805c0f1eeb38862f6661966 (GitHub and origin/master). Existing delivered identity/runtime contracts apply. No S13 work or merge is implied. User .DS_Store/.feedback-log remain untouched.
+
+## Interface and ownership
+
+createInspectionScope exposes addGraph/addDispatcher/disposers/snapshot. Registrations are scope-owned, insertion-ordered and explicitly selected. Graph definitions are immutable snapshots validated by the existing shared model validator. A genuine run must match its captured spec/catalog using exact data identity (object-key order ignored; arrays/all metadata preserved). getRunDefinition's existing private WeakMap association is reused, without exporting registry handles or adding global discovery.
+
+Source IDs follow the nonempty128-character rule. Duplicates, malformed graphs/dispatchers and wrong runs refuse before registration. Registration rechecks availability after calling a custom dispatcher inspector so reentrancy cannot overwrite another registration. Disposers capture only a generation token/source ID/scope map, release references, are idempotent, and cannot delete later generations. They do not cancel application work or alter subscriptions/publishers.
+
+InspectionSnapshot contains version1 graph/spec/catalog/optional run snapshots and current dispatcher topology. Deeply frozen detached JSON includes explicitly public catalog examples, never live packet values/IDs/job/key history or callback/validator/source/registry objects. Every sample validates dispatcher data-only shape, unique local IDs and relationship references. Inventory grows with registrations rather than traffic.
+
+/model exports inspection types and toMermaid without a Node runtime dependency. Existing Snapshot/Diagnostic/ValidationReport declarations move unchanged from runtime.ts into model/inspection.ts and remain re-exported under their original public runtime/root names; runtime execution is unchanged. Diagram helpers validate consumed wiring/topology, generate deterministic synthetic IDs per source/entity order, show defined/declared/active edges, and neutralize label markup/directive/entity/control delimiters. Labels retain inert visible text and reserved syntax uses documented Mermaid numeric entities. No renderer, layout engine or second graph interpreter is added.
+
+The plan records the bounded type-boundary and necessary import/declaration/packed-consumer amendments. README, architecture navigation and examples/04-inspection.cjs follow the user's current-progress/runnable-demo convention. No dependency/lock/tooling policy changes.
+
+## Behavioral evidence
+
+Initial interface scaffold emitted empty inventory/flowchart. The first fixture mistakenly supplied a process where a factory was required; its setup diagnostics are retained separately (inspection-setup.log) and are not behavioral red. After correcting fixture setup, rebuilt scaffolds failed the intended inventory/source-association/diagram assertions (inspection-red.log exit1) with no unhandled asynchronous error. Source bytes restored in finally before final implementation checks. An early missing off API name and test regex lint diagnostic were corrected before final gates; no setup error is counted as product proof.
+
+C52 real runtime/dispatcher fixtures contain two graph registrations (live and idle) and a dispatcher, with an unrelated empty scope. Wrong/fabricated run and altered-public-metadata associations refuse. Immutable registration capture survives caller mutation; object-key reorder remains equivalent. Invalid/duplicate registrations do not pollute inventory. Disposing the registered run leaves packet processing functional; disposing dispatcher inventory leaves application listeners functional. Once/off/publisher disposal updates the next sample while older snapshots remain detached.
+
+C53 tests exact graph port/edge direction, exposed endpoints, duplicate local names across sources, distinct subscriber/publisher identities, owner/unassigned and once details, all three provenance edge labels, empty sources and repeated deterministic export. Hostile labels include quotes/brackets/braces/backslashes/pipes, HTML, entity/directive delimiters, control/bidi characters and normalized line breaks. Malformed topologies/snapshot roots/kinds/graph data refuse; no caller identifier becomes code. A static AST import-tree check follows both built model JavaScript and declarations, refusing Node/server-execution dependencies. Actual browser/DOM/Mermaid rendering remains later UI proof.
+
+C65 feeds50 packets with unique secret payload/key/job/packet-ID canaries through the production runtime. Serialized inventory has none of those execution values/identities or executable handles, while topology stays fixed and bounded runtime counters/status update. Authored null/boolean catalog examples remain deliberately public metadata and participate in exact association. No result index, per-packet history or module-global run map exists.
+
+## Verification status
+
+Source implementation complete; final gates passed below; publication follows. Pinned Node26.13.0/npm11.20.0 via command-local PATH; dependency/lock/build/type/lint/coverage configuration and all-source denominator unchanged. Historical fbp-pre-modernization-r2 is historical characterization only. Evidence retained locally under /tmp/fbp-s12-evidence/. No Next/browser/provider/store proof claimed.
+
+Initial full coverage ran184 tests successfully, but the all-source gate correctly flagged the new erased types-only wire module as unexecuted (0% mapped source). No threshold/config exclusion is added: model/inspection.ts now also owns the real shared inspectionVersion used by both the scope producer and exporter admission, matching the existing dispatcher-topology wire-version pattern. Final build/type/lint/coverage are refreshed for that source change.
+
+## Final gates and handoff
+
+Repository root; command-local PATH=/tmp/node-v26.13.0-darwin-arm64/bin:$PATH. Node26.13.0/npm11.20.0. Lock SHA256 bf9c99a9567367299e8e5f4afb613fe457a513ad43d1513594af781f2f862bbd unchanged. No dependencies/config/denominator/threshold exclusions changed; the shared version constant is production protocol ownership, not a gate bypass.
+
+- npm run check → exit0 (check-final.log), dual build, strict source/generated consumer checks and lint including all four examples. This refreshed check includes the final wire-version ownership change.
+- node --test --test-timeout=5000 test/inspection.test.js test/model.test.js test/model-imports.test.js → exit0,20 tests/0 failures/skips (focused-final.log), including static model runtime/declaration import boundaries.
+- npm_config_cache=/tmp/fbp-npm-cache npm run coverage → exit0,184 tests/0 failures/skips (coverage-final.log). Every delivered file has100% required statement/line/branch coverage, including scope, identity, topology/diagram helpers, model wire types/version and runtime. New modules also100% function coverage; inherited unused private function counters remain unchanged. Mapped coverage-final.json retained locally; prior failed types-only report is superseded by this actual refreshed run.
+- Negative declaration fixture removes only expected-error comments from inspection.ts: types-red.log exit2 with actual immutable-array, wrong dispatcher-kind and source-discriminant errors, no missing-module diagnostics. Source restored byte-for-byte; final npm run check proves restored generated consumers. Valid red was re-established against the scaffold after setup correction; no missing-module or incorrect-factory diagnostic is represented as behavioral red.
+- Installed offline CJS/ESM consumers register a real completed join run and dispatcher, render via the installed /model entry and assert inspection:2 alongside prior graph/deadline/join output. Installed declarations require immutable inspection arrays. Exact stdout guards against unresolved-promise false greens.
+- All four checkout examples exited0 with expected stdout assertions (01-map-filter.log through04-inspection.log). The new demo reports live-flow,idle-definition,application-events, completed run, three Mermaid subgraphs and0 subscribers after once delivery. Existing demo outputs remain6/8, two branch results and one collated result. Wire-version refresh preserves that same output and is also exercised through refreshed installed consumers/focused tests.
+- Guidance integrity passes85 scanned Markdown files/462 local links/22 slices/84 condition owners (guidance-final.log), links/order only. git diff --check passes. Official Mermaid entity-code syntax is linked in the architecture guide; no rendering/DOM claim is made from string tests.
+
+Readability reviewed: scope69 lines, wire model27, exporter36, graph/dispatcher/label/writer helpers10–28, topology41, identity11; runtime shrinks to177 lines through unchanged type relocation. Focused inspection tests127, model tests137, import-tree test27 and demo52 remain cohesive and below the strong200-line guideline. Shared capture/identity/label/writer responsibilities are named; no utility dumping ground, hidden execution registry or second interpreter.
+
+Implementation complete; C52/C53/C65 proofs verified; quality/required coverage passed. No Next/browser/provider/store/hosted-CI or durable execution proof claimed. User files/logs remain untouched. Publication follows; S13 remains unstarted and requires actual S12 merge.
+
+Publication: implementation commit9231ac7 pushed to origin/codex/fbp-12-inspection-export; [PR #21](https://github.com/SilverFox70/node-eventDispatcher/pull/21) created against master. This follow-up records publication only; no merge claimed. S13 still requires actual merge.

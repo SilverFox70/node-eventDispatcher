@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S11 keyed collation; S12 requires actual S11 merge",
+  "next_planning_action": "Review S12 inspection/export; S13 requires actual S12 merge",
   "slices": [
     {
       "id": "S00",
@@ -432,7 +432,7 @@
       "previous": "S10",
       "next": "S12",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "af0cea1ac0ced8f90805c0f1eeb38862f6661966",
       "conditions": [
         "C18",
         "C19",
@@ -448,7 +448,7 @@
         "S11.C"
       ],
       "execution_receipt": "S11-execution.md",
-      "review_status": "open",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/20",
       "implementation_commit": "9c0135d"
     },
@@ -458,8 +458,8 @@
       "title": "Inspect all registered graphs and event relationships",
       "plan": "12-inspection-export-plan.md",
       "branch": "codex/fbp-12-inspection-export",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S11",
       "next": "S13",
       "base": "master after previous slice merge",
@@ -469,10 +469,17 @@
         "C53",
         "C65"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T7 scope + T4 Mermaid export portion",
+      "authorized_tasks": [
+        "S12.A",
+        "S12.B",
+        "S12.C"
       ],
-      "legacy_master_work": "T7 scope + T4 Mermaid export portion"
+      "execution_receipt": "S12-execution.md",
+      "review_status": "open",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/21",
+      "implementation_commit": "9231ac7"
     },
     {
       "id": "S13",

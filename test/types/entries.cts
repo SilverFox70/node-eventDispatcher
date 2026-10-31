@@ -82,3 +82,10 @@ void [joinedValue, joined];
 // @ts-expect-error Composed output requires every input field in installed declarations.
 const missingJoined: root.Values<typeof joined.out>['out'] = { left: 1 };
 void missingJoined;
+
+const inspection = root.createInspectionScope();
+const inspected: model.InspectionSnapshot = inspection.snapshot();
+const diagram: string = model.toMermaid(inspected);
+void diagram;
+// @ts-expect-error Installed inventory declarations remain immutable.
+inspected.sources.push({});

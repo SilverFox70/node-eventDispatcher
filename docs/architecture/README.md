@@ -34,3 +34,5 @@ S09A adds [node-operation deadlines and explicit retries](node-operations.md). S
 S10 adds [stream components](stream-components.md): serial map/filter callbacks, explicit bounded broadcast and readiness-ordered merge. Keyed result collation remains S11.
 
 S11 adds [keyed joins](keyed-joins.md): bounded job/key collation into strict typed products, with non-reusable completed groups.
+
+S12 adds [scoped inspection and Mermaid export](inspection.md): explicit live/idle graph inventory, run association and current dispatcher relationships, with detached browser-safe metadata.

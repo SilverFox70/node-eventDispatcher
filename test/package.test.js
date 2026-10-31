@@ -132,10 +132,16 @@ test('both distribution entries load', () => {
           await jr.send('b', jz); await jr.send('a', ja); await jr.finish(); const jv = await joined;
           if (jv.length !== 1 || jv[0].jobId !== 'join-job' || jv[0].parentPacketIds.join(',') !== [ja.packetId, jz.packetId].join(',')) throw Error('Join lineage lost');
           console.log('joined:' + JSON.stringify(jv[0].value));
+          const scope = f.createInspectionScope(); scope.addGraph('joined', { spec: jb.toSpec(), catalog: f.describeRegistry({ 'join-by-key@1': keyed }), run: jr });
+          const dispatch = f.createDispatcher(); dispatch.declarePublisher('service', 'changed'); scope.addDispatcher('events', dispatch);
+          const model = ${mode === 'commonjs' ? "require('event-driven-design/model')" : "await import('event-driven-design/model')"};
+          const inspection = scope.snapshot(), diagram = model.toMermaid(inspection);
+          if (inspection.sources[0].run.status !== 'completed' || !diagram.includes('subgraph s1')) throw Error('Inspection export failed');
+          console.log('inspection:' + inspection.sources.length);
 
         })().catch(error => { console.error(error); process.exitCode = 1; });
       `]);
-      assert.equal(output.trim(), 'stream:4\nattempts:2\ndeadline:TIMEOUT\nnode-deadline:NODE_TIMEOUT\nfunction:4:2\nfunction-timeout:NODE_TIMEOUT\ncomponents:4,4\njoined:{"a":1,"b":10}');
+      assert.equal(output.trim(), 'stream:4\nattempts:2\ndeadline:TIMEOUT\nnode-deadline:NODE_TIMEOUT\nfunction:4:2\nfunction-timeout:NODE_TIMEOUT\ncomponents:4,4\njoined:{"a":1,"b":10}\ninspection:2');
     }
     for (const file of ['entries.mts', 'entries.cts', 'tsconfig.json']) cpSync(join(root, 'test/types', file), join(fixture, file));
     run(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', join(fixture, 'tsconfig.json')]);
