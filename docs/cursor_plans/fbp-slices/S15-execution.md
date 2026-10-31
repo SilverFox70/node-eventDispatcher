@@ -41,3 +41,5 @@ These are source-request rates, not total internal packet deliveries. Heap inclu
 Readability reviewed: benchmark fixture112 lines, runner18, integration97, stress37. The shared fixture owns load graph construction, constant-size real-channel observation and the measurement assertions used by both stress and benchmark, with public runtime orchestration unchanged. The tiny integration-only two-packet trace is bounded; no unbounded packet history is retained by load fixtures. No file needs a size exception or miscellaneous helper hierarchy. Documentation/README/map explain actual progress and how to reproduce observations. User artifacts untouched.
 
 Implementation, C26/C27 integration/load/resource proofs, reused C31, quality gates and coverage complete. Publication follows; S16 remains unstarted and requires actual S15 merge.
+
+Publication: implementation commitdf3910b pushed to origin/codex/fbp-15-reliability-load; [PR #24](https://github.com/SilverFox70/node-eventDispatcher/pull/24) created against master. This follow-up records publication only; no merge claimed. S16 still requires actual merge.

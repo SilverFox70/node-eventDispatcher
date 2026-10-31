@@ -567,7 +567,9 @@
         "S15.C"
       ],
       "execution_receipt": "S15-execution.md",
-      "review_status": "ready-for-review"
+      "review_status": "open",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/24",
+      "implementation_commit": "df3910b"
     },
     {
       "id": "S16",
