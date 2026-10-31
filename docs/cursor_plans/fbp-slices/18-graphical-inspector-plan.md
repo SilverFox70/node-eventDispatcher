@@ -9,7 +9,7 @@ Parent: master r6 / SC-FBP-4 + proposed IC1-r2 / SP1-r2; acceptance pending.
 
 ## Story and branch outcome
 
-A user can visually inspect every registered graph/event source, select details and refresh current subscription state with an accessible equivalent.
+A user can visually inspect every registered graph/event source, select details and automatically see current relationship changes with an accessible equivalent.
 
 This is one feature/task branch, not permission to execute the full roadmap. The three bounded tasks below belong to this one outcome. One agent session is the sizing target; unresolved prerequisites stop execution rather than expand it.
 
@@ -32,7 +32,7 @@ Shared contract: master SC-FBP-4 + [SP1](shared-execution.md); S00 is the only i
 ## Observable behavior and boundaries
 
 1. Render deterministic read-only SVG from InspectionSnapshot, source selector and node/port/event details, directed connections and legend for defined/declared/active; text/connection table mirrors exact relationships.
-2. Fixture two graph definitions (one without run) plus dispatcher. Explicit refresh samples bounded request-local activity and shows once/unsubscribe topology changes; no invented shared immortal server state.
+2. Fixture two graph definitions (one without run) plus dispatcher. Automatically deliver current topology changes to the open display, including subscribe, once removal, unsubscribe and publisher disposal. Preserve bounded, explicitly owned source/connection lifetimes; no invented shared immortal server state. See LV1 below.
 3. Keyboard-accessible controls/selected state and error/loading/current-request logic; malformed descriptor disables run; obsolete request abort prevents stale UI overwrite. Labels are text, never HTML/code. Verify SVG vertex/edge/label counts against snapshot.
 
 ### Exact allowed-change boundary
@@ -65,7 +65,7 @@ State/setup/order/exact assertions are the cited master condition rows plus Obse
 
 ### S18.A — establish this feature's contracts and failing proofs
 
-Purpose/references: the story and conditions above. Prerequisites: S17 merged into master, with accepted proof and exact merge SHA recorded; apply the shared identity-release gate when applicable. Read: parent contract sections corresponding to this feature, shared-execution.md and delivered predecessor symbols. Allowed changes: tests/type fixtures listed in the allowlist, minimal interface scaffold needed to reach the intended behavior, and local journal. Required behavior: establish explicit fixtures/order/outcomes from the linked master ledger before production logic. Named proof targets: fixtures/next-consumer/e2e/inspector.spec.ts::graphs and event relationships visualized; fixtures/next-consumer/e2e/inspector.spec.ts::schema and current request state. Preservation: do not duplicate existing cases that already assert the same boundary; extend their tables. Verification/red: Selected source graph differs as expected, once edge disappears on refreshed snapshot, hostile labels inert, keyboard details/text agree with graphic, older response cannot overwrite latest. Completion: retain actual expected nonzero exits/assertion pointers and valid setups; missing module/setup error is not behavioral proof. Stop if predecessor interface, identity amendment or contract semantics are missing.
+Purpose/references: the story and conditions above. Prerequisites: S17 merged into master, with accepted proof and exact merge SHA recorded; apply the shared identity-release gate when applicable. Read: parent contract sections corresponding to this feature, shared-execution.md and delivered predecessor symbols. Allowed changes: tests/type fixtures listed in the allowlist, minimal interface scaffold needed to reach the intended behavior, and local journal. Required behavior: establish explicit fixtures/order/outcomes from the linked master ledger before production logic. Named proof targets: fixtures/next-consumer/e2e/inspector.spec.ts::graphs and event relationships visualized; fixtures/next-consumer/e2e/inspector.spec.ts::schema and current request state. Preservation: do not duplicate existing cases that already assert the same boundary; extend their tables. Verification/red: Selected source graph differs as expected, once edge disappears without manual refresh, hostile labels inert, keyboard details/text agree with graphic, older response cannot overwrite latest. Completion: retain actual expected nonzero exits/assertion pointers and valid setups; missing module/setup error is not behavioral proof. Stop if predecessor interface, identity amendment or contract semantics are missing.
 
 ### S18.B — deliver the bounded feature
 
@@ -77,7 +77,7 @@ Prerequisite: S18.B implementation. Allowed changes: focused evidence-driven fix
 
 ## Acceptance demonstration and handoff
 
-Recognizable accepted outcome: **A user can visually inspect every registered graph/event source, select details and refresh current subscription state with an accessible equivalent.**
+Recognizable accepted outcome: **A user can visually inspect every registered graph/event source, select details and automatically see current relationship changes with an accessible equivalent.**
 
 Handoff artifact/interface: Actual graphic and accessibility/UI tests composing /model/inspection with Next package consumer; S19 reviews adoption as whole.
 
@@ -109,3 +109,15 @@ Canonical proposed identity contract: [IC1-r2](../fbp-identity-contract.md). Gra
 Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.
 
 Backend-evaluation display handoff (user direction2026-10-30): consume S05 authoritative safe validation code/path results; before implementation freeze bounded report transport, node/port/revision/run-request attribution and current-result lifecycle for this layer. UI must echo the backend verdict and suppress obsolete responses, with raw payload display only by explicit application policy. See master backend display direction and [S05 contract guide](../../architecture/contracts-and-components.md). This note does not authorize later implementation.
+
+## LV1 — Automatic relationship updates (user direction, 2026-10-31)
+
+This amendment supersedes r2’s manual-refresh workflow and the corresponding C54/T11 wording. The user explicitly prefers seeing relationship changes without refreshing the display. This records a product requirement, not a delivered live API or S18 execution approval.
+
+- Load an authoritative safe snapshot initially, then update SVG, details and accessible relationship text automatically while the inspected source remains connected. Manual refresh may be an optional recovery control; it cannot be required to see a change.
+- Prefer change-driven delivery. S18.A must first settle the real mutation-notification producer, scoped server-to-browser transport, source ownership and connection lifecycle against the delivered APIs. Existing `createInspectionScope().snapshot()` only samples state; opening a stream alone does not make it observable. If this requires core changes outside the current allowlist, amend the producer scope and proof owners before implementation.
+- Keep pending topology updates bounded (for example, coalesce to the latest snapshot); do not retain packet payloads or an event history. This is a current topology display, not a promise to replay every transient relationship.
+- Show connection/stale status on interruption, reconnect automatically with bounded retry behavior, and obtain a fresh authoritative snapshot after reconnect. Discard obsolete source/connection generations and out-of-order snapshots. Clean up observers, connections and timers on source replacement, navigation and disconnect; do not create an immortal session/run map.
+- Extend C54 browser proofs: mutate actual registered dispatcher relationships after initial render without clicking refresh; assert graphic and text both change. Cover once removal, unsubscribe, publisher disposal and new subscription, source switching with late updates, interruption/reconnect resynchronization, and teardown releasing owned resources. Runtime tests must prove the actual notification producer if a new producer is needed.
+
+S17 is merged as PR #26 at `6747624ae9c78c72e2f1654ac817f8409a751c9e`. S18 implementation remains unstarted; the live-delivery interface/design checkpoint above must be resolved before dependent implementation tasks are ready.
