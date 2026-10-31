@@ -12,6 +12,7 @@ S01 introduces the following commands (use the exact Node/npm pins in .nvmrc and
 | `npm run build` | Generate ESM/CJS JavaScript, declarations and source maps |
 | `npm run check` | Build, strict source/declaration-consumer type checks and lint |
 | `npm test` | Build and run delivered offline node:test suites |
+| `npm run test:next` / `npm run demo:next` | Production packed Next consumer acceptance / manual localhost trial |
 | `npm run test:package` | Build, pack/install isolated consumers and run the shipped cookbook |
 | `npm run coverage` | Build, run offline tests with all-files source mapping, enforce per-file thresholds |
 | `node scripts/check-agent-guidance.mjs` | Validate documentation links and slice ordering |

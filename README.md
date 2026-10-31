@@ -19,9 +19,9 @@ The current runtime executes node graphs; these application examples still need 
 
 ## Current progress
 
-**Implemented through S16 on this review branch.** S00–S15 have merged. S16 verifies actual packed installs, typed node recipes and runnable installed examples; it is awaiting review and merge. **S17 is next:** a real Next.js application consuming the package.
+**Implemented through S17 on this review branch.** S00–S16 have merged. S17 installs the package in a production Next.js fixture with server execution, current-result handling and browser isolation; it is awaiting review and merge. **S18 is next:** read-only graph/event visualization.
 
-You can now build and run real, typed, asynchronous pipelines locally. The graphical inspector UI, the Next.js example and optional durable execution remain on the roadmap below.
+You can now build and run real, typed, asynchronous pipelines locally. The graphical inspector UI and optional durable execution remain on the roadmap below. You can now try the small Next.js example with `npm run demo:next`; its printed localhost URL runs a production build.
 
 ## What exists in this revision
 
@@ -55,6 +55,8 @@ node examples/07-external-feed.cjs
 ```
 
 The first doubles1/2/3/4 and filters the results to6/8. The second splits one account request into independent asynchronous profile/settings operations, then brings their separate results into one stream. The third collates those branches into one typed result. The fourth prints a graph/event diagram inventory. The fifth demonstrates a service-injected JavaScript lookup with a local fake service. The sixth tests one node and a complete graph using the public testing helpers. The seventh demonstrates external feeding, backpressure and cancellation. All run offline. See [examples and expected output](examples/README.md).
+
+For the Next.js application, run `npm run demo:next` (Ctrl+C to stop) or `npm run test:next` for production HTTP/browser acceptance. See [the Next.js guide](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/nextjs.md). Dependency/browser installation is setup; demo requests use local fakes.
 
 ## Try the current APIs
 
