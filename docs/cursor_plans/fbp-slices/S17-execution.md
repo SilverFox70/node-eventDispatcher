@@ -41,3 +41,5 @@ Pinned command-local Node26.13.0/npm11.20.0; root lock SHA2567a72e97113003c27a10
 Readability reviewed: route33 lines, client38, provider17, registry16, request coordinator22, type protocol8, page9/layout5/finished4 and small local CSS. Verification scripts split command/server/source-map ownership; no second graph interpreter. Consumer tests remain around200 lines for one cohesive production boundary with shared setup/teardown and explicit cases. No implementation file needs a size exception. Generated lock files are deliberately longer; core/source histories and prior receipts remain intact. User artifacts untouched.
 
 Local implementation/proof/quality/coverage complete. Hosted core matrix plus the separate Ubuntu24.04 packaged Next/browser job and publication follow. No remote result or merge inferred. S18 remains unstarted and requires actual S17 merge.
+
+Publication: implementation commit3865cb0 pushed to origin/codex/fbp-17-next-server-consumer; [PR #26](https://github.com/SilverFox70/node-eventDispatcher/pull/26) created against master. Hosted core/Next results are inspected separately; no merge claimed. S18 remains unstarted.
