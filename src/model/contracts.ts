@@ -75,9 +75,9 @@ function primitiveLiteral(value: unknown): boolean {
 
 export function assertDescriptorSchema(value: unknown, allowAny = false): asserts value is Json {
   assertJsonMetadata(value);
-  function walk(input: unknown): void {
+  function walk(input: unknown, allowEmpty = allowAny): void {
     const fields = metadataRecord(input);
-    if (Object.keys(fields).length === 0) { if (!allowAny) throw new FlowError('INVALID_CATALOG'); return; }
+    if (Object.keys(fields).length === 0) { if (!allowEmpty) throw new FlowError('INVALID_CATALOG'); return; }
     for (const [key, item] of Object.entries(fields)) {
       if (key === '$schema') { if (item !== 'https://json-schema.org/draft/2020-12/schema') throw new FlowError('INVALID_CATALOG'); }
       else if (['description', 'title', 'format', 'pattern'].includes(key)) {
@@ -90,13 +90,13 @@ export function assertDescriptorSchema(value: unknown, allowAny = false): assert
       } else if (['minLength', 'maxLength', 'minItems', 'maxItems'].includes(key)) {
         if (!Number.isSafeInteger(item) || (item as number) < 0) throw new FlowError('INVALID_CATALOG');
       } else if (key === 'properties') {
-        for (const child of Object.values(metadataRecord(item))) walk(child);
+        for (const child of Object.values(metadataRecord(item))) walk(child, true);
       } else if (key === 'items') walk(item);
       else if (key === 'additionalProperties') { if (item !== false) throw new FlowError('INVALID_CATALOG'); }
       else if (['anyOf', 'oneOf', 'allOf'].includes(key)) {
         const children = metadataArray(item);
         if (children.length === 0) throw new FlowError('INVALID_CATALOG');
-        children.forEach(walk);
+        children.forEach(child => walk(child));
       } else if (key === 'required') {
         if (metadataArray(item).some(name => typeof name !== 'string')) throw new FlowError('INVALID_CATALOG');
       } else if (key === 'enum') {

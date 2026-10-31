@@ -48,10 +48,14 @@ export function getContractIssues(contract: ContractBase, value: unknown): reado
   return contracts.get(contract)!(value);
 }
 
-export function contract<T extends Json>(id: string, schema: z.ZodType<T, T>): Contract<T> {
+function assertContractId(id: string): void {
   if (typeof id !== 'string' || id.length === 0 || id.length > 128 || id.lastIndexOf('@') < 1 || id.endsWith('@') || id === 'json@1') {
     throw new FlowError('INVALID_ARGUMENT', 'Invalid or reserved contract ID');
   }
+}
+
+export function contract<T extends Json>(id: string, schema: z.ZodType<T, T>): Contract<T> {
+  assertContractId(id);
   assertSupported(schema);
   let descriptor: Json;
   try {
@@ -79,4 +83,28 @@ export function assertCompatibleContracts(source: ContractBase, destination: Con
   assertContract(source); assertContract(destination);
   const port = (value: ContractBase) => ({ contractId: value.id, representationId: value.representationId, schema: value.schema });
   if (!contractsCompatible(port(source), port(destination))) throw new FlowError('CONTRACT_MISMATCH');
+}
+
+/** Internal product contract: compose trusted validators and descriptors, without schema interpretation. */
+export function objectContract(id: string, inputs: Readonly<Record<string, ContractBase>>): Contract<Json> {
+  assertContractId(id);
+  const fields = readRecord(inputs, 'INVALID_ARGUMENT');
+  for (const value of Object.values(fields)) assertContract(value);
+  const ports = fields as Readonly<Record<string, ContractBase>>;
+  const names = Object.keys(fields);
+  const descriptor = snapshotJsonMetadata({ type: 'object', additionalProperties: false,
+    properties: Object.fromEntries(names.map(name => [name, ports[name]!.schema])), required: names });
+  assertDescriptorSchema(descriptor);
+  return makeContract(id, descriptor, value => {
+    const issue = (code: string, path: readonly (string | number)[]): ContractIssue => Object.freeze({ code, path: Object.freeze([...path]) });
+    if (value === null || typeof value !== 'object' || Array.isArray(value)) return Object.freeze([issue('invalid_type', [])]);
+    const issues: ContractIssue[] = [];
+    if (Object.keys(value).some(name => !Object.hasOwn(fields, name))) issues.push(issue('unrecognized_keys', []));
+    for (const name of names) {
+      for (const child of getContractIssues(ports[name]!, Object.hasOwn(value, name) ? value[name] : undefined)) {
+        issues.push(issue(child.code, [name, ...child.path]));
+      }
+    }
+    return Object.freeze(issues);
+  });
 }

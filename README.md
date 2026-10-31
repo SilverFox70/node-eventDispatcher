@@ -19,7 +19,7 @@ The current runtime executes node graphs; these application examples still need 
 
 ## Current progress
 
-**Implemented through S10 on this review branch.** S00–S09B have merged. S10 adds reusable map/filter/broadcast/merge components and runnable demos; it is awaiting review and merge. **S11 is next:** collect related asynchronous branch results into one payload using job/key correlation.
+**Implemented through S11 on this review branch.** S00–S10 have merged. S11 collects related asynchronous branch results into one typed payload using job/key correlation; it is awaiting review and merge. **S12 is next:** a scoped inventory of graph and event relationships with safe diagram export.
 
 You can now build and run real, typed, asynchronous pipelines locally. Visual graph inspection, the Next.js example, public test helpers and optional durable execution remain on the roadmap below.
 
@@ -32,7 +32,7 @@ You can now build and run real, typed, asynchronous pipelines locally. Visual gr
 - Immutable JSON packets with separate packet/job identities, immediate-parent lineage and optional correlation keys.
 - Internal bounded FIFO channels with backpressure, close/drain and abort semantics, used by the streaming runtime.
 - Typed graph construction and authoritative compilation, isolated streaming runs, bounded duplicate protection, cancellation, deadlines and safe diagnostics.
-- Serial map/filter callbacks, explicit branching and bounded readiness-ordered merging.
+- Serial map/filter callbacks, explicit branching, bounded readiness-ordered merging and job/key result collation.
 - Offline tests, packed-package consumer/type checks and source-mapped per-file coverage gates.
 
 The [slice index](docs/cursor_plans/fbp-slices/INDEX.md) records review/merge status; a feature on a review branch is not automatically released. The package name remains `event-driven-design`. No new npm release is claimed here.
@@ -46,9 +46,10 @@ npm ci
 npm run build
 node examples/01-map-filter.cjs
 node examples/02-async-branches.cjs
+node examples/03-keyed-collation.cjs
 ```
 
-The first doubles1/2/3/4 and filters the results to6/8. The second splits one account request into independent asynchronous profile/settings operations, then brings their separate results into one stream. Both run offline. See [examples and expected output](examples/README.md).
+The first doubles1/2/3/4 and filters the results to6/8. The second splits one account request into independent asynchronous profile/settings operations, then brings their separate results into one stream. The third collates those branches into one typed result. All run offline. See [examples and expected output](examples/README.md).
 
 ## Try the current APIs
 
@@ -105,6 +106,7 @@ The runtime refuses repeated delivery of the same packet to the same node within
 ## Where to go next
 
 - [Ordered feature slices and current progress](docs/cursor_plans/fbp-slices/INDEX.md)
+- [Keyed result collation](docs/architecture/keyed-joins.md)
 - [Stream components, ordering and operation policies](docs/architecture/stream-components.md)
 - [Ordinary function nodes](docs/architecture/function-nodes.md)
 - [Streaming runtime and lifecycle](docs/architecture/runtime.md)

@@ -41,6 +41,7 @@ export type NetworkRun = Readonly<{
 const definitions = new WeakMap<NetworkRun, GraphDefinition>();
 const internalCodes = new Set(['INVALID_PACKET', 'OUTPUT_CONTRACT', 'UNKNOWN_PORT', 'CONCURRENT_SEND',
   'CONCURRENT_READ', 'CHANNEL_CLOSED', 'RUN_TERMINATED', 'DUPLICATE_PACKET', 'EXECUTION_CAPACITY',
+  'DUPLICATE_KEY', 'JOIN_CAPACITY', 'JOIN_INCOMPLETE', 'JOIN_GROUP_COMPLETED', 'JOIN_HISTORY_CAPACITY',
   'UNAWAITED_TASK', 'NODE_TIMEOUT', 'TASK_ACTIVE', 'TASK_IO_ACCESS', 'TASK_TERMINATED', 'INPUT_ABANDONED', 'UNAWAITED_SEND']);
 
 /** Start independent stream processes; callers must consume outputs concurrently with feeding inputs. */
@@ -159,7 +160,7 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
           return result;
         },
       });
-      registerProcessContext(ctx, { runId, nodeId: node.id, component: definition.registry[nodeSpec.component]! });
+      registerProcessContext(ctx, { runId, nodeId: node.id, component: definition.registry[nodeSpec.component]! }, state.onEnd);
       void Promise.resolve().then(() => {
         if (!state.check()) return;
         const spec = definition.spec.nodes.find(spec => spec.id === node.id)!;

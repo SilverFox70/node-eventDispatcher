@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S10 stream components; S11 requires actual S10 merge",
+  "next_planning_action": "Review S11 keyed collation; S12 requires actual S11 merge",
   "slices": [
     {
       "id": "S00",
@@ -400,7 +400,7 @@
       "previous": "S09B",
       "next": "S11",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "b2385726a814e76c54ff2a7657b72ea3e990d16a",
       "conditions": [
         "C16",
         "C17",
@@ -417,7 +417,7 @@
         "S10.C"
       ],
       "execution_receipt": "S10-execution.md",
-      "review_status": "open",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/19",
       "implementation_commit": "3eb1634"
     },
@@ -427,8 +427,8 @@
       "title": "Collate asynchronous branch results by key",
       "plan": "11-keyed-join-plan.md",
       "branch": "codex/fbp-11-keyed-join",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S10",
       "next": "S12",
       "base": "master after previous slice merge",
@@ -440,10 +440,15 @@
         "C61",
         "C62"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T6 keyed join",
+      "authorized_tasks": [
+        "S11.A",
+        "S11.B",
+        "S11.C"
       ],
-      "legacy_master_work": "T6 keyed join"
+      "execution_receipt": "S11-execution.md",
+      "review_status": "pending-publication"
     },
     {
       "id": "S12",
