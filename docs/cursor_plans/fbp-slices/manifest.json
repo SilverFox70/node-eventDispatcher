@@ -386,7 +386,8 @@
         "S09B.C"
       ],
       "execution_receipt": "S09B-execution.md",
-      "review_status": "pending-publication"
+      "review_status": "open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/18"
     },
     {
       "id": "S10",
