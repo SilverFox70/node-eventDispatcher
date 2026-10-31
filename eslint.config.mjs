@@ -13,7 +13,7 @@ export default tseslint.config(
   { ignores: ['dist/**', 'coverage/**'] },
   {
     ...js.configs.recommended,
-    files: ['scripts/**/*.mjs', 'test/**/*.js', 'examples/**/*.cjs', 'test/node-template-fixture.cjs'],
+    files: ['scripts/**/*.mjs', 'test/**/*.js', 'examples/**/*.cjs', 'benchmark/**/*.cjs', 'test/node-template-fixture.cjs'],
     languageOptions: {
       globals: {
         console: 'readonly',

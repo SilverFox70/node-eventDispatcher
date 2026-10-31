@@ -74,3 +74,7 @@ User authorized S13 after verified S12 merge. See [S13 receipt](fbp-slices/S13-e
 ## S14 — public runtime-backed testing
 
 User authorized S14 after verified S13 merge. See [S14 receipt](fbp-slices/S14-execution.md) for typed node/dynamic graph helpers, bounded output/error/cleanup proofs and verification/publication. S15 remains unstarted.
+
+## S15 — assembled runtime reliability and load
+
+User authorized S15 after verified S14 merge. See [S15 receipt](fbp-slices/S15-execution.md) for complete-flow, failure, repeated cleanup and sustained-load proofs with reproducible throughput/heap observations. S16 remains unstarted.

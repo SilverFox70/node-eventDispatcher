@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S14 public test SDK; S15 requires actual S14 merge",
+  "next_planning_action": "Review S15 reliability/load proof; S16 requires actual S15 merge",
   "slices": [
     {
       "id": "S00",
@@ -523,7 +523,7 @@
       "previous": "S13",
       "next": "S15",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "75fb972bd685bdc15d68d7624d3d34017024b453",
       "conditions": [
         "C37",
         "C38",
@@ -538,7 +538,7 @@
         "S14.C"
       ],
       "execution_receipt": "S14-execution.md",
-      "review_status": "open",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/23",
       "implementation_commit": "25497f1"
     },
@@ -548,8 +548,8 @@
       "title": "Prove composed flows and sustained bounded execution",
       "plan": "15-reliability-load-plan.md",
       "branch": "codex/fbp-15-reliability-load",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S14",
       "next": "S16",
       "base": "master after previous slice merge",
@@ -559,10 +559,15 @@
         "C27",
         "C31"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T9",
+      "authorized_tasks": [
+        "S15.A",
+        "S15.B",
+        "S15.C"
       ],
-      "legacy_master_work": "T9"
+      "execution_receipt": "S15-execution.md",
+      "review_status": "ready-for-review"
     },
     {
       "id": "S16",
