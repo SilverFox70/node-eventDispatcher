@@ -40,3 +40,5 @@ Monotonic early/delayed wake and long-duration chunk tests do not assert elapsed
 Readability: runtime facade170 lines, state63, deadline24; lifecycle test108, diagnostic test50 and clock fixture26. Existing state remains the diagnostics owner, so no artificial new diagnostics facade was added. Source responsibilities and shared helpers stay cohesive; no file exceeds200 lines and no wrapper forest or second scheduler introduced. Root/architecture README current-state prose was corrected to reflect delivered graph execution and duplicate protection.
 
 Implementation complete; C21–C25 verified with preserved S08 assertions; quality/coverage passed. Publication follows. No hosted CI/Next/browser/provider/durable recovery claim. S10 starts only after actual S09 merge.
+
+Publication: implementation commit9676ad7 pushed on codex/fbp-09-lifecycle-diagnostics; [PR #16](https://github.com/SilverFox70/node-eventDispatcher/pull/16) created against master. Final receipt/index/manifest pushed before marking ready for review. No merge claimed. Documentation-only publication updates preserve applicability of final source/config verification.
