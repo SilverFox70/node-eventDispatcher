@@ -353,7 +353,9 @@
         "S09A.B",
         "S09A.C"
       ],
-      "review_status": "pending-publication"
+      "review_status": "submitted",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/17",
+      "implementation_commit": "f6e0968"
     },
     {
       "id": "S09B",
