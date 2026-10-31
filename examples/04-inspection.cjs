@@ -1,8 +1,8 @@
 const {
   createInspectionScope, createDispatcher, map, contract, createGraph,
   compileGraph, describeRegistry, startNetwork, packet,
-} = require('../dist/cjs');
-const { toMermaid } = require('../dist/cjs/model');
+} = require('event-driven-design');
+const { toMermaid } = require('event-driven-design/model');
 const { z } = require('zod');
 
 async function main() {

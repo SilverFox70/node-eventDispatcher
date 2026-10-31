@@ -26,7 +26,7 @@ function buildTemplate(change = source => source) {
       ['zod', join(root, 'node_modules/zod')],
       ['@types', join(root, 'node_modules/@types')],
     ];
-    for (const [name, target] of dependencies) symlinkSync(target, join(directory, 'node_modules', name), 'dir');
+    for (const [name, target] of dependencies) symlinkSync(target, join(directory, 'node_modules', name), process.platform === 'win32' ? 'junction' : 'dir');
     const build = spawnSync(process.execPath, [
       join(root, 'node_modules/typescript/bin/tsc'), '--target', 'ES2022', '--module', 'NodeNext',
       '--sourceMap', '--strict', '--types', 'node', '--noUncheckedIndexedAccess', '--exactOptionalPropertyTypes',

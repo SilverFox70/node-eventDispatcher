@@ -2,17 +2,19 @@
   "all": true,
   "src": [
     "dist/cjs",
-    "server/src"
+    "server/src",
+    "examples/legacy"
   ],
   "extension": [
     ".js",
-    ".ts"
+    ".ts",
+    ".cjs"
   ],
   "include": [
     "dist/**/*.js",
     "src/**/*.ts",
-    "server/src/www*.js",
-    "server/src/eventDispatcher.js"
+    "server/src/eventDispatcher.js",
+    "examples/legacy/*.cjs"
   ],
   "exclude": [
     "**/*.d.ts",

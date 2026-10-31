@@ -2,7 +2,7 @@
 
 ## Current checkout
 
-The package now exposes the S02 TypeScript dispatcher; historical examples remain under server/src and the dispatcher path there is a CommonJS compatibility shim. The dependency cleanup removes request, shortid and the fs package shim; current runtime dependencies are Zod and cli-color. Legacy HTTP examples use native fetch and log IDs use node:crypto.randomUUID. S01 replaces the absent main.js package entry with generated distributions and adds tooling tests; the legacy scratch examples remain unchanged.
+The package exposes the typed dispatcher and FBP runtime. Retained historical utilities live under examples/legacy; only server/src/eventDispatcher.js remains as a compatibility shim. The sole runtime dependency is Zod. Native fetch and node:fs/promises replace historical HTTP/filesystem dependencies. S16 removes obsolete scratch scripts and verifies the public cookbook from installed tarballs.
 
 S01 introduces the following commands (use the exact Node/npm pins in .nvmrc and package.json):
 
@@ -12,11 +12,12 @@ S01 introduces the following commands (use the exact Node/npm pins in .nvmrc and
 | `npm run build` | Generate ESM/CJS JavaScript, declarations and source maps |
 | `npm run check` | Build, strict source/declaration-consumer type checks and lint |
 | `npm test` | Build and run delivered offline node:test suites |
+| `npm run test:package` | Build, pack/install isolated consumers and run the shipped cookbook |
 | `npm run coverage` | Build, run offline tests with all-files source mapping, enforce per-file thresholds |
 | `node scripts/check-agent-guidance.mjs` | Validate documentation links and slice ordering |
-| `npm run main` | Legacy demo with external HTTP; not an offline check |
+| `npm run main` | Offline pipeline demo |
 
-The root exports the dispatcher factory, singleton and types, with S03 ownership/publisher inspection. /model exports browser-safe readonly topology types; /testing exports bounded runNode/runGraph helpers using the production compiler/runtime. See [dispatcher migration](architecture/dispatcher.md). Legacy CommonJS code remains under server/src. No global runtime change is required; use a version manager or command-local PATH. Exact engine enforcement deliberately refuses an unsupported Node/npm combination. [S01 receipt](cursor_plans/fbp-slices/S01-execution.md) records versions and proof; [baseline](agent-baselines/INDEX.md) records the historical placeholder test and defects.
+The root exports the dispatcher factory, singleton and types, with S03 ownership/publisher inspection. /model exports browser-safe readonly topology types; /testing exports bounded runNode/runGraph helpers using the production compiler/runtime. See [dispatcher migration](architecture/dispatcher.md). The CommonJS compatibility shim remains under server/src; copyable legacy utilities are under examples/legacy. No global runtime change is required; use a version manager or command-local PATH. Exact engine enforcement deliberately refuses an unsupported Node/npm combination. [S01 receipt](cursor_plans/fbp-slices/S01-execution.md) records versions and proof; [baseline](agent-baselines/INDEX.md) records the historical placeholder test and defects.
 
 ## Toolchain and future package features
 

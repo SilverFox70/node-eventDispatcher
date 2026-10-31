@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const { z } = require('zod');
-const { contract, map, defineComponent, createGraph, compileGraph, packet } = require('../dist/cjs');
-const { runNode, runGraph } = require('../dist/cjs/testing');
+const { contract, map, defineComponent, createGraph, compileGraph, packet } = require('event-driven-design');
+const { runNode, runGraph } = require('event-driven-design/testing');
 
 async function main() {
   const number = contract('demo-test-number@1', z.number());

@@ -78,3 +78,7 @@ User authorized S14 after verified S13 merge. See [S14 receipt](fbp-slices/S14-e
 ## S15 — assembled runtime reliability and load
 
 User authorized S15 after verified S14 merge. See [S15 receipt](fbp-slices/S15-execution.md) for complete-flow, failure, repeated cleanup and sustained-load proofs with reproducible throughput/heap observations. S16 remains unstarted.
+
+## S16 — installed package and cookbook
+
+User authorized S16 after verified S15 merge. See [S16 receipt](fbp-slices/S16-execution.md) for actual tarball/installed authoring proof, legacy cleanup, distribution/CI configuration and verification/publication. S17 remains unstarted.

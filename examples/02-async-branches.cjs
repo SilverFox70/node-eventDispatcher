@@ -3,7 +3,7 @@ const { z } = require('zod');
 const {
   contract, map, broadcast, merge, defineComponent,
   createGraph, compileGraph, startNetwork, packet,
-} = require('../dist/cjs');
+} = require('event-driven-design');
 
 // Local async stand-ins: these do not write to a database or call a service.
 async function saveProfile(profile, { signal }) {

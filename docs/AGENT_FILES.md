@@ -17,6 +17,7 @@ This map is the repository's cross-tool navigation source. No personal home-dire
 | [Inspection](architecture/inspection.md) | S12 explicit graph/run/dispatcher inventory and browser-safe diagram export | Registering sources, exporting topology or implementing later graphical inspection |
 | [Keyed joins](architecture/keyed-joins.md) | S11 typed result products, job/key groups, bounds and terminal refusal semantics | Collating asynchronous results or implementing downstream inspection/testing |
 | [Stream components](architecture/stream-components.md) | S10 map/filter/broadcast/merge, naming, bounded fan-out/fan-in and runnable example | Composing streams or implementing S11 keyed join |
+| [Installed application guide](guide.md) / [migration](migration.md) / [runtime overview](architecture/fbp-runtime.md) | S16 packed consumer cookbook, public install boundaries and retained legacy relocation | Using/distributing the tarball or migrating old callers |
 | [Node authoring](node-authoring.md) | S13 service-injected recipe, stateless/run-local state and compiled template checks | Writing or editing application nodes as a human or agent |
 | [Function nodes](architecture/function-nodes.md) | S09B typed ordinary handlers, automatic task policy and runnable example | Authoring simple nodes or implementing mapping/cookbook/testing consumers |
 | [Node operations](architecture/node-operations.md) | S09A operation budgets, scoped capabilities and explicit bounded retry policy | Authoring advanced nodes or integrating function helpers/combinators |

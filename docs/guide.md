@@ -1,63 +1,42 @@
-# Guide | EventDispatcher
+# Use NodeDispatcher in an application
 
-## Purpose of EventDispatcher
-EventDispatcher is a lightweight 'broadcaster' implementation of a "publish-subscribe" _Event Driven Architecture_ pattern. The Event Dispatcher itself acts as the hub to which all components subscribe to. When events occur, the Event Dispatcher notifies all subscribers. The EventDispatcher itself has no direct of who is emitting or listening to events.s
+The package name is event-driven-design. Build the checkout with its pinned Node26.13.0/npm11.20.0, then create a local artifact:
 
-## API
-Given the following:
-```Javascript
-var eventSystem = require('./eventDispatcher');
-var events = eventSystem.eventDispatcher;
+```sh
+npm ci
+npm run check
+npm run test:package
+npm pack
 ```
 
-```events.on(eventName, callback)``` - subscribes to event of *eventName* and set the callback function as *callback*. If an event of the given name already exists, then the callback will be appended to the list of subscribers to that event in EventDispatcher. If the given event name does not exist yet, it will be created.
+Install the resulting event-driven-design-1.0.0.tgz in another project with `npm install /absolute/path/event-driven-design-1.0.0.tgz`. This does not require an npm registry publication. The framework has one intentional runtime dependency, Zod4. Next/React are not dependencies. The distributed JavaScript is already built; consumers need no source aliases or transpilePackages setting. Source TypeScript and source maps ship for debugging.
 
-```events.emit(eventName, data, context)``` - notifies all subscribers that _eventName_ has occured, invoking all subscribed callbacks associated with that event. The **data** can be a single argument, an array of arguments, or an object. **Context** allows you to define the _this_ identifier for use in the subscribed functions that are called.
+## Choose a module format
 
-```events.once(eventName,callback)``` - subscribes to an event and invokes the callback function only once. Once the function is invoked, eventDispatcher removes the callback from the event using the ```off``` function internally.
+CommonJS uses require('event-driven-design'); ESM uses named imports from the same package. Import runNode/runGraph from event-driven-design/testing. Browser code may import only the metadata/model entry, event-driven-design/model; the runtime and test helpers are Node-only. Use one module format/package instance for a graph's contracts, components, compiler and executor: opaque handles from ESM and CJS are intentionally distinct.
 
-```events.off(eventName, existingCallback)``` -  unsubscribes the _existingCallback_ from the event of _eventName_.
-
-```events.unsubscribeAll(eventName)``` - removes all subscribed callbacks from the given event and deletes that _eventName_ event from EventDispatcher.
-
-```events.getEventNames()``` - returns an array of event names that are registered with EventDispatcher.
-
-```events.getSubscriberFunctionsByEventName(eventName)``` - returns an array of all functions associated with the given event.
-
-```events.isValidEvent(eventName)``` - returns **true** if there is an event of the given name registered, and **false** otherwise.
-
-```events.hasListenersOnEvent(eventName)``` - returns **true** if the given event is being listened to, and **false** otherwise.
-
-```events.eventLog()``` - returns an event log json object that contains a wealth of data about all events registered and called.
-
-```events.eventLoggerOn()``` - turn on the internal event logger (default is that the logger is *off*).
-
-```events.eventLoggerOff()``` - turn the internal event logger off.
-
-```events.eventLoggerIsOn()``` - returns **true** if the event logger is *on*, and **false** if the logger is *off*.
-
-```events.getAllSubscribedFunctions()``` - returns an object that contains every event name and every callback function associated with that event. For example, see the code below:
-```Javascript
-var list = events.getAllSubscribedFunctions();
-var listKeys = Object.keys(list);
-listKeys.forEach(function(key){
-  console.log("event name: " + key);
-  list[key].forEach(function(fn){
-    console.log(fn.name + ' = ' + fn);
-  })
+```js
+const { map, jsonContract, packet } = require('event-driven-design');
+const { runNode } = require('event-driven-design/testing');
+const double = map(jsonContract, jsonContract, value => value * 2);
+runNode(double, { inputs: { in: [packet(2)] } }).then(result => {
+  if (result.terminal.status !== 'completed') throw Error(result.terminal.code);
+  console.log(result.outputs.out[0].value); // 4
 });
 ```
-Would log the following type of output to the console:
-```Bash
-event name: messaging
-sendMessage = function (msg){
-  console.log(msg);
-}
-anotherMsg = function (){
-  console.log("Another message");
-}
-event name: alert
-myAlert = function (warn){
-  console.log(warn);
-}
-```
+
+For application-specific payloads, use contract(id, ZodSchema) rather than broad jsonContract. Runtime checks remain authoritative for JavaScript callers. [The runtime overview](architecture/fbp-runtime.md) describes identity, flow and limits.
+
+## Run installed examples
+
+From the consuming project, run `node node_modules/event-driven-design/examples/01-map-filter.cjs` through07-external-feed.cjs. [The example index](../examples/README.md) lists exact outcomes. They use package exports, native capabilities and local fakes; no checkout test helper, compiler, credentials or provider is needed. Examples are runnable files to copy/adapt, not additional exported library APIs.
+
+The set covers a typed pipeline, async enrichment, keyed collation, graph/event Mermaid export, injected lookup, public testing helpers, external feeding, backpressure and cancellation. The legacy source scanner is a historical string-literal heuristic, not the authoritative inspection model.
+
+## Copy and test a typed node
+
+Copy [templates/node](../templates/node/README.md) into an ESM application folder. Install local dev tools with `npm install --save-dev typescript@6.0.3 @types/node@26.6.6` and follow the template's compile/test commands. Contract types are inferred from Zod; the service interface, fake replies and independent expected fixtures remain explicit. runNode uses the real runtime, closes omitted inputs and collects bounded outputs. Always assert terminal.status as well as values.
+
+The installed-consumer checks compile both CommonJS/ESM declarations, run the exact found/missing template tests with a fake service, prove a wrong handler return is a type error, and prove a JavaScript bypass fails OUTPUT_CONTRACT. Fake services test node behavior; real-provider integration remains the application's responsibility.
+
+No automatic retries are enabled. Optional operation retries require explicit bounded policy and safe effect semantics. Durable saved graph definitions, graphical editing and crash-resumable execution are future capabilities, not part of installing this package. See [migration](migration.md) before adopting legacy code. Licensing is [ISC](../LICENSE).

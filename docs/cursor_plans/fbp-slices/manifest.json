@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S15 reliability/load proof; S16 requires actual S15 merge",
+  "next_planning_action": "Review S16 installed cookbook; S17 requires actual S16 merge",
   "slices": [
     {
       "id": "S00",
@@ -553,7 +553,7 @@
       "previous": "S14",
       "next": "S16",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "a0b8807bc56023a432aa4def7ea81689858b8aeb",
       "conditions": [
         "C26",
         "C27",
@@ -567,7 +567,7 @@
         "S15.C"
       ],
       "execution_receipt": "S15-execution.md",
-      "review_status": "open",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/24",
       "implementation_commit": "df3910b"
     },
@@ -577,8 +577,8 @@
       "title": "Install the framework and author/test nodes outside the repo",
       "plan": "16-package-cookbook-plan.md",
       "branch": "codex/fbp-16-package-cookbook",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S15",
       "next": "S17",
       "base": "master after previous slice merge",
@@ -591,10 +591,15 @@
         "C45",
         "C50"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T10",
+      "authorized_tasks": [
+        "S16.A",
+        "S16.B",
+        "S16.C"
       ],
-      "legacy_master_work": "T10"
+      "execution_receipt": "S16-execution.md",
+      "review_status": "ready-for-review"
     },
     {
       "id": "S17",
