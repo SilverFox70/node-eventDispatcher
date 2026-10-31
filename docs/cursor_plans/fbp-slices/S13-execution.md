@@ -44,3 +44,5 @@ Repository root; command-local PATH=/tmp/node-v26.13.0-darwin-arm64/bin:$PATH. N
 Readability reviewed: contracts13 lines, node29, copyable test40, fixtures14; focused authoring tests117, compilation/coverage fixture59, command12 and demo45. The four recipe files have distinct purposes; the temporary fixture shares actual compiler/test setup rather than product orchestration. No new file needs a larger-file exception. Guide81 lines/template README52 describe real semantics and commands without per-line narration.
 
 Implementation complete; C32/C35/C36/C58 aggregate proofs and C50 authoring contribution verified. Quality/library-and-template coverage passed. No public S14 collector, installed-tarball recipe proof, Next/browser/provider/store or restart-safe claim. User artifacts untouched. Publication follows; S14 remains unstarted and requires actual S13 merge.
+
+Publication: implementation commit b0d88c2 pushed to origin/codex/fbp-13-function-authoring; [PR #22](https://github.com/SilverFox70/node-eventDispatcher/pull/22) created against master. This follow-up records publication only; no merge claimed. S14 still requires actual merge.
