@@ -19,7 +19,7 @@ The current runtime executes node graphs; these application examples still need 
 
 ## Current progress
 
-**Implemented through S12 on this review branch.** S00–S11 have merged. S12 adds explicit graph/event inventory and safe Mermaid export; it is awaiting review and merge. **S13 is next:** node-authoring recipes and templates built on the existing function adapter.
+**Implemented through S13 on this review branch.** S00–S12 have merged. S13 adds checked node-authoring recipes and templates; it is awaiting review and merge. **S14 is next:** public helpers for testing nodes and whole graphs on the real runtime.
 
 You can now build and run real, typed, asynchronous pipelines locally. The graphical inspector UI, the Next.js example, public test helpers and optional durable execution remain on the roadmap below.
 
@@ -28,7 +28,7 @@ You can now build and run real, typed, asynchronous pipelines locally. The graph
 - Pinned Node LTS/npm, strict TypeScript, ESM/CommonJS builds and generated declarations.
 - Independent synchronous event dispatchers, with an optional shared singleton and a legacy compatibility import.
 - Immutable inspection metadata for active subscriptions, optional owners and explicitly declared publishers, plus scoped graph/run inventory and safe Mermaid export.
-- Typed reusable component definitions, ordinary-function adapters, Zod-backed runtime contracts and safe catalog metadata.
+- Typed reusable component definitions, ordinary-function adapters, Zod-backed runtime contracts, safe catalog metadata and a checked dependency-injection recipe.
 - Immutable JSON packets with separate packet/job identities, immediate-parent lineage and optional correlation keys.
 - Internal bounded FIFO channels with backpressure, close/drain and abort semantics, used by the streaming runtime.
 - Typed graph construction and authoritative compilation, isolated streaming runs, bounded duplicate protection, cancellation, deadlines and safe diagnostics.
@@ -48,9 +48,10 @@ node examples/01-map-filter.cjs
 node examples/02-async-branches.cjs
 node examples/03-keyed-collation.cjs
 node examples/04-inspection.cjs
+node examples/05-node-authoring.cjs
 ```
 
-The first doubles1/2/3/4 and filters the results to6/8. The second splits one account request into independent asynchronous profile/settings operations, then brings their separate results into one stream. The third collates those branches into one typed result. The fourth prints a graph/event diagram inventory. All run offline. See [examples and expected output](examples/README.md).
+The first doubles1/2/3/4 and filters the results to6/8. The second splits one account request into independent asynchronous profile/settings operations, then brings their separate results into one stream. The third collates those branches into one typed result. The fourth prints a graph/event diagram inventory. The fifth compiles the copyable lookup recipe and runs it with a local fake service. All run offline. See [examples and expected output](examples/README.md).
 
 ## Try the current APIs
 
@@ -107,6 +108,7 @@ The runtime refuses repeated delivery of the same packet to the same node within
 ## Where to go next
 
 - [Ordered feature slices and current progress](docs/cursor_plans/fbp-slices/INDEX.md)
+- [Node-authoring guide and checked template](docs/node-authoring.md)
 - [Scoped inspection and diagram export](docs/architecture/inspection.md)
 - [Keyed result collation](docs/architecture/keyed-joins.md)
 - [Stream components, ordering and operation policies](docs/architecture/stream-components.md)

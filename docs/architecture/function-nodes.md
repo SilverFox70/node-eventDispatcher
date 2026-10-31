@@ -53,3 +53,5 @@ Bind taskTimeoutMs/retry at graph.add, not in FunctionSpec. [Node-operation poli
 Expected business outcomes should be ordinary data in a declared output union, such as {kind:'unavailable'}, returned before expiry. For explicit timeout-as-data routing or multiple named ports use an advanced defineComponent with ctx.task and catch outside it; no undeclared timeout port or onTimeout hook is invented here.
 
 Keep handlers stateless with immutable injected dependency interfaces. Captured mutable state is not cloned per run. Run-local mutable process state belongs in defineComponent.create. S13 retains the full human/agent cookbook, templates and dependency/testing recipes; S10 can now reuse this adapter for mapping and the same task owner for predicates. Runtime inspection/Next/browser/durable profiles remain separate.
+
+For dependency injection, declared effects, fake service tests and per-run state, see the [S13 authoring guide](../node-authoring.md) and [copyable template](../../templates/node/README.md).

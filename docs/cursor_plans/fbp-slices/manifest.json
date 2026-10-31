@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S12 inspection/export; S13 requires actual S12 merge",
+  "next_planning_action": "Review S13 checked node-authoring recipe; S14 requires actual S13 merge",
   "slices": [
     {
       "id": "S00",
@@ -463,7 +463,7 @@
       "previous": "S11",
       "next": "S13",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "eb629796f890c50123aaaf71c818d9765ff78857",
       "conditions": [
         "C52",
         "C53",
@@ -477,7 +477,7 @@
         "S12.C"
       ],
       "execution_receipt": "S12-execution.md",
-      "review_status": "open",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/21",
       "implementation_commit": "9231ac7"
     },
@@ -487,8 +487,8 @@
       "title": "Write useful nodes as ordinary typed functions",
       "plan": "13-function-authoring-plan.md",
       "branch": "codex/fbp-13-function-authoring",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S12",
       "next": "S14",
       "base": "master after previous slice merge",
@@ -500,10 +500,17 @@
         "C50",
         "C58"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T8 function helper and recipe portion",
+      "authorized_tasks": [
+        "S13.A",
+        "S13.B",
+        "S13.C"
       ],
-      "legacy_master_work": "T8 function helper and recipe portion"
+      "execution_receipt": "S13-execution.md",
+      "review_status": "open",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/22",
+      "implementation_commit": "b0d88c2"
     },
     {
       "id": "S14",
