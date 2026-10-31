@@ -1,7 +1,7 @@
 const { z } = require('zod');
 const {
   contract, map, filter, createGraph, compileGraph, startNetwork, packet,
-} = require('../dist/cjs');
+} = require('event-driven-design');
 
 async function main() {
   const numeric = contract('demo-number@1', z.number());

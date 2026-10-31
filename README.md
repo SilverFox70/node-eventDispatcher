@@ -19,7 +19,7 @@ The current runtime executes node graphs; these application examples still need 
 
 ## Current progress
 
-**Implemented through S15 on this review branch.** S00–S14 have merged. S15 adds complete-flow, failure, cleanup and 100,000-packet load proofs plus a reproducible benchmark; it is awaiting review and merge. **S16 is next:** installing the package and authoring/testing nodes outside this repository.
+**Implemented through S16 on this review branch.** S00–S15 have merged. S16 verifies actual packed installs, typed node recipes and runnable installed examples; it is awaiting review and merge. **S17 is next:** a real Next.js application consuming the package.
 
 You can now build and run real, typed, asynchronous pipelines locally. The graphical inspector UI, the Next.js example and optional durable execution remain on the roadmap below.
 
@@ -36,7 +36,7 @@ You can now build and run real, typed, asynchronous pipelines locally. The graph
 - Typed public node/graph test helpers, offline tests, packed-package consumer/type checks and source-mapped per-file coverage gates.
 - Full-flow failure/cleanup proofs and reproducible 100,000-packet load measurements.
 
-The [slice index](docs/cursor_plans/fbp-slices/INDEX.md) records review/merge status; a feature on a review branch is not automatically released. The package name remains `event-driven-design`. No new npm release is claimed here.
+The [slice index](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/cursor_plans/fbp-slices/INDEX.md) records review/merge status; a feature on a review branch is not automatically released. The package name remains `event-driven-design`. No new npm release is claimed here.
 
 ## Run a graph demo
 
@@ -51,9 +51,10 @@ node examples/03-keyed-collation.cjs
 node examples/04-inspection.cjs
 node examples/05-node-authoring.cjs
 node examples/06-testing.cjs
+node examples/07-external-feed.cjs
 ```
 
-The first doubles1/2/3/4 and filters the results to6/8. The second splits one account request into independent asynchronous profile/settings operations, then brings their separate results into one stream. The third collates those branches into one typed result. The fourth prints a graph/event diagram inventory. The fifth compiles the copyable lookup recipe and runs it with a local fake service. The sixth tests one node and a complete graph using the public testing helpers. All run offline. See [examples and expected output](examples/README.md).
+The first doubles1/2/3/4 and filters the results to6/8. The second splits one account request into independent asynchronous profile/settings operations, then brings their separate results into one stream. The third collates those branches into one typed result. The fourth prints a graph/event diagram inventory. The fifth demonstrates a service-injected JavaScript lookup with a local fake service. The sixth tests one node and a complete graph using the public testing helpers. The seventh demonstrates external feeding, backpressure and cancellation. All run offline. See [examples and expected output](examples/README.md).
 
 ## Try the current APIs
 
@@ -74,7 +75,7 @@ const result = derivePacket({ validated: true }, [request]);
 events.emit('ready', [result.jobId]);
 ```
 
-This demonstrates the dispatcher and packet factories, not a graph scheduler. Event delivery is synchronous; packet movement in the streaming graph runtime is asynchronous. See the [dispatcher API/migration guide](docs/architecture/dispatcher.md) and [identity contract](docs/cursor_plans/fbp-identity-contract.md).
+This demonstrates the dispatcher and packet factories, not a graph scheduler. Event delivery is synchronous; packet movement in the streaming graph runtime is asynchronous. See the [dispatcher API/migration guide](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/architecture/dispatcher.md) and [identity contract](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/cursor_plans/fbp-identity-contract.md).
 
 ## Build and verify
 
@@ -85,11 +86,12 @@ npm ci
 npm run check
 npm test
 npm run coverage
+npm run test:package
 ```
 
-`check` builds both distributions, checks source and consumer declarations, and runs lint. Tests use local fixtures; the legacy `npm run main` demo makes an external HTTP request and is not a verification command. To prepare a local installable artifact, build first and run `npm pack`, then install the resulting `.tgz` into the consuming project.
+`check` builds both distributions, checks source and consumer declarations, and runs lint. Tests use local fixtures; `npm run main` runs the offline pipeline demo. The packed-consumer gate installs a real tarball in temporary projects and runs the template/examples there. To prepare a local installable artifact, build first and run `npm pack`, then install the resulting `.tgz` into the consuming project.
 
-To inspect sustained-load behavior after building, run `node benchmark/throughput.cjs`. It verifies two graph shapes at capacities 1 and 16 and reports throughput, sampled heap and queue bounds. These are machine-specific observations, not performance guarantees. See [benchmark instructions](benchmark/README.md) for settings and focused reliability tests.
+To inspect sustained-load behavior after building, run `node benchmark/throughput.cjs`. It verifies two graph shapes at capacities 1 and 16 and reports throughput, sampled heap and queue bounds. These are machine-specific observations, not performance guarantees. See [benchmark instructions](https://github.com/SilverFox70/node-eventDispatcher/blob/master/benchmark/README.md) for settings and focused reliability tests.
 
 ## Roadmap
 
@@ -111,20 +113,23 @@ The runtime refuses repeated delivery of the same packet to the same node within
 
 ## Where to go next
 
-- [Ordered feature slices and current progress](docs/cursor_plans/fbp-slices/INDEX.md)
-- [Node-authoring guide and checked template](docs/node-authoring.md)
-- [Scoped inspection and diagram export](docs/architecture/inspection.md)
-- [Keyed result collation](docs/architecture/keyed-joins.md)
-- [Stream components, ordering and operation policies](docs/architecture/stream-components.md)
-- [Ordinary function nodes](docs/architecture/function-nodes.md)
-- [Streaming runtime and lifecycle](docs/architecture/runtime.md)
-- [Contracts and component authoring](docs/architecture/contracts-and-components.md)
-- [Architecture and implementation boundaries](docs/architecture/README.md)
-- [Optional extensions: durability and visual graph authoring/export](docs/architecture/roadmap.md)
-- [Development guide](docs/DEVELOPMENT_GUIDELINES.md)
-- [Agent rules, skills and runbooks](docs/AGENT_FILES.md)
-- [Full foundation plan](docs/cursor_plans/fbp-foundation-plan.md)
+- [Install/use guide and cookbook](docs/guide.md)
+- [Migration from legacy examples](docs/migration.md)
+- [Runtime/package boundaries](docs/architecture/fbp-runtime.md)
+- [Ordered feature slices and current progress](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/cursor_plans/fbp-slices/INDEX.md)
+- [Node-authoring guide and checked template](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/node-authoring.md)
+- [Scoped inspection and diagram export](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/architecture/inspection.md)
+- [Keyed result collation](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/architecture/keyed-joins.md)
+- [Stream components, ordering and operation policies](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/architecture/stream-components.md)
+- [Ordinary function nodes](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/architecture/function-nodes.md)
+- [Streaming runtime and lifecycle](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/architecture/runtime.md)
+- [Contracts and component authoring](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/architecture/contracts-and-components.md)
+- [Architecture and implementation boundaries](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/architecture/README.md)
+- [Optional extensions: durability and visual graph authoring/export](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/architecture/roadmap.md)
+- [Development guide](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/DEVELOPMENT_GUIDELINES.md)
+- [Agent rules, skills and runbooks](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/AGENT_FILES.md)
+- [Full foundation plan](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/cursor_plans/fbp-foundation-plan.md)
 
-Historical examples remain under `server/src`; their source-scanning diagram utility is a prototype, not the authoritative graph model. The old dispatcher path delegates to the built implementation. The sibling FBP-Presentation repository is reference material, not this library's runtime.
+Retained historical utilities live under `examples/legacy`; their source scanner is a heuristic, not the authoritative graph model. Only the dispatcher compatibility shim remains under `server/src`. The old dispatcher path delegates to the built implementation. The sibling FBP-Presentation repository is reference material, not this library's runtime.
 
 License: ISC.

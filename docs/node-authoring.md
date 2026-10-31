@@ -2,7 +2,7 @@
 
 S13 provides a copyable lookup recipe and executable checks around the function adapter delivered in S09B. Most application nodes should expose a small contract, do one understandable operation and return a declared result. Stream orchestration remains the library's job.
 
-Start with [templates/node](../templates/node/README.md). It includes contracts, a service-injected factory, fake fixtures and tests against the real compiler/runtime. [The runnable demo](../examples/05-node-authoring.cjs) uses those exact files rather than a hand-maintained second implementation.
+Start with [templates/node](../templates/node/README.md). It includes contracts, a service-injected factory, fake fixtures and tests against the real compiler/runtime. [The runnable JavaScript demo](../examples/05-node-authoring.cjs) illustrates the same injected-service pattern; installed recipe checks compile and execute the exact TypeScript template.
 
 ```sh
 npm run build
@@ -98,3 +98,5 @@ All declared outputs drain concurrently before serial feeders start, one feeder 
 Options are inputs (required), timeoutMs (default1000, positive safe integer), maxOutputPackets (default1024, integer1–100000 shared across all outputs) and signal. The helper accepts at most100000 input packets total. Existing runtime graph/operation policies and its default65536 execution-record bound still apply; those limits are independent. A graph's configured operation phase cannot exceed the helper's flow timeout: explicitly increase timeoutMs when needed rather than silently shortening the operation budget.
 
 Always assert terminal.status. A component failure returns failed plus packets already collected; cancellation returns cancelled normally. Timeout returns failed/TIMEOUT. Unknown input names/invalid options refuse before factories start. Packet/admission refusal rejects with its original runtime error (including INPUT_CONTRACT and DUPLICATE_PACKET); output overflow rejects TEST_OUTPUT_LIMIT, never a truncated success. Owned collectors/feeders settle and the runtime removes its deadline/listeners on every exit. Late service rejection stays handled; arbitrary user code still needs to honor its signal. Collected results are caller-owned memory, not a durable lookup or execution history.
+
+S16 verifies this template from the actual installed tarball, with isolated local tools and no checkout/source aliases. See [the application guide](guide.md) and [migration](migration.md).

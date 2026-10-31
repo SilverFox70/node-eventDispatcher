@@ -36,7 +36,7 @@ test('copyable template tests run with found and missing fixtures against built 
   const { result, report } = fixture.coverage(); assert.equal(result.status, 0, result.stdout + result.stderr);
   assert(readdirSync(join(fixture.directory, 'coverage/tmp')).some(name => name.startsWith('coverage-') && name.endsWith('.json')));
   assert.match(result.stdout, /tests 2/); assert.match(result.stdout, /pass 2/);
-  assert.deepEqual(Object.keys(report).map(path => path.split('/').at(-1)).sort(), ['contract.ts', 'node.ts']);
+  assert.deepEqual(Object.keys(report).map(path => path.replaceAll('\\','/').split('/').at(-1)).sort(), ['contract.ts', 'node.ts']);
   for (const data of Object.values(report)) {
     assert(Object.values(data.s).every(hits => hits > 0));
     assert(Object.values(data.b).flat().every(hits => hits > 0));

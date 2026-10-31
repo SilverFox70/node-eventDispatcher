@@ -5,6 +5,7 @@ const { tmpdir } = require('node:os');
 const { resolve, join } = require('node:path');
 const { spawnSync } = require('node:child_process');
 
+const { npm: runNpm } = require('./package-fixture.cjs');
 const root = resolve(__dirname, '..');
 const readJson = path => JSON.parse(readFileSync(path, 'utf8'));
 
@@ -15,7 +16,7 @@ test('runtime pins agree', () => {
     assert.equal(readFileSync(join(root, file), 'utf8').trim(), version, file);
   }
   assert.equal(pkg.engines.node, version);
-  const npm = spawnSync('npm', ['--version'], { encoding: 'utf8' });
+  const npm = runNpm(['--version'], { encoding: 'utf8' });
   assert.equal(npm.status, 0, npm.stderr);
   assert.equal(pkg.engines.npm, npm.stdout.trim());
   assert.equal(pkg.packageManager, `npm@${npm.stdout.trim()}`);
@@ -29,7 +30,9 @@ test('coverage sees unexecuted production', async () => {
       cpSync(join(root, file), join(fixture, file));
     }
     cpSync(join(root, 'src'), join(fixture, 'src'), { recursive: true });
-    symlinkSync(join(root, 'node_modules'), join(fixture, 'node_modules'), 'dir');
+    cpSync(join(root, 'examples/legacy'), join(fixture, 'examples/legacy'), { recursive: true });
+    writeFileSync(join(fixture, 'examples/legacy/unexecuted.cjs'), 'module.exports = () => 1;\n');
+    symlinkSync(join(root, 'node_modules'), join(fixture, 'node_modules'), process.platform === 'win32' ? 'junction' : 'dir');
     writeFileSync(join(fixture, 'src/unexecuted.ts'), 'export function untouched(value: number): number {\n  return value + 1;\n}\n');
     const build = spawnSync(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', 'tsconfig.cjs.json'], { cwd: fixture, encoding: 'utf8' });
     assert.equal(build.status, 0, build.stdout + build.stderr);
@@ -37,11 +40,13 @@ test('coverage sees unexecuted production', async () => {
     assert.equal(measure.status, 0, measure.stdout + measure.stderr);
     const report = readJson(join(fixture, 'coverage/coverage-final.json'));
     const mapped = Object.keys(report);
-    assert.ok(mapped.every(file => file.startsWith(join(fixture, 'src'))), mapped.join('\n'));
-    const unused = mapped.find(file => file.endsWith('/src/unexecuted.ts'));
+    assert.ok(mapped.every(file => file.startsWith(join(fixture, 'src')) || file.startsWith(join(fixture, 'examples/legacy'))), mapped.join('\n'));
+    const unused = mapped.find(file => file.replaceAll('\\', '/').endsWith('/src/unexecuted.ts'));
     assert.ok(unused, mapped.join('\n'));
     assert.ok(Object.values(report[unused].s).length > 0);
     assert.ok(Object.values(report[unused].s).every(count => count === 0));
+    const legacyUnused = mapped.find(file => file.replaceAll('\\', '/').endsWith('/examples/legacy/unexecuted.cjs'));
+    assert.ok(legacyUnused); assert.ok(Object.values(report[legacyUnused].s).every(count => count === 0));
     const gate = spawnSync(process.execPath, [join(root, 'scripts/coverage-thresholds.mjs')], { cwd: fixture, encoding: 'utf8' });
     assert.equal(gate.status, 1);
     assert.match(gate.stderr, /unexecuted\.ts: statements 0\.00%/);

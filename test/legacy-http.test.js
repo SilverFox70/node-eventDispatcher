@@ -2,9 +2,9 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const { createServer } = require('node:http');
 const { once } = require('node:events');
-const { wwwHandler } = require('../server/src/wwwPromise');
+const { wwwHandler } = require('../examples/legacy/wwwPromise.cjs');
 const { eventDispatcher: events } = require('../server/src/eventDispatcher');
-require('../server/src/www');
+const dispose = require('../examples/legacy/www.cjs').registerHttpEvents(events);
 
 test('legacy HTTP examples use native fetch and preserve completion events', async () => {
   const server = createServer(async (request, response) => {
@@ -43,7 +43,7 @@ test('legacy HTTP examples use native fetch and preserve completion events', asy
   });
   try {
     assert.equal(await wwwHandler.get(base + '/ok'), 'hello');
-    assert.equal(await wwwHandler.get(base + '/status'), 'unavailable');
+    await assert.rejects(wwwHandler.get(base + '/status'), { code: 'HTTP_ERROR', status: 503 });
     assert.equal(await wwwHandler.post(base + '/ok', { name: 'a & b' }), 'name=a+%26+b');
     for (const action of ['get', 'post']) {
       await assert.rejects(wwwHandler[action](base + '/fail', {}), TypeError);
@@ -52,6 +52,7 @@ test('legacy HTTP examples use native fetch and preserve completion events', asy
       assert.ok(await completion(action, '/fail', {}) instanceof Error);
     }
   } finally {
+    dispose();
     const closed = once(server, 'close');
     server.close();
     server.closeAllConnections();

@@ -1,37 +1,20 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { mkdtempSync, writeFileSync, cpSync, rmSync, existsSync } = require('node:fs');
-const { join, resolve } = require('node:path');
-const { tmpdir } = require('node:os');
-const { spawnSync } = require('node:child_process');
+const { cpSync, existsSync } = require('node:fs');
+const { join } = require('node:path');
+const { installedPackage } = require('./package-fixture.cjs');
 
-const root = resolve(__dirname, '..');
-
-test('both distribution entries load', () => {
-  // Exercise the checkout build as well as the isolated tarball consumer.
+test('consumer uses packed package: built distributions usable', () => {
   for (const entry of ['index', 'model/index', 'testing/index']) require(`../dist/cjs/${entry}.js`);
-  const fixture = mkdtempSync(join(tmpdir(), 'fbp-package-'));
-  const run = (command, args, cwd = fixture) => {
-    const result = spawnSync(command, args, { cwd, encoding: 'utf8' });
-    assert.equal(result.status, 0, result.stdout + result.stderr);
-    return result.stdout;
-  };
+  const consumer = installedPackage();
+  const { fixture, root, files, run, installed } = consumer;
   try {
-    const packed = JSON.parse(run('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', fixture, '--cache', join(fixture, 'npm-cache'), '--offline'], root))[0];
-    const files = packed.files.map(file => file.path);
     for (const format of ['esm', 'cjs']) {
       for (const entry of ['index', 'model/index', 'testing/index']) {
-        for (const extension of ['js', 'js.map', 'd.ts', 'd.ts.map']) {
-          assert.ok(files.includes(`dist/${format}/${entry}.${extension}`));
-        }
+        for (const extension of ['js', 'js.map', 'd.ts', 'd.ts.map']) assert(files.includes(`dist/${format}/${entry}.${extension}`));
       }
     }
-    assert.ok(files.includes('src/index.ts'));
-    const installed = join(fixture, 'node_modules/event-driven-design');
-    writeFileSync(join(fixture, 'package.json'), '{"private":true}\n');
-    const cache = run('npm', ['config', 'get', 'cache'], root).trim();
-    run('npm', ['install', '--offline', '--ignore-scripts', '--no-audit', '--no-fund',
-      '--package-lock=false', '--cache', cache, join(fixture, packed.filename)]);
+    assert(files.includes('src/index.ts'));
     for (const [mode, load] of [['commonjs', 'require'], ['module', 'await import']]) {
       const expression = ['event-driven-design', 'event-driven-design/model', 'event-driven-design/testing'].map(name => `${load}('${name}')`).join(';');
       run(process.execPath, ['--input-type=' + mode, '-e', expression]);
@@ -175,6 +158,6 @@ test('both distribution entries load', () => {
       assert.equal(dispatcher.inspect().subscribers[0].ownerId, 'owner');
     `]);
   } finally {
-    rmSync(fixture, { recursive: true, force: true });
+    consumer.dispose();
   }
 });

@@ -51,9 +51,5 @@ test('legacy dispatcher behavior and native log identities remain observable', (
   }
   d.eventLoggerOff();
   assert.equal(d.eventLoggerIsOn(), false);
-  const colors = require('cli-color');
-  for (const color of ['yellow', 'cyan', 'magenta', 'green', 'bold', 'blackBright', 'blueBright']) {
-    assert.equal(typeof colors[color]('text'), 'string');
-  }
   assert.equal(typeof styleText('green', 'text'), 'string');
 });

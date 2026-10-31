@@ -1,45 +1,32 @@
-const { pathToFileURL } = require('node:url');
+const assert = require('node:assert/strict');
 const { setImmediate } = require('node:timers/promises');
-const { buildTemplate } = require('../test/node-template-fixture.cjs');
+const { z } = require('zod');
+const { contract, defineFunction, defineComponent, describeRegistry, packet } = require('event-driven-design');
+const { runNode } = require('event-driven-design/testing');
 
 async function main() {
-  const fixture = buildTemplate();
-  try {
-    if (fixture.build.status !== 0) throw Error(fixture.build.stdout + fixture.build.stderr);
-    const { makeLookupNode } = await import(pathToFileURL(fixture.module));
-    const f = await import('../dist/esm/index.js');
-    let calls = 0;
-    const node = makeLookupNode({ lookup: async (id, { signal }) => {
-      calls++;
-      await setImmediate(undefined, { signal });
-      return id === 'account-123' ? { label: 'Ada' } : null;
-    } });
-    const graph = f.createGraph();
-    const handle = graph.add('lookup', node);
-    graph.exposeInput('in', handle, 'in');
-    graph.exposeOutput('out', handle, 'out');
-    const registry = { 'lookup-profile@1': node };
-    const compiled = f.compileGraph(graph.toSpec(), registry);
-    if (!compiled.ok) throw Error(JSON.stringify(compiled.issues));
-    const run = f.startNetwork(compiled.graph, { timeoutMs: 5000 });
-    const consuming = (async () => {
-      for await (const packet of run.outputs.out) console.log(JSON.stringify(packet.value));
-    })();
-    for (const id of ['account-123', 'missing']) {
-      await run.send('in', f.packet({ id }, { jobId: 'authoring-demo', key: id }));
-    }
-    const terminal = await run.finish();
-    await consuming;
-    console.log('Lookup calls:', calls);
-    console.log('Run:', terminal.status);
-    console.log('Declared dependencies:', f.describeRegistry(registry).components[0].requiredDependencies.join(', '));
-    if (terminal.status !== 'completed') throw Error(terminal.code);
-  } finally {
-    fixture.dispose();
-  }
+  const request = contract('lookup-request@1', z.strictObject({ id: z.string() }));
+  const response = contract('lookup-result@1', z.union([
+    z.strictObject({ kind: z.literal('found'), id: z.string(), label: z.string() }),
+    z.strictObject({ kind: z.literal('missing'), id: z.string() }),
+  ]));
+  let calls = 0;
+  const lookup = async (id, { signal }) => {
+    calls++; await setImmediate(undefined, { signal });
+    return id === 'x' ? { label: 'Ada' } : null;
+  };
+  const node = defineComponent({
+    ...defineFunction({ id: 'lookup', version: 1, title: 'Lookup', description: 'Injected local fake', input: request, output: response,
+      handler: async (value, context) => {
+        const found = await lookup(value.id, { signal: context.signal });
+        return found ? { kind: 'found', id: value.id, label: found.label } : { kind: 'missing', id: value.id };
+      } }), effects: ['profile.read'], requiredDependencies: ['lookup'],
+  });
+  const result = await runNode(node, { inputs: { in: [packet({ id: 'x' }), packet({ id: 'unknown' })] } });
+  assert.equal(result.terminal.status, 'completed'); assert.equal(calls, 2);
+  assert.deepEqual(result.outputs.out.map(p => p.value), [{ kind: 'found', id: 'x', label: 'Ada' }, { kind: 'missing', id: 'unknown' }]);
+  console.log('Lookup:', JSON.stringify(result.outputs.out.map(p => p.value)));
+  console.log('Calls:', calls, 'Run:', result.terminal.status);
+  console.log('Dependencies:', describeRegistry({ 'lookup@1': node }).components[0].requiredDependencies.join(','));
 }
-
-main().catch(error => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main().catch(error => { console.error(error); process.exitCode = 1; });
