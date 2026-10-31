@@ -29,3 +29,7 @@ Local evidence paths are intentionally uncommitted. No dependency, threshold or 
 Manual command `npm run demo:next` built/started the packed production application and printed http://localhost:54545. HTTP GET / and /inspector both returned200. Ctrl+C stopped the owned server (npm reports interrupt exit1); lsof then found no listener on54545. Session evidence: /private/var/folders/s7/ycx3c31d7tl_xw7ykf3p9ym40000gs/T/fbp-next-55y0Ut/evidence. Existing automated tests independently verify collision refusal and cleanup.
 
 Pre-publication `npm run check` rerun exits0 (/tmp/fbp-s18a-check-publish.log); guidance check passes96 Markdown/501 links/23 slices/92 condition owners; git diff --check passes. Public runtime/model producer, actual channel tests, Next production/browser tests and manual CLI evidence cover the changed source boundaries. No Storybook infrastructure exists in this fixture.
+
+## Publication
+
+Implementation commit bf6f4d9b1c46b253dd32801af44869ef401366ab pushed to origin/codex/fbp-18a-live-execution-inspector. [PR #29](https://github.com/SilverFox70/node-eventDispatcher/pull/29) created against master and attached to this task. Remote master still equals the recorded predecessor merge. Local gates pass; hosted CI is pending at publication. No merge or S19 execution is inferred. This follow-up changes only review metadata.
