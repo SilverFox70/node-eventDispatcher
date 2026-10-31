@@ -41,4 +41,4 @@ S13 adds [node-authoring recipes and templates](../node-authoring.md), reusing S
 
 S14 adds [public testing helpers](../node-authoring.md#test-one-node-or-a-complete-flow): typed one-node tests and dynamic compiled-graph tests on the same runtime, with bounded collection and cleanup.
 
-S17 adds [the packaged Next consumer](../nextjs.md): a fixed Node route, browser-safe metadata, backend verdict attribution, current-request suppression and production HTTP/browser/asset proof. S18 still owns the graphical inspector.
+S17 adds [the packaged Next consumer](../nextjs.md): a fixed Node route, browser-safe metadata, backend verdict attribution, current-request suppression and production HTTP/browser/asset proof. S18 adds the read-only graphical inspector, automatic topology notifications and owned live delivery; see the same guide.

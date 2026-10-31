@@ -42,3 +42,11 @@ ESM and CommonJS distributions have their own module instances; share one explic
 Events are the union of active subscriptions and current publisher declarations. A known but empty legacy event is absent from topology. Once removal is visible before its callback executes; off/cleanup/disposal are reflected immediately. Logging toggles do not affect topology. Emitting does not create publisher history.
 
 Snapshots contain no callbacks, source, payloads, contexts or timestamps. Readonly topology/owner types are exported from both the root and browser-safe /model entry. This is relationship data for the later S12 inspection scope and S18 visual inspector, not a graph editor or persistent trace store.
+
+## S18 — automatic topology notifications
+
+`dispatcher.onTopologyChange(() => { /* sample inspect() or scope.snapshot() */ })` returns an idempotent disposer. Subscribe before taking the initial sample. Registration itself does not notify. Relationship changes coalesce into one microtask after synchronous work; observers see current state, not a history of every intermediate edge. Ordinary emit without topology changes, no-op removal and refused operations do not notify. Once removal still notifies when its application callback throws. Existing synchronous callback order/errors remain unchanged.
+
+Each dispatcher admits at most64 observers (RangeError at capacity, TypeError for a nonfunction). Each registration has independent identity even for equal callbacks. Disposing releases its callback; removal before its turn skips delivery. Observers are synchronous; async results are not awaited. A synchronously throwing observer is detached without interrupting other observers or application delivery. Changes made during observation schedule another microtask; observers should sample rather than mutate the application. No event payload, handler source or promise queue is retained.
+
+The inspection scope remains a sampler. Applications own notification wiring and source lifetimes; graph definitions and run lifecycle may have separate application signals. The Next fixture demonstrates this adapter using dispatcher notifications and the associated run's terminal promise. It is not automatic discovery or a distributed observability host.

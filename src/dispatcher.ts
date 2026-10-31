@@ -1,4 +1,5 @@
 import type { DispatcherTopology, DispatcherSubscriber, OwnerMetadata } from './model/dispatcher-topology.js';
+import { createTopologyChanges } from './dispatcher/changes.js';
 import { createDispatcherLog } from './dispatcher/log.js';
 import { createDispatcherTopology, readOwnerMetadata } from './dispatcher/topology.js';
 
@@ -29,6 +30,7 @@ export function createDispatcher(options: DispatcherOptions = {}) {
   const subscribers = new Map<string, Registration[]>();
   const log = createDispatcherLog(limit);
   const topology = createDispatcherTopology();
+  const changes = createTopologyChanges();
   let nextSubscriptionId = 0;
 
   function register(name: string, callback: EventListener, once: boolean, metadata?: OwnerMetadata): void {
@@ -45,21 +47,35 @@ export function createDispatcher(options: DispatcherOptions = {}) {
       id: ++nextSubscriptionId, event: name, ownerId, callbackName, callback, once, fired: false
     });
     log.record(once ? 'once' : 'on', name, callback.name);
+    changes.changed();
   }
 
   function removeRegistration(name: string, registration: Registration): void {
     const registrations = subscribers.get(name);
     const index = registrations?.indexOf(registration) ?? -1;
-    if (registrations && index >= 0) registrations.splice(index, 1);
+    if (registrations && index >= 0) {
+      registrations.splice(index, 1);
+      changes.changed();
+    }
   }
 
   return {
+    /** Subscribe before sampling. Coalesced microtasks; dispose to release. Throwing observers detach. */
+    onTopologyChange: changes.subscribe,
     inspect(): DispatcherTopology {
       return topology.snapshot([...subscribers.values()].flat());
     },
     declarePublisher(ownerId: string, event: string): () => void {
       validateEvent(event);
-      return topology.declarePublisher(ownerId, event);
+      const dispose = topology.declarePublisher(ownerId, event);
+      let active = true;
+      changes.changed();
+      return () => {
+        if (!active) return;
+        active = false;
+        dispose();
+        changes.changed();
+      };
     },
     on(name: string, callback: EventListener, metadata?: OwnerMetadata): void {
       register(name, callback, false, metadata);
@@ -94,7 +110,9 @@ export function createDispatcher(options: DispatcherOptions = {}) {
 
     unsubscribeAll(name: string): boolean {
       validateEvent(name);
+      const hadListeners = (subscribers.get(name)?.length ?? 0) > 0;
       const removed = subscribers.delete(name);
+      if (hadListeners) changes.changed();
       log.record('unsubscribeAll', name);
       return removed;
     },
