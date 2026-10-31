@@ -56,3 +56,12 @@ test('built distributions usable: same-format public helpers and cross-format ha
     assert.notEqual(broken.status, 0); assert.match(broken.stdout, /TS7016/);
   } finally { c.dispose(); }
 });
+
+
+test('cold consumer cache needs only locked tarball bytes, not registry metadata', () => {
+  const c = installedPackage({ tools: true, contentOnlyCache: true });
+  try {
+    c.run(process.execPath, ['-e', "const assert=require('node:assert/strict');assert.equal(typeof require('event-driven-design/testing').runNode,'function');require('typescript');require('undici-types/package.json');"]);
+    c.run(process.execPath, [join(c.fixture, 'node_modules/typescript/bin/tsc'), '--version']);
+  } finally { c.dispose(); }
+});
