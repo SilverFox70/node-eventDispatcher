@@ -78,4 +78,23 @@ Keep files focused: contracts, node, fixtures and tests have separate clear resp
 
 The checks deliberately modify a copied handler twice: a numeric label causes a named type error; an uppercase label passes typing but fails the unchanged Ada fixture. This demonstrates the feedback loop without adding an agent runtime, provider or arbitrary-code endpoint. Review intended behavior and versioning before changing fixtures to accept it.
 
-S09B/S10 proofs remain the adapter/transform identity baseline; S13 adds real recipe, service, state and edit-feedback proofs. S14 supplies public node/graph test helpers; the template currently shows the raw graph API so there is still one production compiler/runtime. Persistence and crash-safe obligations remain a separate optional durable-host project.
+S09B/S10 proofs remain the adapter/transform identity baseline; S13 adds real recipe, service, state and edit-feedback proofs. S14 supplies public node/graph test helpers; the template now uses runNode with the same production compiler/runtime. Persistence and crash-safe obligations remain a separate optional durable-host project.
+
+
+## Test one node or a complete flow
+
+Import runNode and runGraph from event-driven-design/testing. Supply packet arrays and use your own assert/Vitest/Jest expectations:
+
+```ts
+const result = await runNode(node, { inputs: { in: [packet({ id: 'x' })] } });
+assert.equal(result.terminal.status, 'completed');
+assert.deepEqual(result.outputs.out.map(p => p.value), [expected]);
+```
+
+The template injects a fake lookup, asserts its exact call/signal and checks job/key/immediate lineage. runNode infers each input/output port's payload; runGraph accepts a real compiled graph with dynamic named inputs. It exposes the same terminal, readonly output packet arrays and final snapshot. Dependencies remain ordinary injected services, not a test-only runtime. See [example06](../examples/06-testing.cjs) for runnable node and graph assertions.
+
+All declared outputs drain concurrently before serial feeders start, one feeder per ingress. Omitted declared input arrays close immediately as empty streams. Relative arrival between different inputs is unspecified: use raw startNetwork with controlled producers for race-sensitive framework tests.
+
+Options are inputs (required), timeoutMs (default1000, positive safe integer), maxOutputPackets (default1024, integer1–100000 shared across all outputs) and signal. The helper accepts at most100000 input packets total. Existing runtime graph/operation policies and its default65536 execution-record bound still apply; those limits are independent. A graph's configured operation phase cannot exceed the helper's flow timeout: explicitly increase timeoutMs when needed rather than silently shortening the operation budget.
+
+Always assert terminal.status. A component failure returns failed plus packets already collected; cancellation returns cancelled normally. Timeout returns failed/TIMEOUT. Unknown input names/invalid options refuse before factories start. Packet/admission refusal rejects with its original runtime error (including INPUT_CONTRACT and DUPLICATE_PACKET); output overflow rejects TEST_OUTPUT_LIMIT, never a truncated success. Owned collectors/feeders settle and the runtime removes its deadline/listeners on every exit. Late service rejection stays handled; arbitrary user code still needs to honor its signal. Collected results are caller-owned memory, not a durable lookup or execution history.

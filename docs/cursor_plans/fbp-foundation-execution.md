@@ -70,3 +70,7 @@ User authorized S12 after verified S11 merge. See [S12 receipt](fbp-slices/S12-e
 ## S13 — checked node authoring
 
 User authorized S13 after verified S12 merge. See [S13 receipt](fbp-slices/S13-execution.md) for the recipe, aggregate adapter/service/state/contract proofs and verification/publication. S14 remains unstarted.
+
+## S14 — public runtime-backed testing
+
+User authorized S14 after verified S13 merge. See [S14 receipt](fbp-slices/S14-execution.md) for typed node/dynamic graph helpers, bounded output/error/cleanup proofs and verification/publication. S15 remains unstarted.

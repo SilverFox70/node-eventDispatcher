@@ -112,3 +112,10 @@ Additional master condition contributions: **C64**. Final owners are SP1-r2/mani
 | G7 integration | Proposed; release blocked by S00 | Acceptance demonstration + handoff + next-merge condition; parent T labels do not hide owner |
 
 Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.
+
+
+## S14 execution adoption — 2026-10-31
+
+The explicit user execution request adopts S14.A–C and the concrete public helper contract above after actual S13 PR22 merge57683edf12ad04becf22f4277873976f2b7ee914. Earlier pending identity/readiness prose is historical; delivered IC1/runtime/NT1 behavior is consumed unchanged. No retries, ledger expansion, payload registry or second executor are added. Helper input/output bounds do not override the production runtime's independent execution-record limit.
+
+Necessary consumer/documentation scope also includes README.md, examples/06-testing.cjs, examples/README.md, templates/node/README.md, docs/DEVELOPMENT_GUIDELINES.md and docs/architecture/README.md for current progress and a runnable public SDK demo. A focused sibling test/testing-sdk-lifecycle.test.js may split lifecycle proof when it improves readability. No dependency, build, coverage or browser/server boundary change is authorized. [S14 receipt](S14-execution.md) records actual evidence/publication separately.

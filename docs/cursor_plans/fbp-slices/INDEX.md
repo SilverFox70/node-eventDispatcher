@@ -2,7 +2,7 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: S13 node authoring complete and verified; [PR #22](https://github.com/SilverFox70/node-eventDispatcher/pull/22) is open for review.** S12 [PR #21](https://github.com/SilverFox70/node-eventDispatcher/pull/21) merged at eb629796f890c50123aaaf71c818d9765ff78857. See [S13 receipt](S13-execution.md); S14 remains unstarted.
+**Current work: S14 public test SDK complete and verified; [PR #23](https://github.com/SilverFox70/node-eventDispatcher/pull/23) is open for review.** S13 [PR #22](https://github.com/SilverFox70/node-eventDispatcher/pull/22) merged at57683edf12ad04becf22f4277873976f2b7ee914. See [S14 receipt](S14-execution.md); S15 remains unstarted.
 
 **Always execute in manifest order (including approved insertion suffixes). Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
 
@@ -32,7 +32,7 @@ User requested active-operation node/function deadlines before combinators, then
 | 11 | [S11 — Collate asynchronous branch results by key](11-keyed-join-plan.md) | `codex/fbp-11-keyed-join` | ready-for-review | S10 |
 | 12 | [S12 — Inspect all registered graphs and event relationships](12-inspection-export-plan.md) | `codex/fbp-12-inspection-export` | ready-for-review | S11 |
 | 13 | [S13 — Write useful nodes as ordinary typed functions](13-function-authoring-plan.md) | `codex/fbp-13-function-authoring` | ready-for-review | S12 |
-| 14 | [S14 — Test nodes and whole graphs with the real runtime](14-public-test-sdk-plan.md) | `codex/fbp-14-public-test-sdk` | blocked-on-decision | S13 |
+| 14 | [S14 — Test nodes and whole graphs with the real runtime](14-public-test-sdk-plan.md) | `codex/fbp-14-public-test-sdk` | ready-for-review | S13 |
 | 15 | [S15 — Prove composed flows and sustained bounded execution](15-reliability-load-plan.md) | `codex/fbp-15-reliability-load` | blocked-on-decision | S14 |
 | 16 | [S16 — Install the framework and author/test nodes outside the repo](16-package-cookbook-plan.md) | `codex/fbp-16-package-cookbook` | blocked-on-decision | S15 |
 | 17 | [S17 — Run a packaged flow inside a Next.js application](17-next-server-consumer-plan.md) | `codex/fbp-17-next-server-consumer` | blocked-on-decision | S16 |

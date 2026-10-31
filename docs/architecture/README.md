@@ -38,3 +38,5 @@ S11 adds [keyed joins](keyed-joins.md): bounded job/key collation into strict ty
 S12 adds [scoped inspection and Mermaid export](inspection.md): explicit live/idle graph inventory, run association and current dispatcher relationships, with detached browser-safe metadata.
 
 S13 adds [node-authoring recipes and templates](../node-authoring.md), reusing S09B rather than replacing the function adapter or runtime.
+
+S14 adds [public testing helpers](../node-authoring.md#test-one-node-or-a-complete-flow): typed one-node tests and dynamic compiled-graph tests on the same runtime, with bounded collection and cleanup.

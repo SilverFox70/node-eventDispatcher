@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S13 checked node-authoring recipe; S14 requires actual S13 merge",
+  "next_planning_action": "Review S14 public test SDK; S15 requires actual S14 merge",
   "slices": [
     {
       "id": "S00",
@@ -492,7 +492,7 @@
       "previous": "S12",
       "next": "S14",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "57683edf12ad04becf22f4277873976f2b7ee914",
       "conditions": [
         "C35",
         "C36",
@@ -508,7 +508,7 @@
         "S13.C"
       ],
       "execution_receipt": "S13-execution.md",
-      "review_status": "open",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/22",
       "implementation_commit": "b0d88c2"
     },
@@ -518,8 +518,8 @@
       "title": "Test nodes and whole graphs with the real runtime",
       "plan": "14-public-test-sdk-plan.md",
       "branch": "codex/fbp-14-public-test-sdk",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S13",
       "next": "S15",
       "base": "master after previous slice merge",
@@ -530,10 +530,17 @@
         "C39",
         "C64"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T8 public /testing portion",
+      "authorized_tasks": [
+        "S14.A",
+        "S14.B",
+        "S14.C"
       ],
-      "legacy_master_work": "T8 public /testing portion"
+      "execution_receipt": "S14-execution.md",
+      "review_status": "open",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/23",
+      "implementation_commit": "25497f1"
     },
     {
       "id": "S15",
