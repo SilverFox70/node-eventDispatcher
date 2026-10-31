@@ -38,3 +38,7 @@ User authorized S06 after S05 merged. [S06 receipt](fbp-slices/S06-execution.md)
 ## S07 — typed graph construction
 
 User authorized S07 after S06 merged. [S07 receipt](fbp-slices/S07-execution.md) records C32 builder typing, runtime handle ownership, shared compiler integration and publication. Actual streaming execution remains S08.
+
+## S08 — streaming runtime
+
+User authorized S08 after S07 merged. [S08 receipt](fbp-slices/S08-execution.md) records adoption of bounded per-run ledger settings, backend verdict attribution, real graph execution, baseline cancellation and proof/publication. S09 retains deadlines and expanded lifecycle/resource verification.

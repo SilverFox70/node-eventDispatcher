@@ -97,3 +97,5 @@ License: ISC.
 Graph validation/compilation is now available: see [the runnable S06 example](docs/architecture/graphs.md). Valid JSON wiring compiles without calling factories; invalid wiring returns deterministic issues. Streaming execution remains S08.
 
 For typed graph construction, see [the S07 builder example](docs/architecture/graph-builder.md). It checks port names and payload types while producing the same portable graph definition.
+
+Graphs can now process packets: [run the S08 streaming example](docs/architecture/runtime.md) to send1/2/3 through double→plus-one and receive3/5/7. Run instances have isolated state, bounded queues, duplicate protection and baseline cancellation.
