@@ -178,3 +178,7 @@ Exact ledger option names/defaults, refusal ordering and raw-process integration
 ## S08 execution adoption — 2026-10-30
 
 Following actual S07 merge and the explicit S08 execution request, the executionRecordLimit/reservation/refusal/cleanup settings in §3 are adopted for S08. Concrete implementation and proof are recorded in [the S08 receipt](fbp-slices/S08-execution.md) and [runtime guide](../architecture/runtime.md). This supersedes the historical pending label for those bounded settings; it does not adopt S11's proposed completedGroupLimit or claim a runtime merge, cross-run protection, persistence or external-effect exactly-once behavior.
+
+### S11 execution adoption — 2026-10-30
+
+After verified S10 merge b2385726a814e76c54ff2a7657b72ea3e990d16a, the explicit S11 request adopts §4's exact group/history settings, reservation/refusal order and terminal cleanup. [S11 receipt](fbp-slices/S11-execution.md) records production proof/publication; [join guide](../architecture/keyed-joins.md) is the delivered API reference. Earlier pending labels remain historical. No cross-run persistence or protection is added.

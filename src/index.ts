@@ -28,3 +28,5 @@ export type { TaskPolicy, RetryPolicy } from './model/graph/task-policy.js';
 export { defineFunction } from './function.js';
 export type { FunctionContext, FunctionSpec } from './function.js';
 export { map, filter, broadcast, merge } from './components/index.js';
+export { joinByKey } from './components/index.js';
+export type { JoinOptions } from './components/join-by-key.js';

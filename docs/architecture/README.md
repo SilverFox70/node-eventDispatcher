@@ -32,3 +32,5 @@ S09 adds [deadlines and lifecycle verification](lifecycle.md), preserving the sa
 S09A adds [node-operation deadlines and explicit retries](node-operations.md). S09B adds [ordinary function nodes](function-nodes.md) with automatic operation scoping before S10.
 
 S10 adds [stream components](stream-components.md): serial map/filter callbacks, explicit bounded broadcast and readiness-ordered merge. Keyed result collation remains S11.
+
+S11 adds [keyed joins](keyed-joins.md): bounded job/key collation into strict typed products, with non-reusable completed groups.

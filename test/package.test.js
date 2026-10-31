@@ -123,10 +123,19 @@ test('both distribution entries load', () => {
           await pr.send('in', f.packet(1)); await pr.send('in', f.packet(2));
           if ((await pr.finish()).status !== 'completed') throw Error('Combinator pipeline failed');
           console.log('components:' + (await ps).join(','));
+          const keyed = f.joinByKey({ a: numeric, b: numeric }, { outputId: 'installed-join@1' });
+          const jb = f.createGraph(), jh = jb.add('join', keyed);
+          jb.exposeInput('a', jh, 'a'); jb.exposeInput('b', jh, 'b'); jb.exposeOutput('out', jh, 'out');
+          const jr = f.startNetwork(f.compileGraph(jb.toSpec(), { 'join-by-key@1': keyed }).graph);
+          const joined = (async () => { const values = []; for await (const p of jr.outputs.out) values.push(p); return values; })();
+          const ja = f.packet(1, { jobId: 'join-job', key: 'account@v1' }), jz = f.packet(10, { jobId: 'join-job', key: 'account@v1' });
+          await jr.send('b', jz); await jr.send('a', ja); await jr.finish(); const jv = await joined;
+          if (jv.length !== 1 || jv[0].jobId !== 'join-job' || jv[0].parentPacketIds.join(',') !== [ja.packetId, jz.packetId].join(',')) throw Error('Join lineage lost');
+          console.log('joined:' + JSON.stringify(jv[0].value));
 
         })().catch(error => { console.error(error); process.exitCode = 1; });
       `]);
-      assert.equal(output.trim(), 'stream:4\nattempts:2\ndeadline:TIMEOUT\nnode-deadline:NODE_TIMEOUT\nfunction:4:2\nfunction-timeout:NODE_TIMEOUT\ncomponents:4,4');
+      assert.equal(output.trim(), 'stream:4\nattempts:2\ndeadline:TIMEOUT\nnode-deadline:NODE_TIMEOUT\nfunction:4:2\nfunction-timeout:NODE_TIMEOUT\ncomponents:4,4\njoined:{"a":1,"b":10}');
     }
     for (const file of ['entries.mts', 'entries.cts', 'tsconfig.json']) cpSync(join(root, 'test/types', file), join(fixture, file));
     run(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '-p', join(fixture, 'tsconfig.json')]);

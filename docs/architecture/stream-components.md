@@ -35,7 +35,7 @@ Broadcast awaits every branch before reading another input. A full branch slows 
 
 Merge retains at most one outstanding read or ready result per input, plus the current output send. Earlier readiness stays ahead while output is blocked. Reads settling in the same microtask batch are ties and use declaration order. Each input retains FIFO ordering; there is no global ordering guarantee across independent inputs. Pending reads settle through the owning runtime on cancellation/failure.
 
-Merge emits separate packets. S11's planned keyed join will collate related branch results into one payload. To split a multifaceted object today, broadcast it explicitly, then use a differently typed map on each branch to extract the part that branch needs; each branch can perform asynchronous work.
+Merge emits separate packets. [S11's keyed join](keyed-joins.md) collates related branch results into one payload. To split a multifaceted object today, broadcast it explicitly, then use a differently typed map on each branch to extract the part that branch needs; each branch can perform asynchronous work.
 
 ## Runnable pipeline
 

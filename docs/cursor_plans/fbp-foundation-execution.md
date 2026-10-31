@@ -58,3 +58,7 @@ User requested S09B after S09A merged. [S09B receipt](fbp-slices/S09B-execution.
 ## S10 — stream components
 
 User authorized S10 after S09B merged. See [S10 execution receipt](fbp-slices/S10-execution.md) for bounded implementation and actual verification/publication evidence. S11 remains unstarted.
+
+## S11 — typed keyed collation
+
+User authorized S11 after verified S10 merge. See [S11 execution receipt](fbp-slices/S11-execution.md) for implementation, condition proofs and actual verification/publication evidence. S12 remains unstarted.

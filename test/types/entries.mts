@@ -75,3 +75,10 @@ const merged = merge(jsonContract, ['left', 'right']);
 void [mapped, filtered, branched.out.left, merged.in.right];
 // @ts-expect-error Installed declarations retain exact port names.
 void branched.out.missing;
+
+const joined = root.joinByKey({ left: jsonContract, right: jsonContract }, { outputId: 'installed-product@1' });
+const joinedValue: root.Values<typeof joined.out>['out'] = { left: 1, right: { value: true } };
+void [joinedValue, joined];
+// @ts-expect-error Composed output requires every input field in installed declarations.
+const missingJoined: root.Values<typeof joined.out>['out'] = { left: 1 };
+void missingJoined;
