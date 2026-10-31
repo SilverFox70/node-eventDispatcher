@@ -658,7 +658,9 @@
         "S18.C"
       ],
       "execution_receipt": "S18-execution.md",
-      "review_status": "ready"
+      "review_status": "open",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/28",
+      "implementation_commit": "25cd77b"
     },
     {
       "id": "S19",

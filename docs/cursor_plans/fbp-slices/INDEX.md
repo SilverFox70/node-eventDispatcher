@@ -2,7 +2,7 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: S18 graphical inspector implemented and locally verified, ready for PR review.** S17 [PR #26](https://github.com/SilverFox70/node-eventDispatcher/pull/26) merged at6747624ae9c78c72e2f1654ac817f8409a751c9e; the automatic-update amendment [PR #27](https://github.com/SilverFox70/node-eventDispatcher/pull/27) merged at56e1fb155fd26f3bb055cb343f68421771789a89. See [S18 receipt](S18-execution.md) and its saved plan’s LV2 execution checkpoint. S19 remains unstarted.
+**Current work: S18 graphical inspector implemented and locally verified; [PR #28](https://github.com/SilverFox70/node-eventDispatcher/pull/28) is open for review.** S17 [PR #26](https://github.com/SilverFox70/node-eventDispatcher/pull/26) merged at6747624ae9c78c72e2f1654ac817f8409a751c9e; the automatic-update amendment [PR #27](https://github.com/SilverFox70/node-eventDispatcher/pull/27) merged at56e1fb155fd26f3bb055cb343f68421771789a89. See [S18 receipt](S18-execution.md) and its saved plan’s LV2 execution checkpoint. S19 remains unstarted.
 
 **Always execute in manifest order (including approved insertion suffixes). Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
 
