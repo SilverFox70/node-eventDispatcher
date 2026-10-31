@@ -1,6 +1,6 @@
 # Node-operation deadlines and explicit retries
 
-S09A adds operation-scoped policy to the existing runtime. A raw stream node marks active function/service work with ctx.task; idle input waits and downstream sends belong outside that callback. S09B will make this automatic for ordinary function nodes. A policy cannot infer arbitrary JavaScript call boundaries.
+S09A adds operation-scoped policy to the existing runtime. A raw stream node marks active function/service work with ctx.task; idle input waits and downstream sends belong outside that callback. S09B [makes this automatic for ordinary function nodes](function-nodes.md). A policy cannot infer arbitrary JavaScript call boundaries.
 
 ## Author and configure an operation
 

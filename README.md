@@ -22,7 +22,7 @@ The current runtime executes node graphs; these application examples still need 
 - Pinned Node LTS/npm, strict TypeScript, ESM/CommonJS builds and generated declarations.
 - Independent synchronous event dispatchers, with an optional shared singleton and a legacy compatibility import.
 - Immutable inspection metadata for active subscriptions, optional owners and explicitly declared publishers.
-- Typed reusable component definitions, Zod-backed runtime contracts and safe catalog metadata.
+- Typed reusable component definitions, ordinary-function adapters, Zod-backed runtime contracts and safe catalog metadata.
 - Immutable JSON packets with separate packet/job identities, immediate-parent lineage and optional correlation keys.
 - Internal bounded FIFO channels with backpressure, close/drain and abort semantics, used by the streaming runtime.
 - Typed graph construction and authoritative compilation, isolated streaming runs, bounded duplicate protection, cancellation, deadlines and safe diagnostics.
@@ -70,6 +70,7 @@ npm run coverage
 | --- | --- |
 | S00–S05: foundation and ports | Identity contracts, modern tooling, event dispatch/inspection, packets, bounded transport and typed node contracts |
 | S06–S09: graph execution | Typed/runtime-validated node ports, one graph validator/compiler, typed graph construction and an isolated runtime with cancellation and lifecycle management |
+| S09A–S09B: node operations | Per-operation deadlines, bounded opt-in retries and ordinary function nodes on the same runtime |
 | S10–S15: useful flows and tests | Transform/branch/merge/join nodes, graph inspection, ordinary-function authoring, public node/graph test helpers and reliability/load proofs |
 | S16–S19: adoption | Package/migration recipes, a real Next.js consumer, read-only graphical inspection and integrated acceptance |
 | Visual authoring extension | Select/connect nodes, run test loads, durably save drafts and locked graph revisions, and export readable TypeScript plus portable graph artifacts for other projects |
@@ -103,4 +104,4 @@ Graphs can now process packets: [run the S08 streaming example](docs/architectur
 
 S09 adds [run deadlines and verified cleanup/diagnostics](docs/architecture/lifecycle.md): set timeoutMs when starting a graph to bound stalled asynchronous work.
 
-Node-operation deadlines and bounded opt-in retries are now available through [ctx.task and graph policy](docs/architecture/node-operations.md). Retries default to0; configured1–5 retries retain the original flow deadline and packet identity protections. Automatic ordinary-function integration is the next S09B feature.
+Node-operation deadlines and bounded opt-in retries are now available through [ctx.task and graph policy](docs/architecture/node-operations.md). Retries default to0; configured1–5 retries retain the original flow deadline and packet identity protections. The [S09B function adapter](docs/architecture/function-nodes.md) applies this automatically to ordinary typed handlers.

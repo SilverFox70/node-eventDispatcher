@@ -10,6 +10,7 @@ import { createRunState } from './runtime/state.js';
 import type { Channel, NodeState } from './runtime/state.js';
 import { createAdmission, inputIterator } from './runtime/ports.js';
 import type { Port } from './runtime/ports.js';
+import { registerProcessContext } from './runtime/context-validation.js';
 import { createTasks } from './runtime/tasks.js';
 import { createTaskScope } from './runtime/task-scope.js';
 import { RuntimeValidationError } from './runtime/validation.js';
@@ -158,6 +159,7 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
           return result;
         },
       });
+      registerProcessContext(ctx, { runId, nodeId: node.id, component: definition.registry[nodeSpec.component]! });
       void Promise.resolve().then(() => {
         if (!state.check()) return;
         const spec = definition.spec.nodes.find(spec => spec.id === node.id)!;

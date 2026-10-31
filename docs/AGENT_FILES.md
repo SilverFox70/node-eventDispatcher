@@ -12,6 +12,7 @@ This map is the repository's cross-tool navigation source. No personal home-dire
 | [Readability and structure](agent-rules/readability-and-structure.md) | Cohesive small files, meaningful hierarchy/utilities and selective JSDoc | Planning, implementing or reviewing code |
 | [Verification](agent-rules/verification.md) | Proof strength, coverage and baseline meaning | Behavioral/tooling changes |
 | [Architecture index](architecture/README.md) | Current vs target map and topic routing | Architecture context |
+| [Function nodes](architecture/function-nodes.md) | S09B typed ordinary handlers, automatic task policy and runnable example | Authoring simple nodes or implementing mapping/cookbook/testing consumers |
 | [Node operations](architecture/node-operations.md) | S09A operation budgets, scoped capabilities and explicit bounded retry policy | Authoring advanced nodes or integrating function helpers/combinators |
 | [Lifecycle/deadlines](architecture/lifecycle.md) | S09 deadline, terminal cleanup and exact snapshot/event protocol | Configuring deadlines or implementing inspection/testing consumers |
 | [Streaming runtime](architecture/runtime.md) | S08 run lifecycle, admission/ledger, backend verdicts and runnable pipeline | Executing graphs or implementing lifecycle/inspection/testing consumers |

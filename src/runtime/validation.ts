@@ -2,17 +2,16 @@ import { FlowError } from '../errors.js';
 import { getContractIssues } from '../contracts.js';
 import type { ComponentBase } from '../component.js';
 import type { ContractBase, ContractIssue } from '../model/contracts.js';
-import type { Packet } from '../packet.js';
 import type { ValidationReport } from '../runtime.js';
 
 /** Authoritative verdict with bounded safe details; never retain rejected values or messages. */
 export class RuntimeValidationError extends FlowError {
   constructor(code: string, readonly validation: ValidationReport) { super(code); }
 }
-export function validateValue(packet: Packet, contract: ContractBase, context: {
+export function validateValue(value: unknown, contract: ContractBase, context: {
   runId: string; nodeId: string; port: string; direction: 'input' | 'output'; component: ComponentBase;
 }): void {
-  const issues = getContractIssues(contract, packet.value);
+  const issues = getContractIssues(contract, value);
   if (issues.length === 0) return;
   let truncated = issues.length > 16;
   const bounded: ContractIssue[] = issues.slice(0, 16).map(issue => {

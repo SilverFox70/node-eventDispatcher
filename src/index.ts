@@ -25,3 +25,5 @@ export type { NetworkRun, StartOptions, Terminal, Snapshot, Diagnostic, Validati
 export { NodeTimeoutError } from './runtime/tasks.js';
 export type { TaskContext } from './runtime/tasks.js';
 export type { TaskPolicy, RetryPolicy } from './model/graph/task-policy.js';
+export { defineFunction } from './function.js';
+export type { FunctionContext, FunctionSpec } from './function.js';

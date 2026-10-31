@@ -50,3 +50,7 @@ User authorized S09 after S08 merged. [S09 receipt](fbp-slices/S09-execution.md)
 ## S09A — scoped operations and bounded opt-in retries
 
 User inserted node/function deadline work, accepted active-operation timing and0-default/configurable1–5 retries, then requested execution. [S09A receipt](fbp-slices/S09A-execution.md) records NT1-r2, insertion-order migration, runtime policy/proofs and publication. S09B remains the next separate function-adapter branch, then original S10.
+
+## S09B — automatic function-node operations
+
+User requested S09B after S09A merged. [S09B receipt](fbp-slices/S09B-execution.md) records the thin function adapter, automatic task/attempt context, backend-output report preservation, declaration/real runtime/package proof and publication. S10 follows after actual S09B merge; S13 retains the full cookbook/templates and aggregate acceptance.
