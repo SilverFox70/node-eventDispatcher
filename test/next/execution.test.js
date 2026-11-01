@@ -58,6 +58,7 @@ test('execution UI shows semantic cards, real packet markers/details, consent re
     await view.page.getByText('Payload capture is off.', { exact: true }).waitFor();
     await view.page.getByRole('button', { name: 'Inspect Load account', exact: true }).press('Enter');
     assert((await view.page.getByTestId('inspection-details').textContent()).includes('account-id@1'));
+    await view.page.getByRole('button', { name: 'Close node details', exact: true }).click();
     await view.page.getByLabel('Capture sample payloads').check();
     await view.page.getByRole('button', { name: 'Inspect transfer 1', exact: true }).click();
     await view.page.getByTestId('packet-payload').waitFor();
@@ -93,7 +94,7 @@ test('hostile titles stay inert in the actual richer browser renderer', async ()
 
 test('oversize payload state is explicit in the selected packet view', async () => {
   const frame = await finalFrame(true);
-  frame.execution.events[0].payloadState = 'oversize'; delete frame.execution.events[0].payload;
+  for (const event of frame.execution.events.slice(0, 2)) { event.payloadState = 'oversize'; delete event.payload; }
   const view = await fixture.open();
   try {
     await view.page.route('**/api/inspection?payloads=1**', route => route.fulfill({ contentType: 'text/event-stream', body: 'data: ' + JSON.stringify(frame) + '\n\n' }));
@@ -101,5 +102,30 @@ test('oversize payload state is explicit in the selected packet view', async () 
     await view.page.getByLabel('Capture sample payloads').check();
     await view.page.getByRole('button', { name: 'Inspect transfer 1', exact: true }).click();
     await view.page.getByText('Payload omitted: oversize.', { exact: true }).waitFor();
+    await view.page.getByRole('button', { name: 'Inspect Load account', exact: true }).click();
+    await view.page.getByText('Payload exceeded the capture size limit.', { exact: true }).waitFor();
   } finally { await view.close(); }
+});
+
+test('node details distinguish empty and evicted observations without inventing input/output pairs', async () => {
+  const original = await finalFrame(true);
+  for (const sequence of [0, 2, 3]) {
+    const frame = globalThis.structuredClone(original);
+    frame.execution.events = sequence ? [frame.execution.events[sequence - 1]] : [];
+    frame.execution.total = sequence; frame.execution.dropped = sequence ? sequence - 1 : 0;
+    const view = await fixture.open();
+    try {
+      await view.page.route('**/api/inspection**', route => route.fulfill({ contentType: 'text/event-stream', body: 'data: ' + JSON.stringify(frame) + '\n\n' }));
+      await view.page.goto(fixture.server.url + '/inspector');
+      await view.page.getByRole('button', { name: 'Inspect Load account', exact: true }).click();
+      const dialog = view.page.getByRole('dialog', { name: 'Load account', exact: true });
+      if (!sequence) await dialog.getByText('No input or output observations are retained for this node yet.', { exact: true }).waitFor();
+      else {
+        await dialog.getByText('This view may be incomplete.', { exact: false }).waitFor();
+        await dialog.getByText(sequence === 2 ? 'No output observation retained.' : 'No input observation retained.', { exact: true }).waitFor();
+        await dialog.getByText('Payload is not available in this view.', { exact: true }).waitFor();
+      }
+      await dialog.getByRole('button', { name: 'Close node details', exact: true }).click();
+    } finally { await view.close(); }
+  }
 });

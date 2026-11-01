@@ -33,7 +33,7 @@ export function graphCards(source: GraphSource): Diagram {
     const component = source.catalog.components.find(item => `${item.id}@${item.version}` === node.component)!;
     const status = source.run?.nodes.find(item => item.id === node.id)?.status ?? 'idle';
     const totals = counts.get(node.id)!;
-    vertices.push({ id: ids.get(node.id)!, label: component.title, column: column(node.id),
+    vertices.push({ id: ids.get(node.id)!, label: component.title, nodeId: node.id, column: column(node.id),
       lines: [component.description, node.id + ' · ' + node.component, ...ports('Input', component.in), ...ports('Output', component.out),
         `Process: ${status}`, `Received: ${totals.received} · Sent: ${totals.sent}`],
       details: JSON.stringify({ node, component, status, counts: totals }, null, 2) });

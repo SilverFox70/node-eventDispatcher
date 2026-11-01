@@ -2,7 +2,7 @@ import { graphCards } from './inspection-graph-cards.ts';
 import { validateGraph } from 'event-driven-design/model';
 import type { InspectionSource } from 'event-driven-design/model';
 
-export type Vertex = { id: string; label: string; lines: string[]; details: string; column: number };
+export type Vertex = { id: string; label: string; lines: string[]; details: string; column: number; nodeId?: string };
 export type Edge = { from: string; to: string; label: string; kind: 'defined' | 'declared' | 'active'; channelId?: string };
 export type Diagram = { vertices: Vertex[]; edges: Edge[] };
 
