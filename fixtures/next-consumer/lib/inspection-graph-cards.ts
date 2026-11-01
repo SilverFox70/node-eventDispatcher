@@ -12,6 +12,13 @@ const ports = (side: string, values: ComponentDescriptor['in']) => Object.entrie
 export function graphCards(source: GraphSource): Diagram {
   const vertices: Diagram['vertices'] = [], edges: Diagram['edges'] = [];
   const ids = new Map(source.spec.nodes.map((node, index) => [node.id, 'node-' + index]));
+  const columns = new Map<string, number>();
+  function column(id: string): number {
+    if (columns.has(id)) return columns.get(id)!;
+    const parents = source.spec.edges.filter(edge => edge.to.node === id);
+    const value = parents.length ? Math.max(...parents.map(edge => column(edge.from.node))) + 1 : 0;
+    columns.set(id, value); return value;
+  }
   const channels = new Map(source.run?.channels.map(channel => [channel.id, channel]));
   const counts = new Map(source.spec.nodes.map(node => [node.id, { received: 0, sent: 0 }]));
   function count(id: string, from: string | null, to: string | null) {
@@ -22,11 +29,11 @@ export function graphCards(source: GraphSource): Diagram {
   source.spec.edges.forEach((edge, index) => count('edge:' + index, edge.from.node, edge.to.node));
   Object.entries(source.spec.inputs).forEach(([name, endpoint]) => count('input:' + name, null, endpoint.node));
   Object.entries(source.spec.outputs).forEach(([name, endpoint]) => count('output:' + name, endpoint.node, null));
-  for (const [index, node] of source.spec.nodes.entries()) {
+  for (const node of source.spec.nodes) {
     const component = source.catalog.components.find(item => `${item.id}@${item.version}` === node.component)!;
     const status = source.run?.nodes.find(item => item.id === node.id)?.status ?? 'idle';
     const totals = counts.get(node.id)!;
-    vertices.push({ id: ids.get(node.id)!, label: component.title, column: index % 3,
+    vertices.push({ id: ids.get(node.id)!, label: component.title, column: column(node.id),
       lines: [component.description, node.id + ' · ' + node.component, ...ports('Input', component.in), ...ports('Output', component.out),
         `Process: ${status}`, `Received: ${totals.received} · Sent: ${totals.sent}`],
       details: JSON.stringify({ node, component, status, counts: totals }, null, 2) });
@@ -39,7 +46,7 @@ export function graphCards(source: GraphSource): Diagram {
       const component = source.catalog.components.find(item => `${item.id}@${item.version}` === node.component)!;
       const descriptor = (side === 'input' ? component.in : component.out)[endpoint.port]!;
       const id = `${side}-${vertices.length}`, target = ids.get(endpoint.node)!;
-      vertices.push({ id, label: `${side === 'input' ? 'Input' : 'Output'}: ${name}`, column: side === 'input' ? 0 : 2,
+      vertices.push({ id, label: `${side === 'input' ? 'Input' : 'Output'}: ${name}`, column: side === 'input' ? Math.max(0, column(endpoint.node) - 1) : column(endpoint.node) + 1,
         lines: [portType(descriptor), `${side === 'input' ? 'Feeds' : 'From'} ${component.title}.${endpoint.port}`],
         details: JSON.stringify({ endpoint, contract: descriptor }, null, 2) });
       edges.push({ from: side === 'input' ? id : target, to: side === 'input' ? target : id,

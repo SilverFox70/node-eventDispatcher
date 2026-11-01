@@ -2,11 +2,11 @@ import type { Vertex } from './inspection-diagram';
 export type PositionedVertex = Vertex & { x: number; y: number; height: number };
 
 export function positionVertices(vertices: Vertex[]): PositionedVertex[] {
-  const rows = [0, 0, 0];
+  const rows = new Map<number, number>();
   return vertices.map(vertex => {
-    const y = rows[vertex.column]!;
+    const y = rows.get(vertex.column) ?? 0;
     const height = Math.max(80, 50 + vertex.lines.length * 20);
-    rows[vertex.column] = y + height + 25;
+    rows.set(vertex.column, y + height + 25);
     return { ...vertex, x: 20 + vertex.column * 300, y: y + 20, height };
   });
 }

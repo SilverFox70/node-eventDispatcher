@@ -96,7 +96,7 @@ test('oversize payload state is explicit in the selected packet view', async () 
   frame.execution.events[0].payloadState = 'oversize'; delete frame.execution.events[0].payload;
   const view = await fixture.open();
   try {
-    await view.page.route('**/api/inspection?payloads=1', route => route.fulfill({ contentType: 'text/event-stream', body: 'data: ' + JSON.stringify(frame) + '\n\n' }));
+    await view.page.route('**/api/inspection?payloads=1**', route => route.fulfill({ contentType: 'text/event-stream', body: 'data: ' + JSON.stringify(frame) + '\n\n' }));
     await view.page.goto(fixture.server.url + '/inspector');
     await view.page.getByLabel('Capture sample payloads').check();
     await view.page.getByRole('button', { name: 'Inspect transfer 1', exact: true }).click();

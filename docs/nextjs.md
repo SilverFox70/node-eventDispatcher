@@ -73,3 +73,19 @@ npm run demo:next -- --port 54546
 ```
 
 Invalid arguments fail before building. If the requested port is occupied, startup fails clearly; it never silently changes ports or terminates another application. Automated acceptance continues using ephemeral loopback ports, with separate localhost/bind/collision/cleanup proofs. This change does not configure your global host or network settings.
+
+## S18B: live Pokémon HTTP graph
+
+At /inspector, choose **Run live Pokémon example (capture public results)**. This is an explicit opt-in to public network calls and capture of their public results. Three fixed names fork into concurrent stats/species lookups and collate through the production keyed join. Result cards show both branches; the same inspector shows packets, lineage, state and counters. Disable capture to keep just metadata. Run account example again returns to the deterministic local demo.
+
+Data comes from [PokéAPI v2](https://pokeapi.co/docs/v2), a free/no-key, read-only API. The server caches successful public fetches for one hour per its fair-use policy. A run performs at most six GET fetches (cache hits may avoid origin calls); it does not guarantee six new origin requests. Browser reconnects create fresh demo runs using the same cache. No artificial live-service latency or retries are added. Height is in decimetres and weight in hectograms. Attribution is also visible in the UI.
+
+Each HTTP node has a5-second operation budget; the whole three-job graph has20 seconds. These are demo settings, not recommended production defaults. The adapter refuses redirects, validates upstream data and matching names, reads at most512 KiB per response and propagates cancellation. Upstream failure/invalid data is visible as a failed run, never replaced with invented success data. Public availability is not a CI requirement.
+
+```sh
+npm run stress:http
+```
+
+This deliberately runs the full production Next acceptance suite, including the owned HTTP stress harness and source-mapped coverage gates. The stress case runs32 networks/96 jobs with8 concurrent networks, making192 actual loopback HTTP calls. It asserts exact correlation, results, lineage, channel drain and no unintended retries; reports timings and observed HTTP concurrency to http-stress.json in the printed evidence directory. It also exercises503, invalid JSON/schema, oversized bodies, socket loss, held-request timeout and disconnect cancellation. Timing observations are machine-dependent, not SLAs or proof of maximum capacity.
+
+The server-only FBP_POKEMON_BASE_URL override exists for the test harness and permits only an HTTP127.0.0.1 origin with root path. It is not accepted from URL/query/body data. Automated browser/network tests use this owned service; public APIs never receive the stress load. No root framework source, dependencies, persistence or global machine configuration is changed.

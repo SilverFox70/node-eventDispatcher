@@ -19,9 +19,9 @@ The current runtime executes node graphs; these application examples still need 
 
 ## Current progress
 
-**Implemented through S18A on this review branch.** S00–S18 have merged. S18A adds real packet activity, meaningful typed account lookup/summary nodes, useful cards and explicit bounded payload capture to the live inspector. S19 will accept the complete developer story after this slice merges.
+**Implemented through S18B on this review branch.** S00–S18A have merged. S18B adds an opt-in live PokéAPI graph with parallel HTTP branches, collated result cards and a controlled real-HTTP stress harness. The inspector retains real packet activity, typed cards and bounded payload capture. S19 will accept the complete developer story after this slice merges.
 
-You can now build and run real, typed, asynchronous pipelines locally. The inspector now visualizes registered graphs and event relationships; editing and optional durable execution remain on the roadmap below. You can now try the small Next.js example with `npm run demo:next`; it runs a production build at **http://localhost:54545**. Follow **Inspect graphs and events** to watch packets and subscriptions change without refreshing.
+You can now build and run real, typed, asynchronous pipelines locally. The inspector now visualizes registered graphs and event relationships; editing and optional durable execution remain on the roadmap below. You can now try the small Next.js example with `npm run demo:next`; it runs a production build at **http://localhost:54545**. Follow **Inspect graphs and events** to watch packets and subscriptions change without refreshing. Choose **Run live Pokémon example** for public API responses; `npm run stress:http` exercises192 requests against our owned loopback service through the full production acceptance suite.
 
 ## What exists in this revision
 

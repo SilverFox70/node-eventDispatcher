@@ -539,3 +539,17 @@ S18 execution checkpoint (2026-10-31): [LV2](fbp-slices/18-graphical-inspector-p
 | C71 | Run-correlated safe transport, obsolete-frame suppression and consent/reset | test/runtime-trace.test.js; test/next/execution.test.js; test/next/inspector-state.test.js | S18A |
 | C72 | Useful cards, actual counters, packet markers/timeline and keyboard/inert text | test/runtime-trace.test.js; test/next/execution.test.js; test/next/inspector-state.test.js | S18A |
 | C73 | Manual localhost:54545, explicit override, clear collision refusal and ephemeral test isolation | test/runtime-trace.test.js; test/next/execution.test.js; test/next/inspector-state.test.js | S18A |
+
+## HTTP1 insertion — S18B
+
+User approved live external API demonstration plus owned HTTP stress2026-10-31. [S18B](fbp-slices/18b-live-http-demo-plan.md) freezes application-level HTTP1; no new core API.
+
+| Condition | Required observable proof | Owner |
+| --- | --- | --- |
+| C74 | Explicit public mode, fixed bounded cached GETs; offline default and loopback-only test override | S18B |
+| C75 | Real parallel HTTP branches, typed ingress and job/key join with immediate lineage | S18B |
+| C76 | Inspector live trace/counters and collated public results; capture/source lifetime retained | S18B |
+| C77 | Bounded concurrent HTTP load, exact outputs, no unintended retries or duplicate execution | S18B |
+| C78 | HTTP errors, invalid/oversize bodies, socket loss, timeout and cancellation; no late output | S18B |
+| C79 | Owned server/run cleanup and machine observations, no public API load test | S18B |
+| C80 | Packed production Next/browser/coverage, manual live smoke, docs and review receipt | S18B |

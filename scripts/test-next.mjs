@@ -58,7 +58,7 @@ try {
     await checked(process.execPath, [join(app, 'node_modules/playwright/cli.js'), 'install', ...(process.platform === 'linux' && process.env.CI ? ['--with-deps'] : []), 'chromium'], {
       cwd: app, env: { PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') }, log: join(evidence, 'browser-install.log'),
     });
-    const tests = ['consumer', 'inspector', 'inspector-state', 'coverage-signal', 'execution', 'demo-address'].map(name => join(root, `test/next/${name}.test.js`));
+    const tests = ['consumer', 'inspector', 'inspector-state', 'coverage-signal', 'execution', 'demo-address', 'http'].map(name => join(root, `test/next/${name}.test.js`));
     const tested = await command(process.execPath, ['--test', '--test-reporter=tap', ...tests], {
       cwd: root, env: { FBP_NEXT_APP: app, FBP_NEXT_EVIDENCE: evidence, NODE_V8_COVERAGE: join(evidence, 'v8-test'), PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') },
       log: join(evidence, 'consumer-tests.log'),

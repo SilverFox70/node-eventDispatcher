@@ -109,3 +109,7 @@ Canonical proposed identity contract: [IC1-r2](../fbp-identity-contract.md). Rec
 | G7 integration | Proposed; release blocked by S00 | Acceptance demonstration + handoff + next-merge condition; parent T labels do not hide owner |
 
 Two-executor counterexample: an executor cannot change the numbered behavior, error/ordering/identity policy, proof level or branch boundary and still claim this plan is satisfied. Equivalent internal algorithms are allowed. Any ambiguity not resolved by parent/SP1 becomes a recorded planning gap, not agent discretion to change behavior. Runtime/tool/merge evidence is gathered during execution; this table does not assert implemented gates passed.
+
+## HTTP1 predecessor amendment
+
+S18B is the approved insertion after merged S18A and before S19. S19 requires actual S18B merge and its C74–C80 HTTP/demo proof, in addition to earlier receipts. Reconcile these added conditions and EX1 C66–C73 on the accepted candidate; historical S18-only predecessor/condition ranges above do not waive those requirements. This amendment does not authorize S19 execution.

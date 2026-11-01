@@ -13,7 +13,7 @@ export default function DiagramView({ diagram, selected, select, trace }: {
   const shorten = (text: string, length: number) => text.length > length ? text.slice(0, length) + '…' : text;
   const label = (vertex: Vertex) => shorten(vertex.label, 30);
   return <div className="diagram-scroll">
-    <svg role="img" aria-label="Current relationship diagram" viewBox={`0 0 920 ${Math.max(220, ...positioned.map(vertex => vertex.y + vertex.height)) + 30}`}>
+    <svg role="img" aria-label="Current relationship diagram" viewBox={`0 0 ${Math.max(920, ...positioned.map(vertex => vertex.x + 280))} ${Math.max(220, ...positioned.map(vertex => vertex.y + vertex.height)) + 30}`}>
       <defs><marker id={arrow} markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" /></marker></defs>
       {diagram.edges.map((edge, index) => {
         const from = byId.get(edge.from)!, to = byId.get(edge.to)!;
