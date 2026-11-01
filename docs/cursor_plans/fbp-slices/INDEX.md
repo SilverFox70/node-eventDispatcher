@@ -2,7 +2,7 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: S18A live execution inspection is implemented and locally verified; [PR #29](https://github.com/SilverFox70/node-eventDispatcher/pull/29) is open for review.** S18 merged in PR #28 at e38ff9c55e5d9b3dfa48debbff69dc47aaf6ce8b. See [S18A plan](18a-live-execution-inspector-plan.md), [EX1](../fbp-execution-inspection-contract.md) and [receipt](S18A-execution.md). S19 remains unstarted.
+**Current work: S18B live API/HTTP stress implemented and locally verified; [PR #30](https://github.com/SilverFox70/node-eventDispatcher/pull/30) is open for review.** S18A merged in PR #29 at19cd6b639ac766da9ad06ccaf1f14460e774b09f. See [plan](18b-live-http-demo-plan.md) and [receipt](S18B-execution.md). S19 unstarted.
 
 **Always execute in manifest order (including approved insertion suffixes). Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
 
@@ -38,7 +38,8 @@ User requested active-operation node/function deadlines before combinators, then
 | 17 | [S17 — Run a packaged flow inside a Next.js application](17-next-server-consumer-plan.md) | `codex/fbp-17-next-server-consumer` | ready-for-review | S16 |
 | 18 | [S18 — See graph wiring and event relationships in Next.js](18-graphical-inspector-plan.md) | `codex/fbp-18-graphical-inspector` | ready-for-review | S17 |
 | 18A | [S18A — Watch a meaningful flow execute](18a-live-execution-inspector-plan.md) | `codex/fbp-18a-live-execution-inspector` | ready-for-review | S18 |
-| 19 | [S19 — Accept the complete application/developer story](19-adoption-acceptance-plan.md) | `codex/fbp-19-adoption-acceptance` | blocked-on-decision | S18A |
+| 18B | [S18B — Live API flows and controlled HTTP stress](18b-live-http-demo-plan.md) | `codex/fbp-18b-live-http-demo` | ready-for-review | S18A |
+| 19 | [S19 — Accept the complete application/developer story](19-adoption-acceptance-plan.md) | `codex/fbp-19-adoption-acceptance` | blocked-on-decision | S18B |
 
 ## Implementation quality across the sequence
 

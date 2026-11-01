@@ -5,7 +5,9 @@ import type { InspectionSnapshot, ExecutionTraceSnapshot } from 'event-driven-de
 import { connectInspection } from '../../lib/inspection-connection';
 import type { ConnectionStatus } from '../../lib/inspection-connection';
 import { inspectionDiagram } from '../../lib/inspection-diagram';
+import NodeDetails from './node-details';
 import DiagramView from './diagram';
+import PokemonResults from './pokemon-results';
 import ExecutionView from './execution';
 
 export default function Inspector() {
@@ -13,37 +15,45 @@ export default function Inspector() {
   const [status, setStatus] = useState<ConnectionStatus>('Connecting');
   const [sourceId, setSourceId] = useState('account-flow');
   const [selected, setSelected] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [execution, setExecution] = useState<ExecutionTraceSnapshot | null>(null);
   const [payloads, setPayloads] = useState(false);
+  const [example, setExample] = useState<'account' | 'pokemon'>('account');
   const [restart, setRestart] = useState(0);
   useEffect(() => {
-    setSnapshot(null); setExecution(null); setSelected(null); setStatus('Connecting');
+    setSnapshot(null); setExecution(null); setSelected(null); setDetailsOpen(false); setStatus('Connecting');
     return connectInspection((snapshot, execution) => { setSnapshot(snapshot); setExecution(execution); }, setStatus,
-      () => new EventSource('/api/inspection?payloads=' + (payloads ? '1' : '0')));
-  }, [payloads, restart]);
+      () => new EventSource('/api/inspection?payloads=' + (payloads ? '1' : '0') + '&example=' + example));
+  }, [payloads, restart, example]);
   const source = snapshot?.sources.find(item => item.id === sourceId);
   const diagram = source ? inspectionDiagram(source) : null;
   const trace = source?.kind === 'graph' && source.run?.runId === execution?.runId ? execution : null;
   const detail = diagram?.vertices.find(vertex => vertex.id === selected);
+  const select = (id: string) => { setSelected(id); setDetailsOpen(true); };
   return <section className="inspector">
     <p role="status" aria-live="polite">Connection: {status}</p>
-    <p>A real local example: account ID → asynchronous sample lookup → display summary. Three invented accounts run through typed ports; packet markers reflect observed sends.</p>
+    <p hidden={example !== 'account'}>A real local example: account ID → asynchronous sample lookup → display summary. Three invented accounts run through typed ports; packet markers reflect observed sends.</p>
+    {example === 'pokemon' && <p>Live PokéAPI: three names branch into parallel stats/species HTTP calls, then collate by job. Public responses may be cached for one hour. <a href="https://pokeapi.co/docs/v2">Data: PokéAPI</a>. Each run makes at most six GET requests, with no retries.</p>}
     <div className="execution-controls">
-      <button type="button" onClick={() => { setSourceId('account-flow'); setRestart(value => value + 1); }}>Run account example again</button>
-      <label className="payload-choice"><input type="checkbox" checked={payloads} onChange={event => { setSourceId('account-flow'); setPayloads(event.target.checked); }} />Capture sample payloads</label>
+      <button id="pokemon-demo" type="button" onClick={() => { setExample('pokemon'); setSourceId('pokemon-flow'); setPayloads(true); setRestart(value => value + 1); }}>Run live Pokémon example (capture public results)</button>
+      <button type="button" onClick={() => { setExample('account'); setSourceId('account-flow'); setRestart(value => value + 1); }}>Run account example again</button>
+      <label className="payload-choice"><input type="checkbox" checked={payloads} onChange={event => { setSourceId(example === 'pokemon' ? 'pokemon-flow' : 'account-flow'); setPayloads(event.target.checked); }} />Capture sample payloads</label>
     </div>
     <p>Payloads are off by default. Changing capture restarts this local example and clears the previous view.</p>
     <label>Inspected source <select value={sourceId} onChange={event => { setSourceId(event.target.value); setSelected(null); }}>
       {snapshot?.sources.map(item => <option key={item.id} value={item.id}>{item.id} ({item.kind})</option>)}
     </select></label>
     <p>Legend: defined wiring (solid), declared publisher (dashed), active subscription (dotted).</p>
+    {source?.kind === 'graph' && source.run && <p>Run: {source.run.status} · Latest diagnostic: {source.run.diagnostics.at(-1)?.code}</p>}
     {source && !diagram && <p>Invalid graph metadata</p>}
     {diagram && <>
-      <DiagramView key={sourceId} trace={trace} diagram={diagram} selected={selected} select={setSelected} />
+      <DiagramView key={sourceId} trace={trace} diagram={diagram} selected={selected} select={select} />
+      {detail?.nodeId && detailsOpen && <NodeDetails vertex={detail} trace={trace} allowPayloads={payloads} close={() => setDetailsOpen(false)} />}
+      {example === 'pokemon' && trace && <PokemonResults key={'results:' + trace.runId} trace={trace} diagram={diagram} />}
       {trace && <ExecutionView key={trace.runId} trace={trace} allowPayloads={payloads} />}
       <h2>Relationship text</h2>
       <ul aria-label="Entities">{diagram.vertices.map(vertex => <li key={vertex.id}>
-        <button type="button" aria-pressed={selected === vertex.id} onClick={() => setSelected(vertex.id)}>{vertex.label}</button>
+        <button type="button" aria-pressed={selected === vertex.id} onClick={() => select(vertex.id)}>{vertex.label}</button>
         {' — ' + vertex.lines.join(', ')}
       </li>)}</ul>
       <table><caption>Current relationships</caption><thead><tr><th>From</th><th>To</th><th>Connection</th><th>Kind</th></tr></thead>

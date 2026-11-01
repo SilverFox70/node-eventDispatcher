@@ -44,3 +44,5 @@ S14 adds [public testing helpers](../node-authoring.md#test-one-node-or-a-comple
 S17 adds [the packaged Next consumer](../nextjs.md): a fixed Node route, browser-safe metadata, backend verdict attribution, current-request suppression and production HTTP/browser/asset proof. S18 adds the read-only graphical inspector, automatic topology notifications and owned live delivery; see the same guide.
 
 S18A adds [optional live packet inspection](execution-inspection.md): actual channel events, bounded opt-in capture, semantic node cards and the meaningful sample account workflow. Default scope snapshots and execution policy remain unchanged.
+
+S18B adds an application-level [live Pokémon graph and HTTP stress harness](../nextjs.md#s18b-live-pokémon-http-graph). It uses the same compiler/runtime, keyed joins and EX1 trace; no core API or durable execution is added. Public traffic is explicit and cached; stress stays on an owned loopback provider.

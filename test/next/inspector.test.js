@@ -25,15 +25,20 @@ test('graphs and event relationships visualized: SVG/text parity, selection, ine
     const node = view.page.getByRole('button', { name: 'Inspect Load account', exact: true });
     await node.focus(); await node.press('Enter');
     assert((await view.page.getByTestId('inspection-details').textContent()).includes('account-id@1'));
-    await node.press('Escape'); await node.press(' ');
+    await view.page.keyboard.press('Escape'); await node.press(' ');
+    await view.page.getByRole('button', { name: 'Close node details', exact: true }).click();
     await view.page.getByRole('button', { name: 'Load account', exact: true }).click();
     assert.equal(await node.getAttribute('aria-pressed'), 'true');
+    await view.page.getByRole('button', { name: 'Close node details', exact: true }).click();
     await view.page.screenshot({ path: join(evidence, 'inspector-graph.png'), fullPage: true });
     assert.equal(await view.page.locator('svg script, svg img').count(), 0);
     await view.page.getByLabel('Inspected source').selectOption('idle-definition');
     assert.equal(await view.page.locator('[data-vertex]').count(), 3);
     assert.equal((await view.page.getByTestId('inspection-run').textContent()).trim(), 'null');
-    assert.equal(await view.page.getByTestId('inspection-details').textContent(), 'Choose an entity to inspect its metadata.');
+    await view.page.getByRole('button', { name: 'Inspect Load account', exact: true }).click();
+    await view.page.getByText('No execution trace is available for this graph definition.', { exact: true }).waitFor();
+    await view.page.getByRole('button', { name: 'Close node details', exact: true }).click();
+    assert((await view.page.getByTestId('inspection-details').textContent()).includes('account-id@1'));
     await view.page.getByLabel('Inspected source').selectOption('account-flow');
     assert((await view.page.getByTestId('inspection-run').textContent()).includes('runId'));
     // Establish a new demonstration after inspecting graphs; no refresh is used during mutations.

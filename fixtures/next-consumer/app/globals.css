@@ -57,3 +57,18 @@ caption { font-weight: 600; text-align: left; padding: .75rem 0; }
 @media (prefers-reduced-motion: reduce) { .packet { display: none; } }
 
 .inspector-page { max-width: 76rem; }
+.pokemon-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+.pokemon-results article { min-width: 0; }
+
+.demo-launch { margin-top: 1.5rem; }
+
+.node-details { width: min(900px, calc(100vw - 4rem)); max-height: 85vh; overflow: auto; border: 1px solid #8b9bb2; border-radius: .75rem; padding: 1.5rem; color: #182332; }
+.node-details::backdrop { background: rgb(15 23 42 / .45); }
+.node-details header { display: flex; gap: 1rem; align-items: center; justify-content: space-between; }
+.node-details h2 { margin: 0; }
+.node-job { margin-top: 1rem; }
+.node-io { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 1rem; }
+.node-observation { border-top: 1px solid #d4dce7; padding-top: .75rem; margin-top: .75rem; overflow-wrap: anywhere; }
+
+.pokemon-results { max-height: 30rem; overflow: auto; align-items: start; }
+.pokemon-results pre { max-height: 14rem; overflow: auto; }

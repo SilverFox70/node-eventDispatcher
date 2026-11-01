@@ -13,7 +13,8 @@
     "coverage": "npm run build && c8 node --test test/*.test.js && node scripts/coverage-thresholds.mjs",
     "test:package": "npm run build && node --test test/package.test.js test/package-contracts.test.js test/author-recipe.test.js test/examples.test.js",
     "test:next": "node scripts/test-next.mjs",
-    "demo:next": "node scripts/test-next.mjs --serve"
+    "demo:next": "node scripts/test-next.mjs --serve",
+    "stress:http": "npm run test:next"
   },
   "keywords": [
     "EDD",

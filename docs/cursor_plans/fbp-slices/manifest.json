@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S18A live execution inspection; S19 requires actual S18A merge",
+  "next_planning_action": "Review S18B; S19 requires actual S18B merge",
   "slices": [
     {
       "id": "S00",
@@ -671,9 +671,9 @@
       "readiness": "ready-for-review",
       "execution_status": "complete",
       "previous": "S18",
-      "next": "S19",
+      "next": "S18B",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "19cd6b639ac766da9ad06ccaf1f14460e774b09f",
       "conditions": [
         "C66",
         "C67",
@@ -692,19 +692,52 @@
         "S18A.D"
       ],
       "execution_receipt": "S18A-execution.md",
-      "review_status": "open",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/29",
       "implementation_commit": "bf6f4d9b1c46b253dd32801af44869ef401366ab"
     },
     {
-      "id": "S19",
+      "id": "S18B",
       "order": 22,
+      "title": "Live API flows and controlled HTTP stress",
+      "plan": "18b-live-http-demo-plan.md",
+      "branch": "codex/fbp-18b-live-http-demo",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
+      "previous": "S18A",
+      "next": "S19",
+      "base": "master after previous slice merge",
+      "merge_sha": null,
+      "conditions": [
+        "C74",
+        "C75",
+        "C76",
+        "C77",
+        "C78",
+        "C79",
+        "C80"
+      ],
+      "blocked_by": [],
+      "authorized_tasks": [
+        "S18B.A",
+        "S18B.B",
+        "S18B.C",
+        "S18B.D"
+      ],
+      "execution_receipt": "S18B-execution.md",
+      "review_status": "open",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/30",
+      "implementation_commit": "bb1126f4eba344de2d528cb0e18f8e28a31cfb7a"
+    },
+    {
+      "id": "S19",
+      "order": 23,
       "title": "Accept the complete application/developer story",
       "plan": "19-adoption-acceptance-plan.md",
       "branch": "codex/fbp-19-adoption-acceptance",
       "readiness": "blocked-on-decision",
       "execution_status": "not-started",
-      "previous": "S18A",
+      "previous": "S18B",
       "next": null,
       "base": "master after previous slice merge",
       "merge_sha": null,
@@ -809,7 +842,14 @@
     "C70": "S18A",
     "C71": "S18A",
     "C72": "S18A",
-    "C73": "S18A"
+    "C73": "S18A",
+    "C74": "S18B",
+    "C75": "S18B",
+    "C76": "S18B",
+    "C77": "S18B",
+    "C78": "S18B",
+    "C79": "S18B",
+    "C80": "S18B"
   },
   "identity_contract": {
     "path": "../fbp-identity-contract.md",
