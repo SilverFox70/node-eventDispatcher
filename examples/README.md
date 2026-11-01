@@ -35,3 +35,5 @@ To adapt these examples to an installed package, use package exports as these sc
 The fifth demo is an installed-friendly JavaScript lookup example; the exact TypeScript template is independently compiled/tested by the installed cookbook checks. See [the application guide](../docs/guide.md). The seventh uses controlled local promises to demonstrate backpressure and cancellation, without timers pretending to be service latency.
 
 Installed consumers can run these files under node_modules/event-driven-design/examples. They need no repository test helpers, source aliases or TypeScript runtime. The native-fetch/scanner modules under legacy are copyable historical utilities, not core public exports; see [migration](../docs/migration.md).
+
+For the live graphical account example, run `npm run demo:next`, open http://localhost:54545/inspector and watch real packet observations. Payload capture requires the checkbox; sample data is invented. See [the Next guide](../docs/nextjs.md) for the explicit port override and [execution inspection](../docs/architecture/execution-inspection.md) for the optional runtime API.

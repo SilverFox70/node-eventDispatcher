@@ -3,9 +3,9 @@ import { join } from 'node:path';
 import { writeFileSync } from 'node:fs';
 import { environment } from './process.mjs';
 
-/** A child production server, owned until finally/stop. Its ephemeral port is reported by Next. */
-export async function startServer(directory, { mode = 'success', badCatalog = false, shortInspectionLease = false, badInspection = false, coverage, log } = {}) {
-  const child = spawn(process.execPath, [join(directory, 'node_modules/next/dist/bin/next'), 'start', '-H', '127.0.0.1', '-p', '0'], {
+/** A child production server, owned until finally/stop. Next reports its requested or ephemeral port. */
+export async function startServer(directory, { host = '127.0.0.1', port = 0, mode = 'success', badCatalog = false, shortInspectionLease = false, badInspection = false, coverage, log } = {}) {
+  const child = spawn(process.execPath, [join(directory, 'node_modules/next/dist/bin/next'), 'start', '-H', host, '-p', String(port)], {
     cwd: directory, env: environment({ FBP_DEMO_MODE: mode, FBP_DEMO_BAD_CATALOG: badCatalog ? '1' : '0',
       FBP_INSPECTION_SHORT_LEASE: shortInspectionLease ? '1' : '0',
       FBP_INSPECTION_BAD_GRAPH: badInspection ? '1' : '0',
@@ -27,11 +27,11 @@ export async function startServer(directory, { mode = 'success', badCatalog = fa
       const capture = data => {
         output = (output + data.toString()).slice(-131072);
         const match = output.match(/http:\/\/(?:127\.0\.0\.1|localhost):(\d+)/);
-        if (match && Number(match[1]) > 0 && output.includes('Ready')) { done(); resolve(`http://127.0.0.1:${match[1]}`); }
+        if (match && Number(match[1]) > 0 && output.includes('Ready')) { done(); resolve(`http://${host}:${match[1]}`); }
       };
       child.stdout.on('data', capture); child.stderr.on('data', capture);
       child.once('error', error => { done(); reject(error); });
-      child.once('exit', () => { done(); reject(Error('Next exited before startup: ' + output)); });
+      child.once('exit', () => { done(); reject(Error(output.includes('EADDRINUSE') ? `Port ${port} is already in use; choose --port <number>.` : 'Next exited before startup: ' + output)); });
     });
     return { url, stop, logs: () => output, child };
   } catch (error) { await stop(); throw error; }

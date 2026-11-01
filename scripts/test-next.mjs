@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { command, npmCommand } from './next/process.mjs';
 import { measureFixture } from './next/coverage.mjs';
 import { startServer } from './next/server.mjs';
+import { demoOptions } from './next/demo-options.mjs';
+const demo = demoOptions(process.argv.slice(2));
 
 const root = resolve(fileURLToPath(new globalThis.URL('..', import.meta.url)));
 const session = realpathSync(mkdtempSync(join(tmpdir(), 'fbp-next-')));
@@ -34,7 +36,7 @@ try {
   const install = await npmCommand(['ci', '--no-audit', '--no-fund'], { cwd: app, log: join(evidence, 'install.log') });
   assert.equal(install.code, 0, install.output);
   const next = join(app, 'node_modules/next/dist/bin/next');
-  if (!process.argv.includes('--serve')) {
+  if (!demo.serve) {
     const client = join(app, 'app/demo.tsx'), original = readFileSync(client, 'utf8');
     try {
       writeFileSync(client, original + "\nimport { serverCanary } from '../lib/provider'; console.log(serverCanary);\n");
@@ -48,15 +50,15 @@ try {
       NODE_OPTIONS: '--import=' + new globalThis.URL('./next/coverage-exit.mjs', import.meta.url).href },
     log: join(evidence, 'next-build.log'),
   });
-  if (process.argv.includes('--serve')) {
-    serving = await startServer(app);
+  if (demo.serve) {
+    serving = await startServer(app, { host: demo.host, port: demo.port });
     console.log('Demo ready:', serving.url, '(Ctrl+C to stop)');
     await new Promise(resolve => { process.once('SIGINT', resolve); process.once('SIGTERM', resolve); });
   } else {
     await checked(process.execPath, [join(app, 'node_modules/playwright/cli.js'), 'install', ...(process.platform === 'linux' && process.env.CI ? ['--with-deps'] : []), 'chromium'], {
       cwd: app, env: { PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') }, log: join(evidence, 'browser-install.log'),
     });
-    const tests = ['consumer', 'inspector', 'inspector-state', 'coverage-signal'].map(name => join(root, `test/next/${name}.test.js`));
+    const tests = ['consumer', 'inspector', 'inspector-state', 'coverage-signal', 'execution', 'demo-address'].map(name => join(root, `test/next/${name}.test.js`));
     const tested = await command(process.execPath, ['--test', '--test-reporter=tap', ...tests], {
       cwd: root, env: { FBP_NEXT_APP: app, FBP_NEXT_EVIDENCE: evidence, NODE_V8_COVERAGE: join(evidence, 'v8-test'), PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') },
       log: join(evidence, 'consumer-tests.log'),

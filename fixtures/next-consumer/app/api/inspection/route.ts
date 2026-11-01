@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export function GET(request: Request) {
-  return new Response(openInspectionStream(createInspectionFixture(), request.signal, randomUUID(), {
+  return new Response(openInspectionStream(createInspectionFixture(new URL(request.url).searchParams.get('payloads') === '1'), request.signal, randomUUID(), {
     leaseMs: process.env.FBP_INSPECTION_SHORT_LEASE === '1' ? 800 : 60000
   }), {
     headers: { 'content-type': 'text/event-stream', 'cache-control': 'no-store', 'x-accel-buffering': 'no' }

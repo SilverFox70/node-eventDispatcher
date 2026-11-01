@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S18 graphical inspector; S19 requires actual S18 merge",
+  "next_planning_action": "Review S18A live execution inspection; S19 requires actual S18A merge",
   "slices": [
     {
       "id": "S00",
@@ -642,9 +642,9 @@
       "readiness": "ready-for-review",
       "execution_status": "complete",
       "previous": "S17",
-      "next": "S19",
+      "next": "S18A",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "e38ff9c55e5d9b3dfa48debbff69dc47aaf6ce8b",
       "conditions": [
         "C44",
         "C53",
@@ -658,19 +658,53 @@
         "S18.C"
       ],
       "execution_receipt": "S18-execution.md",
-      "review_status": "open",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/28",
       "implementation_commit": "25cd77b"
     },
     {
-      "id": "S19",
+      "id": "S18A",
       "order": 21,
+      "title": "Watch a meaningful flow execute",
+      "plan": "18a-live-execution-inspector-plan.md",
+      "branch": "codex/fbp-18a-live-execution-inspector",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
+      "previous": "S18",
+      "next": "S19",
+      "base": "master after previous slice merge",
+      "merge_sha": null,
+      "conditions": [
+        "C66",
+        "C67",
+        "C68",
+        "C69",
+        "C70",
+        "C71",
+        "C72",
+        "C73"
+      ],
+      "blocked_by": [],
+      "authorized_tasks": [
+        "S18A.A",
+        "S18A.B",
+        "S18A.C",
+        "S18A.D"
+      ],
+      "execution_receipt": "S18A-execution.md",
+      "review_status": "open",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/29",
+      "implementation_commit": "bf6f4d9b1c46b253dd32801af44869ef401366ab"
+    },
+    {
+      "id": "S19",
+      "order": 22,
       "title": "Accept the complete application/developer story",
       "plan": "19-adoption-acceptance-plan.md",
       "branch": "codex/fbp-19-adoption-acceptance",
       "readiness": "blocked-on-decision",
       "execution_status": "not-started",
-      "previous": "S18",
+      "previous": "S18A",
       "next": null,
       "base": "master after previous slice merge",
       "merge_sha": null,
@@ -767,7 +801,15 @@
     "NT15": "S09A",
     "NT16": "S09A",
     "NT17": "S09A",
-    "NT18": "S09A"
+    "NT18": "S09A",
+    "C66": "S18A",
+    "C67": "S18A",
+    "C68": "S18A",
+    "C69": "S18A",
+    "C70": "S18A",
+    "C71": "S18A",
+    "C72": "S18A",
+    "C73": "S18A"
   },
   "identity_contract": {
     "path": "../fbp-identity-contract.md",

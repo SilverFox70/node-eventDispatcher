@@ -1,5 +1,5 @@
 import type { DispatcherTopology, DispatcherSubscriber, OwnerMetadata } from './model/dispatcher-topology.js';
-import { createTopologyChanges } from './dispatcher/changes.js';
+import { createChanges } from './observation/changes.js';
 import { createDispatcherLog } from './dispatcher/log.js';
 import { createDispatcherTopology, readOwnerMetadata } from './dispatcher/topology.js';
 
@@ -30,7 +30,7 @@ export function createDispatcher(options: DispatcherOptions = {}) {
   const subscribers = new Map<string, Registration[]>();
   const log = createDispatcherLog(limit);
   const topology = createDispatcherTopology();
-  const changes = createTopologyChanges();
+  const changes = createChanges();
   let nextSubscriptionId = 0;
 
   function register(name: string, callback: EventListener, once: boolean, metadata?: OwnerMetadata): void {

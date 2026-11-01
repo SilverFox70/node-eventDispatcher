@@ -33,3 +33,6 @@ export type { JoinOptions } from './components/join-by-key.js';
 export { createInspectionScope } from './inspection.js';
 export type { InspectionScope } from './inspection.js';
 export type { InspectionSnapshot, InspectionSource } from './model/inspection.js';
+
+export type { TraceOptions } from './runtime/trace.js';
+export type { ExecutionTraceEvent, ExecutionTraceSnapshot } from './model/execution-trace.js';
