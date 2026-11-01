@@ -61,3 +61,12 @@ Implementation: complete (adoption documentation and reconciliation). Behavioral
 ## Publication
 
 Acceptance commit 0e2e3b27a021600ce88931f3f932ea652b874e3b pushed on codex/fbp-19-adoption-acceptance. [PR #31](https://github.com/SilverFox70/node-eventDispatcher/pull/31) created against master and attached to the task; title/body/base/head verified. This follow-up records review metadata only, outside the shipped archive, so the exact tested artifact remains applicable. No merge/npm publish/deployment occurred. Hosted CI is not polled or claimed green; local acceptance is complete and review/merge remain pending.
+
+
+## Windows CI remediation — user authorized
+
+Run41264903863 on d765826: Linux/macOS/Next pass; Windows coverage227/229, failing author-recipe and package-contracts during isolated npm ci. Both return status=null around66–68 seconds with a60-second child budget. The previous assertion drops subprocess error/signal, so timeout is strongly indicated rather than proven by that old log. Saved /tmp/fbp-s19-windows-ci.log. Current acceptance is not claimed hosted-green.
+
+Bounded S16-owned fixture amendment: install-only budget180000ms; all ordinary process/type/runtime command budgets remain60000ms. No retries, skipped assertions, threshold or shipped-code changes. Factor the existing runner within the same fixture and expose it only to internal tests. Real child timeout/nonzero/launch-failure cases fail meaningful diagnostic assertions before the fix (/tmp/fbp-s19-package-process-red.log); final focused/package/coverage proof follows. Future failures retain actual error code/signal and configured budget instead of only null != 0.
+
+Local remediation verification: targeted process cases3/3 pass (/tmp/fbp-s19-package-process-green.log); final lint exits0 (/tmp/fbp-s19-package-lint.log); full npm run coverage exits0 with232/232 tests and unchanged production coverage gates (/tmp/fbp-s19-windows-fix-coverage.log). npm pack --dry-run integrity exactly matches the original S19/Next artifact (/tmp/fbp-s19-windows-fix-pack.json), so production Next/browser proof remains applicable and is not redundantly rerun. Guidance/diff checks pass. Hosted Windows verification pending after push; no green claim from local results.
