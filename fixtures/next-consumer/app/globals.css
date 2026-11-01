@@ -59,3 +59,5 @@ caption { font-weight: 600; text-align: left; padding: .75rem 0; }
 .inspector-page { max-width: 76rem; }
 .pokemon-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
 .pokemon-results article { min-width: 0; }
+
+.demo-launch { margin-top: 1.5rem; }

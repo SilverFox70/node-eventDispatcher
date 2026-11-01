@@ -32,7 +32,7 @@ export default function Inspector() {
     <p hidden={example !== 'account'}>A real local example: account ID → asynchronous sample lookup → display summary. Three invented accounts run through typed ports; packet markers reflect observed sends.</p>
     {example === 'pokemon' && <p>Live PokéAPI: three names branch into parallel stats/species HTTP calls, then collate by job. Public responses may be cached for one hour. <a href="https://pokeapi.co/docs/v2">Data: PokéAPI</a>. Each run makes at most six GET requests, with no retries.</p>}
     <div className="execution-controls">
-      <button type="button" onClick={() => { setExample('pokemon'); setSourceId('pokemon-flow'); setPayloads(true); setRestart(value => value + 1); }}>Run live Pokémon example (capture public results)</button>
+      <button id="pokemon-demo" type="button" onClick={() => { setExample('pokemon'); setSourceId('pokemon-flow'); setPayloads(true); setRestart(value => value + 1); }}>Run live Pokémon example (capture public results)</button>
       <button type="button" onClick={() => { setExample('account'); setSourceId('account-flow'); setRestart(value => value + 1); }}>Run account example again</button>
       <label className="payload-choice"><input type="checkbox" checked={payloads} onChange={event => { setSourceId(example === 'pokemon' ? 'pokemon-flow' : 'account-flow'); setPayloads(event.target.checked); }} />Capture sample payloads</label>
     </div>

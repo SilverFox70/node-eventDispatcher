@@ -91,7 +91,11 @@ test('live browser shows real graph, collated cards, capture off and return to o
   await page.coverage.startJSCoverage({ resetOnNavigation: false });
   await page.route('**/*', route => ['127.0.0.1', 'localhost'].includes(new globalThis.URL(route.request().url()).hostname) ? route.continue() : route.abort());
   try {
-    await page.goto(server.url + '/inspector');
+    const before = upstream.stats().calls;
+    await page.goto(server.url + '/');
+    await page.getByRole('link', { name: 'Open the live Pokémon demo', exact: true }).click();
+    await page.getByText('Connection: Live', { exact: true }).waitFor();
+    assert.equal(upstream.stats().calls, before, 'home navigation does not trigger public work');
     await page.getByRole('button', { name: 'Run live Pokémon example (capture public results)', exact: true }).click();
     await page.getByRole('region', { name: 'Pokémon results' }).getByRole('heading', { name: 'charmander', exact: true }).waitFor();
     assert((await page.getByRole('img').textContent()).includes('Fetch Pokémon stats'));

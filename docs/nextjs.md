@@ -76,7 +76,7 @@ Invalid arguments fail before building. If the requested port is occupied, start
 
 ## S18B: live Pokémon HTTP graph
 
-At /inspector, choose **Run live Pokémon example (capture public results)**. This is an explicit opt-in to public network calls and capture of their public results. Three fixed names fork into concurrent stats/species lookups and collate through the production keyed join. Result cards show both branches; the same inspector shows packets, lineage, state and counters. Disable capture to keep just metadata. Run account example again returns to the deterministic local demo.
+The home page includes **Open the live Pokémon demo**, linking directly to the run control. At /inspector, choose **Run live Pokémon example (capture public results)**. Navigation alone does not start external calls. This is an explicit opt-in to public network calls and capture of their public results. Three fixed names fork into concurrent stats/species lookups and collate through the production keyed join. Result cards show both branches; the same inspector shows packets, lineage, state and counters. Disable capture to keep just metadata. Run account example again returns to the deterministic local demo.
 
 Data comes from [PokéAPI v2](https://pokeapi.co/docs/v2), a free/no-key, read-only API. The server caches successful public fetches for one hour per its fair-use policy. A run performs at most six GET fetches (cache hits may avoid origin calls); it does not guarantee six new origin requests. Browser reconnects create fresh demo runs using the same cache. No artificial live-service latency or retries are added. Height is in decimetres and weight in hectograms. Attribution is also visible in the UI.
 

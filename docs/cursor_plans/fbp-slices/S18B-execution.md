@@ -31,3 +31,5 @@ Final lint exits0 (/tmp/fbp-s18b-lint-final.log). npm run check previously passe
 ## Publication
 
 Implementation bb1126f4eba344de2d528cb0e18f8e28a31cfb7a pushed to origin/codex/fbp-18b-live-http-demo. [PR #30](https://github.com/SilverFox70/node-eventDispatcher/pull/30) created against master, attached to the task, and title/body/base/head verified. Local gates passed; hosted CI pending at publication. This follow-up changes only review metadata. No merge/S19 execution is inferred.
+
+User follow-up requested a home-page entry for Pokémon. Added an explanatory home section linking to the live run control; opening the link does not trigger external calls. Production browser journey now starts at home and asserts no upstream call before explicit Run. Final homepage acceptance follows; previously green receipts apply to unchanged core/HTTP graph behavior.
