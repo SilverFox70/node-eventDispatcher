@@ -2,9 +2,9 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: S18B live API/HTTP stress implemented and locally verified; [PR #30](https://github.com/SilverFox70/node-eventDispatcher/pull/30) is open for review.** S18A merged in PR #29 at19cd6b639ac766da9ad06ccaf1f14460e774b09f. See [plan](18b-live-http-demo-plan.md) and [receipt](S18B-execution.md). S19 unstarted.
+**Current work: S19 foundation adoption acceptance is locally verified and ready for review.** S18B merged in PR #30 at8693131. See [S19 plan](19-adoption-acceptance-plan.md) and [receipt](S19-execution.md). Extension implementation is not authorized by this slice.
 
-**Always execute in manifest order (including approved insertion suffixes). Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. S00–S03 are ready-for-review proposals. S04–S19 are explicitly blocked-on-decision until S00's reviewed public identity contract is applied to affected plans; ordinary merge prerequisites still apply to all slices.
+**Always execute in manifest order (including approved insertion suffixes). Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. The original S00 identity block is historical: S00–S18B are merged with their accepted amendments. S19 is released by the current explicit request; ordinary merge prerequisites remain.
 
 The choice to retain FIFO and use job/correlation/packet/lineage identity is compatible, but r4 did not freeze an exact metadata API or result-lookup lifetime. IC1-r2 now supplies one concrete proposal with downstream amendments, pending human acceptance. It does not implement a durable store. No current slice expands into rich public packet codecs, cycles, hosted agents or a drag/drop editor; the extension seams and graphical inspection remain included.
 
@@ -39,7 +39,7 @@ User requested active-operation node/function deadlines before combinators, then
 | 18 | [S18 — See graph wiring and event relationships in Next.js](18-graphical-inspector-plan.md) | `codex/fbp-18-graphical-inspector` | ready-for-review | S17 |
 | 18A | [S18A — Watch a meaningful flow execute](18a-live-execution-inspector-plan.md) | `codex/fbp-18a-live-execution-inspector` | ready-for-review | S18 |
 | 18B | [S18B — Live API flows and controlled HTTP stress](18b-live-http-demo-plan.md) | `codex/fbp-18b-live-http-demo` | ready-for-review | S18A |
-| 19 | [S19 — Accept the complete application/developer story](19-adoption-acceptance-plan.md) | `codex/fbp-19-adoption-acceptance` | blocked-on-decision | S18B |
+| 19 | [S19 — Accept the complete application/developer story](19-adoption-acceptance-plan.md) | `codex/fbp-19-adoption-acceptance` | ready-for-review | S18B |
 
 ## Implementation quality across the sequence
 

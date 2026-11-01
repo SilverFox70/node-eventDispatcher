@@ -34,6 +34,7 @@ This map is the repository's cross-tool navigation source. No personal home-dire
 | [Decision register](architecture/decision-register.md) | Status/authority of directions and decisions | Choosing or changing behavior |
 | [Extension roadmap](architecture/roadmap.md) | Future optional profiles, including persistent/resumable execution | Evaluating a future capability |
 | [ADRs](architecture/decisions/README.md) | Durable accepted/superseded decision records | Recording a material contract change |
+| [Foundation adoption acceptance](cursor_plans/fbp-slices/S19-execution.md) / [condition evidence](cursor_plans/fbp-slices/S19-condition-evidence.md) | Current foundation candidate, artifact/gate proof, retained limits and all99 condition pointers | Evaluating readiness or planning extensions |
 | [Master plan](cursor_plans/fbp-foundation-plan.md) | Proposed requirements/invariants/condition ledger | Cross-feature behavior |
 | [Slice index](cursor_plans/fbp-slices/INDEX.md) / [manifest](cursor_plans/fbp-slices/manifest.json) | Branch order and readiness | Selecting next feature |
 | [SP1](cursor_plans/fbp-slices/shared-execution.md) | Slice ownership, handoff and baseline rules | Every slice execution |

@@ -1,11 +1,11 @@
 # S19 — Accept the complete application/developer story
 
-Contract version: 2  
-Slice revision: r2, 2026-10-29  
-Readiness: blocked-on-decision  
-Execution: not-started; approved task set: none  
-Branch: `codex/fbp-19-adoption-acceptance`  
-Parent: master r6 / SC-FBP-4 + proposed IC1-r2 / SP1-r2; acceptance pending.
+Contract version: 2\
+Slice revision: r3 execution amendment, 2026-10-31 (historical r2 retained below)\
+Readiness: user-authorized after actual S18B merge\
+Execution: locally verified for review; approved task set: S19.A–C\
+Branch: `codex/fbp-19-adoption-acceptance`\
+Parent: master r6 / SC-FBP-4 + delivered IC1-r2 / NT1 / EX1 / HTTP1 / SP1-r2; S19 local acceptance results in the execution receipt; review/merge pending.
 
 ## Story and branch outcome
 
@@ -13,7 +13,7 @@ A reviewer can follow one candidate from typed authored node through installed g
 
 This is one feature/task branch, not permission to execute the full roadmap. The three bounded tasks below belong to this one outcome. One agent session is the sizing target; unresolved prerequisites stop execution rather than expand it.
 
-## Provenance, order and entry conditions
+## Historical r2 provenance, order and entry conditions
 
 Source: master `9cb666dc6c846512d64edd39770b7eb2f213256c`; old JS prototype inspected, new interfaces not yet implemented. This plan is a future change proposal, not a live-source/coverage success claim. Baseline: S01 captures `fbp-pre-modernization-r2`; later slices verify applicability/reuse it. Existing placeholder npm test exit1 is known from planning; no new checks run here.
 
@@ -96,7 +96,7 @@ Commands must return actual individual exits. `npm run coverage` uses the all-de
 
 Canonical proposed identity contract: [IC1-r2](../fbp-identity-contract.md). Reconcile all C00–C65, including split C58 proof ownership, against one actual candidate. Design submission/approval/merge is separate from code proof; no S00 walkthrough is counted as passing runtime assertions. Human acceptance remains pending; this section settles the proposal, not release authority.
 
-## Readiness evidence
+## Historical r2 readiness proposal
 
 | Gate | Verdict | Concrete artifact pointers |
 | --- | --- | --- |
@@ -113,3 +113,14 @@ Two-executor counterexample: an executor cannot change the numbered behavior, er
 ## HTTP1 predecessor amendment
 
 S18B is the approved insertion after merged S18A and before S19. S19 requires actual S18B merge and its C74–C80 HTTP/demo proof, in addition to earlier receipts. Reconcile these added conditions and EX1 C66–C73 on the accepted candidate; historical S18-only predecessor/condition ranges above do not waive those requirements. This amendment does not authorize S19 execution.
+
+
+## S19 execution checkpoint — 2026-10-31
+
+User requested S19 after S18B actually merged at8693131 (PR #30; full SHA recorded in receipt). S19.A–C are authorized. Historical S00/identity/predecessor blocks above are settled by delivered IC1-r2 and actual merged predecessors, not reopened product decisions. Scope is adoption acceptance and current-progress documentation only; no extension implementation.
+
+Reconcile C00–C80 and NT01–NT18 against delivered tests and one unchanged executable candidate. Reuse existing real-runtime/packed/public-helper/production-Next assertions instead of adding test/acceptance.test.js merely to aggregate them. The accepted artifact manifest/integrity ties package and Next proof to the same packed content; no source alias. Meaningful red is N/A for documentary characterization; existing negative controls remain required.
+
+Additional allowed documentation: this checkpoint, S19-condition-evidence.md (proof pointers, no duplicate behavioral specification), README current progress, architecture README and agent documentation map. Preserve historical receipts. No dependency/config/src/fixture changes; consequential proof gaps return to their owner rather than grow S19.
+
+Run npm ci with the pinned toolchain/task-local cache, check, full coverage, full packed Next acceptance and pack inventory. Coverage already runs the exact offline test glob (including package/recipe/example suites); npm test and test:package do not need redundant separate executions when those assertions already pass on identical source/artifact. Record individual actual exits and which commands were reused, not a fabricated command pass. Do not overlap root builds. Final published documentation commits may reuse executable evidence when no shipped/executable file changes.

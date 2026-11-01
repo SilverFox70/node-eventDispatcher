@@ -2,7 +2,9 @@
 
 ## Current state versus destination
 
-S02 delivers the synchronous TypeScript dispatcher and a legacy CommonJS shim; S03 adds safe current subscription/publisher topology. S04 adds immutable JSON packets and internal bounded channels; [packet/channel ownership](packets-and-channels.md) describes their boundaries. Retained HTTP/scanner utilities now live under examples/legacy; the dispatcher shim remains under server/src. S05–S09 now deliver typed contracts, graph validation/construction, streaming execution and deadlines. Guidance setup does not advance slice status, resolve S00 identity or certify current tests.
+S00–S18B are merged. The package currently delivers a typed in-memory FBP runtime: contracts/components, immutable JSON packets, graph construction/compilation, bounded streams, cancellation/deadlines, explicit retries, branch/merge/keyed joins, testing helpers and installed CJS/ESM consumers. The Next fixture adds live graph/event inspection, optional bounded packet capture, node input/output dialogs, selectable output stages and controlled HTTP stress. [S19 adoption acceptance](../cursor_plans/fbp-slices/S19-execution.md) reconciles the candidate and proof; no npm release or deployment is inferred.
+
+Visual graph editing/export tooling, per-node diagnostic policy, a durable host, rich public packet profiles and cyclic graphs remain future extensions. The existing graph builder emits portable JSON GraphSpec; this is not a visual authoring or TypeScript generation claim.
 
 - [Dispatcher API and migration](dispatcher.md): instance ownership, synchronous delivery, bounded metadata logs and the legacy import.
 - [System boundaries](system-boundaries.md): proposed module responsibilities and present source map.
@@ -18,6 +20,10 @@ S02 delivers the synchronous TypeScript dispatcher and a legacy CommonJS shim; S
 User instruction defines scope; accepted decisions and the approved feature contract settle behavior. Proposed plans are reviewable design, not implementation approval. For execution order SP1 supersedes old broad T task groupings. For unresolved packet/job/lineage/lookup semantics S00 owns the amendment; do not infer a complete contract from the word key.
 
 After a feature merges, update only relevant current-state facts and decision status with its evidence link. Keep detailed historical plans/receipts in their existing locations; do not copy all55 conditions into an architecture overview. If an accepted ADR changes a shared interface, amend affected plans/consumers and proof owners together using [the runbook](../runbooks/change-contract.md).
+
+## Delivery history
+
+The following entries retain the sequence at delivery time; later slices named as future in an earlier entry are delivered as described above.
 
 S05 defines [typed contracts, reusable components and safe catalogs](contracts-and-components.md). Graph execution remains a later slice.
 

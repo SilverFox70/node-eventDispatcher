@@ -1,6 +1,6 @@
 # FBP execution index
 
-Updated2026-10-29. Branch codex/fbp-00-identity-contract, based on origin/master9cb666d.
+Historical starting checkpoint,2026-10-29. Branch codex/fbp-00-identity-contract, based on origin/master9cb666d.
 
 | Slice | Authorized scope | Execution result | Review / merge | Receipt |
 | --- | --- | --- | --- | --- |
@@ -86,3 +86,8 @@ User authorized S16 after verified S15 merge. See [S16 receipt](fbp-slices/S16-e
 ## S17 — packaged production Next consumer
 
 User authorized S17 after verified S16 merge. See [S17 receipt](fbp-slices/S17-execution.md) for the fixed Node route, browser/server boundary, backend-result protocol and production HTTP/browser/source-map proofs. S18 remains unstarted.
+
+
+## Current checkpoint — S19 adoption acceptance
+
+S00–S18B are merged; the earlier entries retain their publication-time state as history. S18B merged in PR #30 at8693131. User authorized S19.A–C after that actual merge. [S19 receipt](fbp-slices/S19-execution.md) and [condition pointers](fbp-slices/S19-condition-evidence.md) reconcile the complete current candidate, including EX1/HTTP1 and NT1 additions. No visual authoring, durable host, rich packet/cycle profile or application migration is executed here.
