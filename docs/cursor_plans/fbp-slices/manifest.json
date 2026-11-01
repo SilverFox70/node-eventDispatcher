@@ -6,7 +6,7 @@
   "source_head": "9cb666dc6c846512d64edd39770b7eb2f213256c",
   "default_branch": "master",
   "execution_policy": "strict sequential; predecessor merged before next branch",
-  "next_planning_action": "Review S18B; S19 requires actual S18B merge",
+  "next_planning_action": "Review S19 adoption acceptance; plan diagnostics/visual-authoring/durable-host extensions separately after acceptance",
   "slices": [
     {
       "id": "S00",
@@ -707,7 +707,7 @@
       "previous": "S18A",
       "next": "S19",
       "base": "master after previous slice merge",
-      "merge_sha": null,
+      "merge_sha": "8693131dc50222b67ea4da1bea282aa68790728d",
       "conditions": [
         "C74",
         "C75",
@@ -725,7 +725,7 @@
         "S18B.D"
       ],
       "execution_receipt": "S18B-execution.md",
-      "review_status": "open",
+      "review_status": "merged",
       "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/30",
       "implementation_commit": "bb1126f4eba344de2d528cb0e18f8e28a31cfb7a"
     },
@@ -735,8 +735,8 @@
       "title": "Accept the complete application/developer story",
       "plan": "19-adoption-acceptance-plan.md",
       "branch": "codex/fbp-19-adoption-acceptance",
-      "readiness": "blocked-on-decision",
-      "execution_status": "not-started",
+      "readiness": "ready-for-review",
+      "execution_status": "complete",
       "previous": "S18B",
       "next": null,
       "base": "master after previous slice merge",
@@ -744,10 +744,17 @@
       "conditions": [
         "C47"
       ],
-      "blocked_by": [
-        "IC1-r1 human acceptance and S00 merge; proposal applied, acceptance pending"
+      "blocked_by": [],
+      "legacy_master_work": "T12",
+      "authorized_tasks": [
+        "S19.A",
+        "S19.B",
+        "S19.C"
       ],
-      "legacy_master_work": "T12"
+      "execution_receipt": "S19-execution.md",
+      "review_status": "open",
+      "review_url": "https://github.com/SilverFox70/node-eventDispatcher/pull/31",
+      "implementation_commit": "0e2e3b27a021600ce88931f3f932ea652b874e3b"
     }
   ],
   "condition_final_owners": {

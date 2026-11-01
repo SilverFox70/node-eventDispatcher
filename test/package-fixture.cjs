@@ -4,23 +4,37 @@ const { tmpdir } = require('node:os');
 const { join, resolve, dirname } = require('node:path');
 const { spawnSync } = require('node:child_process');
 const root = resolve(__dirname, '..');
+const commandTimeoutMs = 60000;
+const installationTimeoutMs = 180000;
 
 function npm(args, options = {}) {
   if (process.env.npm_execpath) return spawnSync(process.execPath, [process.env.npm_execpath, ...args], options);
   return spawnSync(process.platform === 'win32' ? 'npm.cmd' : 'npm', args, { ...options, shell: process.platform === 'win32' });
 }
+function attemptCommand(command, args, cwd, timeoutMs = commandTimeoutMs) {
+  const options = { cwd, encoding: 'utf8', timeout: timeoutMs, env: { ...process.env } };
+  delete options.env.NODE_TEST_CONTEXT;
+  return command === 'npm' ? npm(args, options) : spawnSync(command, args, options);
+}
+function runCommand(command, args, cwd, timeoutMs = commandTimeoutMs) {
+  const result = attemptCommand(command, args, cwd, timeoutMs);
+  const failure = [
+    `Command failed: ${command} ${args[0] ?? ''}`,
+    `cwd: ${cwd}`,
+    `timeoutMs: ${timeoutMs}`,
+    `status: ${result.status}`,
+    `signal: ${result.signal ?? 'none'}`,
+    `error: ${result.error?.code ?? 'none'} ${result.error?.message ?? ''}`,
+    result.stdout ?? '', result.stderr ?? ''
+  ].join('\n');
+  assert.equal(result.status, 0, failure);
+  return result.stdout;
+}
 /** Install the actual tarball in a real isolated consumer. Never link checkout source or dependencies. */
 function installedPackage({ tools = false, contentOnlyCache = false } = {}) {
   const fixture = realpathSync(mkdtempSync(join(tmpdir(), 'fbp-installed-')));
-  const attempt = (command, args, cwd = fixture) => {
-    const options = { cwd, encoding: 'utf8', timeout: 60000, env: { ...process.env } };
-    delete options.env.NODE_TEST_CONTEXT;
-    return command === 'npm' ? npm(args, options) : spawnSync(command, args, options);
-  };
-  const run = (command, args, cwd) => {
-    const result = attempt(command, args, cwd);
-    assert.equal(result.status, 0, result.stdout + result.stderr); return result.stdout;
-  };
+  const attempt = (command, args, cwd = fixture) => attemptCommand(command, args, cwd);
+  const run = (command, args, cwd = fixture, timeoutMs = commandTimeoutMs) => runCommand(command, args, cwd, timeoutMs);
   try {
     const packed = JSON.parse(run('npm', ['pack', '--ignore-scripts', '--json', '--offline', '--pack-destination', fixture, '--cache', join(fixture, 'pack-cache')], root))[0];
     const pkg = require('../package.json'), locked = require('../package-lock.json');
@@ -52,10 +66,11 @@ function installedPackage({ tools = false, contentOnlyCache = false } = {}) {
     for (const [name, record] of selected) packages[`node_modules/${name}`] = record;
     writeFileSync(join(fixture, 'package.json'), JSON.stringify(manifest));
     writeFileSync(join(fixture, 'package-lock.json'), JSON.stringify({ name: manifest.name, version: manifest.version, lockfileVersion: 3, requires: true, packages }));
-    run('npm', ['ci', '--offline', '--ignore-scripts', '--no-audit', '--no-fund', '--cache', cache]);
+    // Package materialization has a separate setup budget under parallel CI load.
+    run('npm', ['ci', '--offline', '--ignore-scripts', '--no-audit', '--no-fund', '--cache', cache], fixture, installationTimeoutMs);
     return { fixture, root, packed, files: packed.files.map(file => file.path), run, attempt,
       installed: join(fixture, 'node_modules/event-driven-design'),
       dispose() { rmSync(fixture, { recursive: true, force: true }); } };
   } catch (error) { rmSync(fixture, { recursive: true, force: true }); throw error; }
 }
-module.exports = { installedPackage, npm };
+module.exports = { installedPackage, npm, runCommand };
