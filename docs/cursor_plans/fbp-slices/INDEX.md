@@ -2,7 +2,7 @@
 
 Partition: SP1-r2, 2026-10-28. Master: [r6](../fbp-foundation-plan.md), architecture SC-FBP-4. Read [shared execution contract](shared-execution.md) before a slice. [Machine-readable order/status](manifest.json) mirrors this index.
 
-**Current work: S19 foundation adoption acceptance is locally verified and ready for review.** S18B merged in PR #30 at8693131. See [S19 plan](19-adoption-acceptance-plan.md) and [receipt](S19-execution.md). Extension implementation is not authorized by this slice.
+**Current work: S19 foundation adoption acceptance is locally verified; [PR #31](https://github.com/SilverFox70/node-eventDispatcher/pull/31) is open for review.** S18B merged in PR #30 at8693131. See [S19 plan](19-adoption-acceptance-plan.md) and [receipt](S19-execution.md). Extension implementation is not authorized by this slice.
 
 **Always execute in manifest order (including approved insertion suffixes). Start a slice branch from updated master only after the previous slice is accepted and merged.** Branch-complete is not merged. Do not stack feature branches or start every slice concurrently. The original S00 identity block is historical: S00–S18B are merged with their accepted amendments. S19 is released by the current explicit request; ordinary merge prerequisites remain.
 

@@ -91,3 +91,5 @@ User authorized S17 after verified S16 merge. See [S17 receipt](fbp-slices/S17-e
 ## Current checkpoint — S19 adoption acceptance
 
 S00–S18B are merged; the earlier entries retain their publication-time state as history. S18B merged in PR #30 at8693131. User authorized S19.A–C after that actual merge. [S19 receipt](fbp-slices/S19-execution.md) and [condition pointers](fbp-slices/S19-condition-evidence.md) reconcile the complete current candidate, including EX1/HTTP1 and NT1 additions. No visual authoring, durable host, rich packet/cycle profile or application migration is executed here.
+
+S19 local acceptance is complete; [PR #31](https://github.com/SilverFox70/node-eventDispatcher/pull/31) is open for review. Current receipt separates229 core/package and32 production Next proofs from unclaimed hosted CI, merge and npm publication.
