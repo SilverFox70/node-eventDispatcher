@@ -9,6 +9,8 @@ Follow the ordered manifest, including approved suffix IDs such as S09A/S09B. Sl
 
 Resolve paths relative to this skill's repository, not the caller's home folder. Read [AGENTS.md](../../../AGENTS.md), [the slice index](../../../docs/cursor_plans/fbp-slices/INDEX.md), [SP1](../../../docs/cursor_plans/fbp-slices/shared-execution.md) and the named slice plus existing journal. Follow [the local execution runbook](../../../docs/runbooks/execute-slice.md).
 
+For S20 and later IDs (including S24A–S24F), read [the extension index](../../../docs/cursor_plans/fbp-extensions/INDEX.md), its [manifest](../../../docs/cursor_plans/fbp-extensions/manifest.json), [execution contract](../../../docs/cursor_plans/fbp-extensions/execution.md) and selected plan/journal instead of searching the historical foundation manifest. SP1 predecessor/branch/proof rules still apply. Contract precedence and exact review gates are in [SC20-r1](../../../docs/cursor_plans/fbp-extensions/S20-decisions.md). Do not start a successor from an unmerged design branch.
+
 - Confirm the actual branch/HEAD/dirty state, predecessor's real master merge and approved/requested task scope. Reuse an applicable checkout; preserve unrelated work.
 - S00 is identity design, not runtime implementation. S04 onward cannot invent the unresolved packet/job/lineage/lookup contract; verify the actual amendment and readiness instead of trusting an old manifest label.
 - Work only the selected feature's allowed tasks/files and linked condition proofs. Do tests-first behavioral proof when applicable; use delivered interfaces, not later-slice stubs or a second executor. Record progress/evidence in the slice journal so another agent can resume.

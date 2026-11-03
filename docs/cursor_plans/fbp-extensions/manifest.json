@@ -1,0 +1,756 @@
+{
+  "revision": "EXT1-r2",
+  "status": "proposed-not-approved",
+  "foundation": {
+    "id": "S19",
+    "merge_sha": "53737a3dc229fb95fcc8d4bd7bc730be24e9f8aa",
+    "receipt": "../fbp-slices/S19-execution.md"
+  },
+  "execution_approval": null,
+  "contract": "shared-contract.md",
+  "conditions": "conditions.md",
+  "slices": [
+    {
+      "id": "S20",
+      "order": 0,
+      "phase": "design",
+      "title": "Review one coherent extension contract before changing public interfaces.",
+      "plan": "S20-extension-contract-freeze.md",
+      "branch": "codex/fbp-20-extension-contract-freeze",
+      "previous": "S19",
+      "next": "S21",
+      "conditions": [
+        "X20.1",
+        "X20.2",
+        "X20.3"
+      ],
+      "status": "ready-for-review",
+      "execution_status": "complete-for-review",
+      "merge_sha": null,
+      "gate": "D1, D2, D3, D4, D5 decision evidence",
+      "execution_approval": {
+        "authority": "user request 2026-11-03",
+        "tasks": [
+          "S20.A",
+          "S20.B",
+          "S20.C"
+        ]
+      },
+      "journal": "S20-execution.md",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/32",
+      "publication_status": "pr-open"
+    },
+    {
+      "id": "S21",
+      "order": 1,
+      "phase": "diagnostics",
+      "title": "See safe, correlated error and operation records without enabling payload logging.",
+      "plan": "S21-diagnostic-records.md",
+      "branch": "codex/fbp-21-diagnostic-records",
+      "previous": "S20",
+      "next": "S22",
+      "conditions": [
+        "X21.1",
+        "X21.2",
+        "X21.3"
+      ],
+      "status": "ready-for-review",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "SC20-r1/DG1 design acceptance and actual S20 master merge; explicit S21 execution request"
+    },
+    {
+      "id": "S22",
+      "order": 2,
+      "phase": "diagnostics",
+      "title": "Turn input/output capture on for a selected node and turn it off again safely.",
+      "plan": "S22-node-capture-policy.md",
+      "branch": "codex/fbp-22-node-capture-policy",
+      "previous": "S21",
+      "next": "S23",
+      "conditions": [
+        "X22.1",
+        "X22.2",
+        "X22.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 diagnostic policy"
+    },
+    {
+      "id": "S23",
+      "order": 3,
+      "phase": "diagnostics",
+      "title": "Export bounded diagnostics without making logging a business dependency.",
+      "plan": "S23-diagnostic-sinks.md",
+      "branch": "codex/fbp-23-diagnostic-sinks",
+      "previous": "S22",
+      "next": "S24",
+      "conditions": [
+        "X23.1",
+        "X23.2",
+        "X23.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 diagnostic policy"
+    },
+    {
+      "id": "S24",
+      "order": 4,
+      "phase": "diagnostics",
+      "title": "Use node capture controls and inspect correlated inputs, outputs and errors in the installed demo.",
+      "plan": "S24-diagnostic-controls.md",
+      "branch": "codex/fbp-24-diagnostic-controls",
+      "previous": "S23",
+      "next": "S24A",
+      "conditions": [
+        "X24.1",
+        "X24.2",
+        "X24.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 diagnostic policy"
+    },
+    {
+      "id": "S24A",
+      "phase": "explainability-proof",
+      "title": "Record explicit decisions, including inputs that intentionally produce no output.",
+      "plan": "S24A-decision-evidence.md",
+      "branch": "codex/fbp-24a-decision-evidence",
+      "conditions": [
+        "X24A.1",
+        "X24A.2",
+        "X24A.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 diagnostic/task context amendment; D5 evidence/fixture/comparison contract; predecessor proof",
+      "order": 5,
+      "previous": "S24",
+      "next": "S24B"
+    },
+    {
+      "id": "S24B",
+      "phase": "explainability-proof",
+      "title": "Explain an output or a missing output using retained run-scoped evidence.",
+      "plan": "S24B-causal-inspection.md",
+      "branch": "codex/fbp-24b-causal-inspection",
+      "conditions": [
+        "X24B.1",
+        "X24B.2",
+        "X24B.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 diagnostic/task context amendment; D5 evidence/fixture/comparison contract; predecessor proof",
+      "order": 6,
+      "previous": "S24A",
+      "next": "S24C"
+    },
+    {
+      "id": "S24C",
+      "phase": "explainability-proof",
+      "title": "Export a reviewed, sanitized observed case as a regression fixture.",
+      "plan": "S24C-run-to-test.md",
+      "branch": "codex/fbp-24c-run-to-test",
+      "conditions": [
+        "X24C.1",
+        "X24C.2",
+        "X24C.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 diagnostic/task context amendment; D5 evidence/fixture/comparison contract; predecessor proof",
+      "order": 7,
+      "previous": "S24B",
+      "next": "S24D"
+    },
+    {
+      "id": "S24D",
+      "phase": "explainability-proof",
+      "title": "Compare two graph/code revisions against the same fixed test case.",
+      "plan": "S24D-revision-comparison.md",
+      "branch": "codex/fbp-24d-revision-comparison",
+      "conditions": [
+        "X24D.1",
+        "X24D.2",
+        "X24D.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 diagnostic/task context amendment; D5 evidence/fixture/comparison contract; predecessor proof",
+      "order": 8,
+      "previous": "S24C",
+      "next": "S24E"
+    },
+    {
+      "id": "S24E",
+      "phase": "explainability-proof",
+      "title": "Use the framework for an understandable content-validation and preview application.",
+      "plan": "S24E-application-proof.md",
+      "branch": "codex/fbp-24e-application-proof",
+      "conditions": [
+        "X24E.1",
+        "X24E.2",
+        "X24E.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 diagnostic/task context amendment; D5 evidence/fixture/comparison contract; predecessor proof",
+      "order": 9,
+      "previous": "S24D",
+      "next": "S24F"
+    },
+    {
+      "id": "S24F",
+      "phase": "explainability-proof",
+      "title": "Measure whether the application is easier to diagnose, test and change.",
+      "plan": "S24F-comparative-value.md",
+      "branch": "codex/fbp-24f-comparative-value",
+      "conditions": [
+        "X24F.1",
+        "X24F.2",
+        "X24F.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 diagnostic/task context amendment; D5 evidence/fixture/comparison contract; predecessor proof",
+      "order": 10,
+      "previous": "S24E",
+      "next": "S25"
+    },
+    {
+      "id": "S25",
+      "order": 11,
+      "phase": "editor",
+      "title": "Give registered node definitions typed per-instance configuration that the backend validates.",
+      "plan": "S25-configured-graph-contract.md",
+      "branch": "codex/fbp-25-configured-graph-contract",
+      "previous": "S24F",
+      "next": "S26",
+      "conditions": [
+        "X25.1",
+        "X25.2",
+        "X25.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 model compatibility; D2 package/canvas compatibility; D5 and application-proof checkpoint recorded"
+    },
+    {
+      "id": "S26",
+      "order": 12,
+      "phase": "editor",
+      "title": "Install a usable palette and canvas alongside a Next application.",
+      "plan": "S26-editor-canvas.md",
+      "branch": "codex/fbp-26-editor-canvas",
+      "previous": "S25",
+      "next": "S27",
+      "conditions": [
+        "X26.1",
+        "X26.2",
+        "X26.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 model compatibility; D2 package/canvas compatibility"
+    },
+    {
+      "id": "S27",
+      "order": 13,
+      "phase": "editor",
+      "title": "Wire, rearrange and undo graph edits without accidentally executing them.",
+      "plan": "S27-editor-commands.md",
+      "branch": "codex/fbp-27-editor-commands",
+      "previous": "S26",
+      "next": "S28",
+      "conditions": [
+        "X27.1",
+        "X27.2",
+        "X27.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 model compatibility; D2 package/canvas compatibility"
+    },
+    {
+      "id": "S28",
+      "order": 14,
+      "phase": "editor",
+      "title": "Configure a node and see authoritative errors on its actual fields and ports.",
+      "plan": "S28-editor-configuration.md",
+      "branch": "codex/fbp-28-editor-configuration",
+      "previous": "S27",
+      "next": "S29",
+      "conditions": [
+        "X28.1",
+        "X28.2",
+        "X28.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 model compatibility; D2 package/canvas compatibility"
+    },
+    {
+      "id": "S29",
+      "order": 15,
+      "phase": "editor",
+      "title": "Run explicit test inputs against the graph being edited.",
+      "plan": "S29-editor-test-runs.md",
+      "branch": "codex/fbp-29-editor-test-runs",
+      "previous": "S28",
+      "next": "S30",
+      "conditions": [
+        "X29.1",
+        "X29.2",
+        "X29.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 model compatibility; D2 package/canvas compatibility"
+    },
+    {
+      "id": "S30",
+      "order": 16,
+      "phase": "editor",
+      "title": "Follow real packet transfers and relationships while testing a graph.",
+      "plan": "S30-editor-live-debug.md",
+      "branch": "codex/fbp-30-editor-live-debug",
+      "previous": "S29",
+      "next": "S31",
+      "conditions": [
+        "X30.1",
+        "X30.2",
+        "X30.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 model compatibility; D2 package/canvas compatibility"
+    },
+    {
+      "id": "S31",
+      "order": 17,
+      "phase": "editor",
+      "title": "Build, wire and test a meaningful flow in a fresh installed Next project.",
+      "plan": "S31-editor-installed-acceptance.md",
+      "branch": "codex/fbp-31-editor-installed-acceptance",
+      "previous": "S30",
+      "next": "S32",
+      "conditions": [
+        "X31.1",
+        "X31.2",
+        "X31.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 model compatibility; D2 package/canvas compatibility"
+    },
+    {
+      "id": "S32",
+      "order": 18,
+      "phase": "artifacts",
+      "title": "Represent editable documents and immutable content identities consistently.",
+      "plan": "S32-graph-document-identities.md",
+      "branch": "codex/fbp-32-graph-document-identities",
+      "previous": "S31",
+      "next": "S33",
+      "conditions": [
+        "X32.1",
+        "X32.2",
+        "X32.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 artifact schema; D2 packaging; D3 storage"
+    },
+    {
+      "id": "S33",
+      "order": 19,
+      "phase": "artifacts",
+      "title": "Save and reopen a draft without losing edits or overwriting someone else\u2019s changes.",
+      "plan": "S33-saved-graph-drafts.md",
+      "branch": "codex/fbp-33-saved-graph-drafts",
+      "previous": "S32",
+      "next": "S34",
+      "conditions": [
+        "X33.1",
+        "X33.2",
+        "X33.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 artifact schema; D2 packaging; D3 storage"
+    },
+    {
+      "id": "S34",
+      "order": 20,
+      "phase": "artifacts",
+      "title": "Lock an immutable tested graph revision and keep later edits separate.",
+      "plan": "S34-locked-graph-revisions.md",
+      "branch": "codex/fbp-34-locked-graph-revisions",
+      "previous": "S33",
+      "next": "S35",
+      "conditions": [
+        "X34.1",
+        "X34.2",
+        "X34.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 artifact schema; D2 packaging; D3 storage"
+    },
+    {
+      "id": "S35",
+      "order": 21,
+      "phase": "artifacts",
+      "title": "Export and import portable graphs with explicit dependencies and integrity checks.",
+      "plan": "S35-portable-graph-bundles.md",
+      "branch": "codex/fbp-35-portable-graph-bundles",
+      "previous": "S34",
+      "next": "S36",
+      "conditions": [
+        "X35.1",
+        "X35.2",
+        "X35.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 artifact schema; D2 packaging; D3 storage"
+    },
+    {
+      "id": "S36",
+      "order": 22,
+      "phase": "artifacts",
+      "title": "Export a graph as readable TypeScript that another project can build and run.",
+      "plan": "S36-readable-typescript-export.md",
+      "branch": "codex/fbp-36-readable-typescript-export",
+      "previous": "S35",
+      "next": "S37",
+      "conditions": [
+        "X36.1",
+        "X36.2",
+        "X36.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 artifact schema; D2 packaging; D3 storage"
+    },
+    {
+      "id": "S37",
+      "order": 23,
+      "phase": "artifacts",
+      "title": "Take a visually authored graph into a separate project and maintain it there.",
+      "plan": "S37-artifact-adoption-acceptance.md",
+      "branch": "codex/fbp-37-artifact-adoption-acceptance",
+      "previous": "S36",
+      "next": "S38",
+      "conditions": [
+        "X37.1",
+        "X37.2",
+        "X37.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 artifact schema; D2 packaging; D3 storage"
+    },
+    {
+      "id": "S38",
+      "order": 24,
+      "phase": "artifacts",
+      "title": "Reuse a locked graph as a version-pinned subflow with useful debug attribution.",
+      "plan": "S38-versioned-subflows.md",
+      "branch": "codex/fbp-38-versioned-subflows",
+      "previous": "S37",
+      "next": "S39",
+      "conditions": [
+        "X38.1",
+        "X38.2",
+        "X38.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 artifact schema; D2 packaging; D3 storage"
+    },
+    {
+      "id": "S39",
+      "order": 25,
+      "phase": "durable",
+      "title": "Identify which graphs can recover and share task semantics with the in-memory runtime.",
+      "plan": "S39-durable-task-profile.md",
+      "branch": "codex/fbp-39-durable-task-profile",
+      "previous": "S38",
+      "next": "S40",
+      "conditions": [
+        "X39.1",
+        "X39.2",
+        "X39.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+    },
+    {
+      "id": "S40",
+      "order": 26,
+      "phase": "durable",
+      "title": "Commit business state and the obligation to run together.",
+      "plan": "S40-durable-submission-store.md",
+      "branch": "codex/fbp-40-durable-submission-store",
+      "previous": "S39",
+      "next": "S41",
+      "conditions": [
+        "X40.1",
+        "X40.2",
+        "X40.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+    },
+    {
+      "id": "S41",
+      "order": 27,
+      "phase": "durable",
+      "title": "Retain a finished step and its next work atomically.",
+      "plan": "S41-atomic-step-continuations.md",
+      "branch": "codex/fbp-41-atomic-step-continuations",
+      "previous": "S40",
+      "next": "S42",
+      "conditions": [
+        "X41.1",
+        "X41.2",
+        "X41.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+    },
+    {
+      "id": "S42",
+      "order": 28,
+      "phase": "durable",
+      "title": "Recover abandoned work without accepting stale worker results.",
+      "plan": "S42-worker-recovery-fencing.md",
+      "branch": "codex/fbp-42-worker-recovery-fencing",
+      "previous": "S41",
+      "next": "S43",
+      "conditions": [
+        "X42.1",
+        "X42.2",
+        "X42.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+    },
+    {
+      "id": "S43",
+      "order": 29,
+      "phase": "durable",
+      "title": "Protect non-idempotent external calls across jobs and worker failures.",
+      "plan": "S43-external-operation-ledger.md",
+      "branch": "codex/fbp-43-external-operation-ledger",
+      "previous": "S42",
+      "next": "S44",
+      "conditions": [
+        "X43.1",
+        "X43.2",
+        "X43.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+    },
+    {
+      "id": "S44",
+      "order": 30,
+      "phase": "durable",
+      "title": "Resolve uncertain provider outcomes with evidence and an audit trail.",
+      "plan": "S44-reconciliation-resolution.md",
+      "branch": "codex/fbp-44-reconciliation-resolution",
+      "previous": "S43",
+      "next": "S45",
+      "conditions": [
+        "X44.1",
+        "X44.2",
+        "X44.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+    },
+    {
+      "id": "S45",
+      "order": 31,
+      "phase": "durable",
+      "title": "Keep retries, waits and deadlines meaningful across restarts.",
+      "plan": "S45-durable-time-policy.md",
+      "branch": "codex/fbp-45-durable-time-policy",
+      "previous": "S44",
+      "next": "S46",
+      "conditions": [
+        "X45.1",
+        "X45.2",
+        "X45.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+    },
+    {
+      "id": "S46",
+      "order": 32,
+      "phase": "durable",
+      "title": "Recover asynchronous fan-out and merge without losing packets.",
+      "plan": "S46-durable-routing.md",
+      "branch": "codex/fbp-46-durable-routing",
+      "previous": "S45",
+      "next": "S47",
+      "conditions": [
+        "X46.1",
+        "X46.2",
+        "X46.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+    },
+    {
+      "id": "S47",
+      "order": 33,
+      "phase": "durable",
+      "title": "Recover partially collated results and never reopen a completed join.",
+      "plan": "S47-durable-keyed-joins.md",
+      "branch": "codex/fbp-47-durable-keyed-joins",
+      "previous": "S46",
+      "next": "S48",
+      "conditions": [
+        "X47.1",
+        "X47.2",
+        "X47.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+    },
+    {
+      "id": "S48",
+      "order": 34,
+      "phase": "durable",
+      "title": "Pause a workflow for an authorized event or human decision and resume safely.",
+      "plan": "S48-durable-signals-waits.md",
+      "branch": "codex/fbp-48-durable-signals-waits",
+      "previous": "S47",
+      "next": "S49",
+      "conditions": [
+        "X48.1",
+        "X48.2",
+        "X48.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+    },
+    {
+      "id": "S49",
+      "order": 35,
+      "phase": "durable",
+      "title": "Show recoverable workflow progress and safe operator actions in an app.",
+      "plan": "S49-durable-progress-ui.md",
+      "branch": "codex/fbp-49-durable-progress-ui",
+      "previous": "S48",
+      "next": "S50",
+      "conditions": [
+        "X49.1",
+        "X49.2",
+        "X49.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+    },
+    {
+      "id": "S50",
+      "order": 36,
+      "phase": "durable",
+      "title": "Prove the composed host survives adversarial failures instead of relying on unit claims.",
+      "plan": "S50-durable-crash-qualification.md",
+      "branch": "codex/fbp-50-durable-crash-qualification",
+      "previous": "S49",
+      "next": "S51",
+      "conditions": [
+        "X50.1",
+        "X50.2",
+        "X50.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+    },
+    {
+      "id": "S51",
+      "order": 37,
+      "phase": "durable",
+      "title": "Install and operate an optional durable host with honest recovery guarantees.",
+      "plan": "S51-durable-installed-adoption.md",
+      "branch": "codex/fbp-51-durable-installed-adoption",
+      "previous": "S50",
+      "next": null,
+      "conditions": [
+        "X51.1",
+        "X51.2",
+        "X51.3"
+      ],
+      "status": "blocked-on-decision",
+      "execution_status": "not-started",
+      "merge_sha": null,
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+    }
+  ],
+  "storage_decision": {
+    "authority": "user reply 2026-10-31",
+    "graphs": "SQLite",
+    "durable_execution": "PostgreSQL",
+    "adapter_schema_status": "pending-evidence-and-review"
+  },
+  "previous_revision_archive": "archive/EXT1-r1.tar.gz",
+  "amendment": "amendment-r2.md",
+  "s20_contract": "S20-decisions.md"
+}
