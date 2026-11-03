@@ -110,3 +110,9 @@ For example: discover a page's load query, editable state and submit command; sh
 5. Expand transformation coverage, framework adapters and agent-assisted implementation only after their preservation and behavioral proofs exist. Define ownership and round-trip rules for applications combining handwritten code, generated code and native FBP flows.
 
 This sidecar can help teams understand and evolve applications without first rebuilding them as FBP programs. Its analysis and transformation tooling belongs outside the lightweight runtime. F01 durability remains independently optional; understanding an existing workflow does not make that workflow recoverable after failure.
+
+## Proposed extension slice breakdown
+
+[EXT1-r2](../cursor_plans/fbp-extensions/INDEX.md) breaks diagnostics, visual authoring, saved/exportable graphs and optional durable execution into proposed S20–S51 stories. SQLite graph storage and PostgreSQL durable hosting are user-selected. Exact interfaces and implementation remain subject to the recorded decision gates; no extension is marked delivered by this planning document.
+
+The r2 [explainability/application milestone](../cursor_plans/fbp-extensions/explainability.md) inserts S24A–S24F before S25 visual authoring. It tests retained ancestry, missing-result decisions, sanitized offline fixtures and revision comparison in an installed application, then records a fair ordinary-TypeScript comparison. These are proposed capabilities, not current runtime guarantees.

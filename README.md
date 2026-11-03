@@ -1,5 +1,9 @@
 # NodeDispatcher: a foundation for flow-based applications
 
+*every result can be explained, every node can be tested alone, and every change can be traced.*
+
+NodeDispatcher aims to make asynchronous application behavior inspectable, explainable and testable by design. Typed nodes and explicit data flows provide the structure for understanding results, diagnosing failures and testing changes. The current inspector shows observed execution; complete causal inspection, declared decision reasons and run-to-test comparisons are planned next. Evidence that was not captured cannot be reconstructed, and a graph cannot explain private reasoning inside arbitrary node code.
+
 This project is rebuilding a small, historical JavaScript event dispatcher into a typed **flow-based programming (FBP) library** for Node.js. The aim is to make applications from reusable nodes with explicit input/output contracts, connected by bounded data streams.
 
 The graph describes how work fits together. Each node remains an ordinary, understandable function or process that a human or coding agent can write and test. The library is intended to install alongside an application—including a Next.js site—rather than require an application to become a hosted workflow product.
@@ -19,7 +23,7 @@ The current runtime executes node graphs; these application examples still need 
 
 ## Current progress
 
-**Foundation implemented through S18B; S19 is the adoption-acceptance slice on this review branch.** S00–S18B have merged. The framework runs typed asynchronous flows from an installed package, with a Next.js consumer, live packet inspection, node input/output dialogs and selectable output stages. The optional live PokéAPI demo and owned HTTP stress harness exercise real network I/O. S19 reconciles the complete developer story and its proof; no npm release or production deployment is claimed.
+**Foundation implemented and merged through S19.** S19/PR31 completed adoption acceptance. The framework runs typed asynchronous flows from an installed package, with a Next.js consumer, live packet inspection, node input/output dialogs and selectable output stages. The optional live PokéAPI demo and owned HTTP stress harness exercise real network I/O. S19 reconciled the complete developer story and its proof; no npm release or production deployment is claimed.
 
 You can now build and run real, typed, asynchronous pipelines locally. The inspector now visualizes registered graphs and event relationships; editing and optional durable execution remain on the roadmap below. You can now try the small Next.js example with `npm run demo:next`; it runs a production build at **http://localhost:54545**. Follow **Inspect graphs and events** to watch packets and subscriptions change without refreshing. Choose **Run live Pokémon example** for public API responses; `npm run stress:http` exercises192 requests against our owned loopback service through the full production acceptance suite.
 
@@ -112,6 +116,10 @@ The initial graphical inspector is **read-only**. The interactive editor and cod
 Rich/custom payload types, controlled cyclic graphs and more capable agent-authored applications are extension goals. Initial public payloads are JSON-compatible and initial graph topology is acyclic. Most graphs should remain useful without a database.
 
 The runtime refuses repeated delivery of the same packet to the same node within one run, using bounded protection records without live-run eviction. The channel alone does not enforce that policy. Crash-safe execution and exactly-once external side effects are not current guarantees; a durable host still needs application/provider idempotency or reconciliation where effects are uncertain.
+
+The [proposed extension slices](docs/cursor_plans/fbp-extensions/INDEX.md) cover per-node diagnostics, Node-RED-inspired visual authoring, saved/exportable graphs and optional durable execution. They focus on explaining behavior, testing nodes independently and tracing changes; implementation remains gated by the recorded contract reviews. The revised order adds causal inspection, decision records, reviewed regression capture and revision comparison, followed by a useful application and a fair plain-TypeScript comparison before visual authoring.
+
+The planned [local workspace option](docs/cursor_plans/fbp-extensions/local-workspace.md) will let an application repository contain editable Nodeflow source and consume it through public package exports, without publishing to npm. Application nodes and graphs can live directly in the project. Exact workspace build/watch tooling remains to be implemented and verified.
 
 ## Where to go next
 

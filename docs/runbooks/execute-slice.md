@@ -6,6 +6,8 @@ Use when the user requests a named slice or continuation. This procedure is not 
 
 Read [INDEX](../cursor_plans/fbp-slices/INDEX.md), [manifest](../cursor_plans/fbp-slices/manifest.json), [SP1](../cursor_plans/fbp-slices/shared-execution.md), the selected plan and any existing journal. Verify actual checkout/status/HEAD, relevant guidance and baseline applicability. Current source may have advanced beyond the planning anchor.
 
+For S20 onward, use [extension INDEX](../cursor_plans/fbp-extensions/INDEX.md), [extension manifest](../cursor_plans/fbp-extensions/manifest.json), [execution additions](../cursor_plans/fbp-extensions/execution.md) and [SC20-r1](../cursor_plans/fbp-extensions/S20-decisions.md); the foundation manifest remains historical. Treat suffix IDs as stable identities, not numeric positions. S20 is design-only; current package.json supersedes historical placeholder-command notes.
+
 Confirm its predecessor is accepted and merged into default master with an actual commit/merge SHA and applicable proof. Do not use an unmerged predecessor feature branch as base under SP1. Reuse a suitable existing branch/worktree; preserve unrelated changes. The proposed branch name is recorded by the slice; no new naming invention required.
 
 Check readiness independently of execution authorization. S00 is a concrete identity-design deliverable; S01–S03 can be reviewed independently; S04 onward must not invent the pending identity contract. If blocked, name the actual missing artifact/decision and do already-authorized independent work. No repeated permission request for normal approved task mechanics.
