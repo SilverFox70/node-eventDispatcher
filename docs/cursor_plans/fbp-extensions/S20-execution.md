@@ -37,3 +37,10 @@ Characterization proves existing behavior, not future DG1/configured v2/durable/
 ## Current status
 
 S20.A–C complete for design review; documentation gates and29 existing characterization/guidance tests pass. Exact selected proposal awaits review/merge. S21 design is ready for review, not executed. Later package/SQL/kernel/provider/codegen gates remain explicit. Branch/PR publication is the final handoff; no master merge or successor implementation inferred.
+
+
+## Publication receipt
+
+Committed design/roadmap as `6e809e995e1c5b67de6172b5f7f19a10aa8f9ce5`, pushed to `origin/codex/fbp-20-extension-contract-freeze`, and created [PR32](https://github.com/SilverFox70/node-eventDispatcher/pull/32) against master. Connector read-back confirms title/body/base/head and open/unmerged status. This receipt update is a separate documentation commit; no force push or automatic merge. CI is separate from local verification and is not claimed green here.
+
+Unrelated `.DS_Store`/`.feedback-log/` remain local and unstaged. Next action is S20 review/merge; S21 starts only from the actual accepted master merge plus an execution request.

@@ -36,7 +36,9 @@
           "S20.C"
         ]
       },
-      "journal": "S20-execution.md"
+      "journal": "S20-execution.md",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/32",
+      "publication_status": "pr-open"
     },
     {
       "id": "S21",

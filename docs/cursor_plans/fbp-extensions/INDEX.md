@@ -28,7 +28,7 @@ User-selected consumption target: [local workspace packages](local-workspace.md)
 - [Planning verification receipt](planning-evidence.md) (historical planning-only evidence).
 - [Canonical condition ledger](conditions.md), [machine-readable proposed order](manifest.json), [future use cases and demonstrations](use-cases.md).
 
-S20 design work is **complete for review**, not merged; [SC20-r1](S20-decisions.md) records selected interfaces and remaining later gates. S21 DG1 is ready for proposal review, not implementation approval. S22–S51 remain proposed with their named contract/predecessor gates. This is a complete roadmap breakdown with explicit gates, not a claim all future branches can execute unchanged today.
+S20 design work is **complete for review** in [PR32](https://github.com/SilverFox70/node-eventDispatcher/pull/32), not merged; [SC20-r1](S20-decisions.md) records selected interfaces and remaining later gates. S21 DG1 is ready for proposal review, not implementation approval. S22–S51 remain proposed with their named contract/predecessor gates. This is a complete roadmap breakdown with explicit gates, not a claim all future branches can execute unchanged today.
 
 Six insertion slices **S24A–S24F** prove explainability and application value before S25 visual authoring. Existing S25–S51 IDs/branch names stay stable.
 
