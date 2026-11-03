@@ -12,7 +12,7 @@ export function filter<T extends Json>(input: Contract<T>, predicate: (value: Re
     create: () => async ctx => {
       for await (const packet of ctx.inputs.in) {
         const { value, ...metadata } = packet;
-        const keep = await ctx.task(attempt => predicate(value, Object.freeze({ ...attempt, packet: Object.freeze(metadata) })));
+        const keep = await ctx.task(attempt => predicate(value, Object.freeze({ ...attempt, packet: Object.freeze(metadata) })), { inputs: [packet] });
         if (typeof keep !== 'boolean') throw new FlowError('OUTPUT_CONTRACT');
         if (keep) await ctx.send('out', packet);
       }

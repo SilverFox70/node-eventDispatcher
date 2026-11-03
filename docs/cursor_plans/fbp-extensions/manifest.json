@@ -25,8 +25,8 @@
         "X20.3"
       ],
       "status": "ready-for-review",
-      "execution_status": "complete-for-review",
-      "merge_sha": null,
+      "execution_status": "merged",
+      "merge_sha": "b45213ae290822569c6f8b6ed5ffcce61b32e7d2",
       "gate": "D1, D2, D3, D4, D5 decision evidence",
       "execution_approval": {
         "authority": "user request 2026-11-03",
@@ -54,10 +54,20 @@
         "X21.2",
         "X21.3"
       ],
-      "status": "ready-for-review",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
-      "gate": "SC20-r1/DG1 design acceptance and actual S20 master merge; explicit S21 execution request"
+      "gate": "SC20-r1/DG1 design acceptance and actual S20 master merge; explicit S21 execution request",
+      "journal": "S21-execution.md",
+      "execution_approval": {
+        "authority": "user request 2026-11-03",
+        "tasks": [
+          "S21.A",
+          "S21.B",
+          "S21.C"
+        ],
+        "contract": "DG1-r1"
+      }
     },
     {
       "id": "S22",

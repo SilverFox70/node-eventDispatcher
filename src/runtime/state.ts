@@ -8,7 +8,7 @@ export type NodeState = { id: string; status: Snapshot['nodes'][number]['status'
 
 /** One terminal owner; every observer sees the same immutable terminal result. */
 export function createRunState(runId: string, nodes: NodeState[], channels: Map<string, Channel>, limit: number,
-  clearLedger: () => void, signal?: AbortSignal, timeoutMs?: number) {
+  clearLedger: () => void, signal?: AbortSignal, timeoutMs?: number, onTerminal?: (terminal: Terminal) => void) {
   const started = performance.now();
   const cleanups = new Set<() => void>();
   const controller = new globalThis.AbortController();
@@ -42,6 +42,7 @@ export function createRunState(runId: string, nodes: NodeState[], channels: Map<
     clearLedger();
     record(result.status === 'completed' ? 'COMPLETED' : result.code,
       result.status === 'failed' ? result.nodeId : undefined);
+    onTerminal?.(terminal);
     resolve(terminal);
   }
   function cancel(): void { end({ status: 'cancelled', code: 'CANCELLED' }); }

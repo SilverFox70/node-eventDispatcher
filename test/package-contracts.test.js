@@ -45,6 +45,16 @@ test('built distributions usable: same-format public helpers and cross-format ha
           assert.equal(r.outputs.out[0].jobId,p.jobId); assert.deepEqual(r.outputs.out[0].parentPacketIds,[p.packetId]);
         }
       }
+      const model = await import('event-driven-design/model');
+      for (const [f, g] of [[esm,e.graph],[cjs,c.graph]]) {
+        const run = f.startNetwork(g, {diagnostics:{limit:32}});
+        const reading = (async()=>{ for await (const result of run.outputs.out) assert.equal(result.value,4); })();
+        const input = f.packet(2,{jobId:'installed-diagnostics'});
+        await run.send('in',input); run.closeInput('in'); assert.equal((await run.done).status,'completed'); await reading;
+        const diagnostic = run.diagnostics(); assert.deepEqual(model.validateDiagnostics(JSON.parse(JSON.stringify(diagnostic))),{ok:true});
+        assert.equal(diagnostic.events.find(record=>record.kind==='attempt-started').inputs[0].packetId,input.packetId);
+        assert(!diagnostic.events.some(record=>Object.hasOwn(record,'payload')));
+      }
       console.log('same-format helpers: 4; cross-format handles: INVALID_ARGUMENT');
     `]);
     assert.match(output, /same-format helpers: 4; cross-format handles: INVALID_ARGUMENT/);

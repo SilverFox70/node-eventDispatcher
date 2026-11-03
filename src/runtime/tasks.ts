@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+import { performance } from 'node:perf_hooks';
 import { isProxy } from 'node:util/types';
 import { FlowError } from '../errors.js';
 import type { TaskPolicy } from '../model/graph/task-policy.js';
@@ -6,6 +8,10 @@ import { taskAttempt } from './task-attempt.js';
 import type { TaskContext } from './task-attempt.js';
 import type { RunState } from './state.js';
 import type { TaskScope } from './task-scope.js';
+import type { Diagnostics } from './diagnostics/records.js';
+import { createProvenance } from './diagnostics/provenance.js';
+import type { TaskOptions } from './diagnostics/provenance.js';
+import { diagnosticErrorCode } from './diagnostics/errors.js';
 export type { TaskContext } from './task-attempt.js';
 export { NodeTimeoutError } from './task-attempt.js';
 
@@ -13,21 +19,38 @@ function errorCode(error: unknown): unknown {
   return typeof error === 'object' && error !== null && !isProxy(error) ? Object.getOwnPropertyDescriptor(error, 'code')?.value : undefined;
 }
 /** One operation owner per node. Retries never overlap an unsettled attempt. */
-export function createTasks(state: RunState, scope: TaskScope, nodeId: string, policy: TaskPolicy) {
+export function createTasks(state: RunState, scope: TaskScope, nodeId: string, policy: TaskPolicy, diagnostics: Diagnostics) {
   let busy = false, working = false;
-  function task<T>(handler: (context: TaskContext) => T | PromiseLike<T>): Promise<T> {
+  const provenance = createProvenance();
+  let failure: { error: unknown } | undefined;
+  function consumeFailure(error: unknown): boolean {
+    const match = failure !== undefined && Object.is(failure.error, error);
+    failure = undefined; return match;
+  }
+  function task<T>(handler: (context: TaskContext) => T | PromiseLike<T>, options?: TaskOptions): Promise<T> {
+    let inputs: ReturnType<typeof provenance.inputs>;
     try {
       scope.guard(true);
       if (!state.check()) throw new FlowError('RUN_TERMINATED');
       if (typeof handler !== 'function') throw new FlowError('INVALID_ARGUMENT');
       if (busy) throw new FlowError('TASK_ACTIVE');
+      inputs = provenance.inputs(options);
     } catch (error) {
       const refused = Promise.reject<T>(error); void refused.catch(() => {}); return refused;
     }
-    busy = true; working = true;
+    busy = true; working = true; failure = undefined;
+    const operationId = randomUUID(), started = performance.now();
+    diagnostics.record({ kind: 'operation-started', nodeId, operationId, inputs });
+    let observed = false;
+    function finishObservation(outcome: 'succeeded' | 'failed' | 'cancelled', error?: unknown): void {
+      if (observed) return;
+      observed = true;
+      const base = { kind: 'operation-finished' as const, nodeId, operationId, durationMs: performance.now() - started };
+      diagnostics.record(outcome === 'succeeded' ? { ...base, outcome } : { ...base, outcome, code: diagnosticErrorCode(error) });
+    }
     let pending = false, ended = false;
     let cancelAttempt: (() => void) | undefined, cancelWait: (() => void) | undefined;
-    const unregister = state.onEnd(() => { cancelAttempt?.(); cancelWait?.(); });
+    const unregister = state.onEnd(() => { cancelAttempt?.(); cancelWait?.(); finishObservation('cancelled', new FlowError('RUN_TERMINATED')); });
     function wait(ms: number, settlement?: Promise<void>): Promise<boolean> {
       if (ms === 0) return Promise.resolve(false);
       return new Promise(resolve => {
@@ -48,7 +71,7 @@ export function createTasks(state: RunState, scope: TaskScope, nodeId: string, p
         if (!state.check()) throw new FlowError('RUN_TERMINATED');
         pending = true;
         const current = taskAttempt(handler, state, scope, nodeId, attempt, policy.taskTimeoutMs,
-          () => { pending = false; if (ended) busy = false; });
+          () => { pending = false; if (ended) busy = false; }, { diagnostics, operationId, inputs });
         cancelAttempt = current.cancel;
         const outcome = await current.result;
         if (!state.check()) throw new FlowError('RUN_TERMINATED');
@@ -64,9 +87,11 @@ export function createTasks(state: RunState, scope: TaskScope, nodeId: string, p
         await wait(retry.delayMs);
       }
     }
-    const result = execute().finally(() => { ended = true; working = false; unregister(); if (!pending) busy = false; });
+    const result = execute().then(value => { finishObservation('succeeded'); return value; }, error => {
+      finishObservation('failed', error); failure = { error }; throw error;
+    }).finally(() => { ended = true; working = false; unregister(); if (!pending) busy = false; });
     void result.catch(() => {});
     return result;
   }
-  return { task, pending: () => working };
+  return { task, pending: () => working, delivered: provenance.delivered, consumeFailure };
 }

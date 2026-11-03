@@ -36,3 +36,7 @@ export type { InspectionSnapshot, InspectionSource } from './model/inspection.js
 
 export type { TraceOptions } from './runtime/trace.js';
 export type { ExecutionTraceEvent, ExecutionTraceSnapshot } from './model/execution-trace.js';
+
+export type { DiagnosticRecord, DiagnosticSnapshot } from './model/diagnostics/index.js';
+export type { DiagnosticOptions } from './runtime/diagnostics/records.js';
+export type { TaskOptions } from './runtime/diagnostics/provenance.js';
