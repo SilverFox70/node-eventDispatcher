@@ -19,16 +19,19 @@ import { registerProcessContext } from './runtime/context-validation.js';
 import { createTasks } from './runtime/tasks.js';
 import { createTaskScope } from './runtime/task-scope.js';
 import { RuntimeValidationError } from './runtime/validation.js';
-import { createDiagnostics, packetMetadata } from './runtime/diagnostics/records.js';
+import { createDiagnostics } from './runtime/diagnostics/records.js';
 import type { DiagnosticOptions } from './runtime/diagnostics/records.js';
 import type { DiagnosticSnapshot } from './model/diagnostics/index.js';
 import { runtimeFailureCodes, diagnosticErrorCode } from './runtime/diagnostics/errors.js';
+import type { CapturePolicy } from './runtime/diagnostics/policy.js';
+import type { DiagnosticsSession, SessionRequest } from './runtime/diagnostics/session.js';
 export { RuntimeValidationError } from './runtime/validation.js';
 
 export type Terminal = Readonly<{ status: 'completed' } | { status: 'cancelled'; code: 'CANCELLED' } |
   { status: 'failed'; code: string; nodeId?: string }>;
-export type StartOptions = Readonly<{ signal?: AbortSignal; executionRecordLimit?: number; diagnosticLimit?: number; timeoutMs?: number; trace?: TraceOptions; diagnostics?: DiagnosticOptions }>;
+export type StartOptions = Readonly<{ signal?: AbortSignal; executionRecordLimit?: number; diagnosticLimit?: number; timeoutMs?: number; trace?: TraceOptions; diagnostics?: DiagnosticOptions; capturePolicy?: CapturePolicy }>;
 export type NetworkRun = Readonly<{
+  openDiagnosticsSession(request: SessionRequest): DiagnosticsSession;
   runId: string; diagnostics(): DiagnosticSnapshot; onDiagnostics(listener: () => void): () => void; outputs: Readonly<Record<string, AsyncIterable<Packet>>>;
   send(name: string, packet: Packet): Promise<void>; closeInput(name: string): void;
   trace(): ExecutionTraceSnapshot | null; onTrace(listener: () => void): () => void; clearTrace(): void;
@@ -41,7 +44,7 @@ const definitions = new WeakMap<NetworkRun, GraphDefinition>();
 /** Start independent stream processes; callers must consume outputs concurrently with feeding inputs. */
 export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): NetworkRun {
   const definition = getGraphDefinition(graph), fields = readRecord(options, 'INVALID_ARGUMENT');
-  if (Object.keys(fields).some(key => !['signal', 'executionRecordLimit', 'diagnosticLimit', 'timeoutMs', 'trace', 'diagnostics'].includes(key))) throw new FlowError('INVALID_ARGUMENT');
+  if (Object.keys(fields).some(key => !['signal', 'executionRecordLimit', 'diagnosticLimit', 'timeoutMs', 'trace', 'diagnostics', 'capturePolicy'].includes(key))) throw new FlowError('INVALID_ARGUMENT');
   const recordLimit = Object.hasOwn(fields, 'executionRecordLimit') ? fields.executionRecordLimit : 65536;
   const diagnosticLimit = Object.hasOwn(fields, 'diagnosticLimit') ? fields.diagnosticLimit : 100;
   if (!Number.isSafeInteger(recordLimit) || (recordLimit as number) < 1 || (recordLimit as number) > 1048576 ||
@@ -59,7 +62,7 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
   const scope = createTaskScope();
   const signal = fields.signal as AbortSignal | undefined;
   const runId = randomUUID();
-  const diagnostics = createDiagnostics(runId, Object.hasOwn(fields, 'diagnostics') ? fields.diagnostics : {});
+  const diagnostics = createDiagnostics(runId, definition, Object.hasOwn(fields, 'diagnostics') ? fields.diagnostics : {}, Object.hasOwn(fields, 'capturePolicy') ? (fields.capturePolicy ?? null) : undefined);
   const trace = Object.hasOwn(fields, 'trace') ? createExecutionTrace(runId, fields.trace) : undefined;
   const channels = new Map<string, Channel>();
   const inputs = new Map<string, Port>(), outputs = new Map<string, Port>();
@@ -75,8 +78,8 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
     const result = createChannel<Packet>(capacity, (kind, packet) => {
       trace?.record(kind, { channelId: id, from, to }, packet);
       if (kind !== 'sent') return;
-      if (from) diagnostics.record({ kind: 'sent', nodeId: from.node, port: from.port, packet: packetMetadata(packet) });
-      else diagnostics.record({ kind: 'input-admitted', inputName: id.slice(6), nodeId: to!.node, port: to!.port, packet: packetMetadata(packet) });
+      if (from) diagnostics.transfer('sent', from.node, from.port, packet);
+      else diagnostics.transfer('input-admitted', to!.node, to!.port, packet, id.slice(6));
     });
     channels.set(id, result); return result;
   }
@@ -94,7 +97,7 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
     outputs.set(name, target); nodeOutputs.get(target.nodeId)!.set(target.port, target);
   }
   const ledger = new Set<string>();
-  const state = createRunState(runId, nodeStates, channels, diagnosticLimit as number, () => ledger.clear(), signal, fields.timeoutMs as number | undefined, terminal => diagnostics.record({ kind: 'run-terminal', ...terminal }));
+  const state = createRunState(runId, nodeStates, channels, diagnosticLimit as number, () => ledger.clear(), signal, fields.timeoutMs as number | undefined, terminal => { diagnostics.record({ kind: 'run-terminal', ...terminal }); diagnostics.sessions.terminate(); });
   const admission = createAdmission(runId, recordLimit as number, ledger);
   const closed = new Set<string>(), drained = new Set<string>();
   function complete(): void {
@@ -120,6 +123,7 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
     inputIterator(target.channel, state, () => { drained.add(name); complete(); }, () => fail(new FlowError('INPUT_ABANDONED')), () => scope.guard()),
   ])));
   const run: NetworkRun = Object.freeze({
+    openDiagnosticsSession: diagnostics.sessions.open,
     diagnostics: diagnostics.snapshot, onDiagnostics: diagnostics.subscribe,
     trace: () => trace?.snapshot() ?? null, clearTrace: () => { trace?.clear(); },
     onTrace(listener: () => void) {
@@ -160,7 +164,7 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
         inputs: Object.freeze(Object.fromEntries([...inputPorts].map(([name, target]) => [name,
           inputIterator(target.channel, state, () => { eof.add(name); }, undefined, () => scope.guard(), packet => {
             operations.delivered(packet);
-            diagnostics.record({ kind: 'received', nodeId: node.id, port: name, packet: packetMetadata(packet) });
+            diagnostics.transfer('received', node.id, name, packet);
           }),
         ]))),
         send(name: string, packet: Packet): Promise<void> {

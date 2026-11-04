@@ -15,14 +15,17 @@ for (const signal of ['SIGINT', 'SIGTERM']) {
       env: { ...process.env, NODE_V8_COVERAGE: directory, NODE_OPTIONS: '' }, stdio: ['ignore', 'pipe', 'pipe']
     });
     t.after(() => { if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL'); });
-    const closed = new Promise(resolve => child.once('close', resolve));
+    const closed = new Promise(resolve => child.once('close', (code, signal) => resolve({ code, signal })));
     await new Promise((resolve, reject) => {
       const timeout = globalThis.setTimeout(() => reject(Error('Worker startup timed out')), 5000);
       child.once('error', reject);
       child.stdout.once('data', data => { globalThis.clearTimeout(timeout); assert.match(data.toString(), /ready 42/); resolve(); });
     });
-    child.kill(signal); await closed;
-    const scripts = readdirSync(directory).filter(name => name.endsWith('.json')).flatMap(name => JSON.parse(readFileSync(join(directory, name), 'utf8')).result);
+    child.kill(signal);
+    assert.deepEqual(await closed, { code: signal === 'SIGINT' ? 130 : 143, signal: null }, 'The coverage-flushing signal handler must complete');
+    const reports = readdirSync(directory).filter(name => name.endsWith('.json'));
+    assert.equal(reports.length, 1, 'Signal exit must write one final report without an automatic second flush');
+    const scripts = reports.flatMap(name => JSON.parse(readFileSync(join(directory, name), 'utf8')).result);
     assert(scripts.some(script => script.functions.some(fn => fn.functionName === 'observedWork' && fn.ranges[0].count > 0)),
       'Executed worker function must survive in V8 evidence, not only bootstrap modules');
   });

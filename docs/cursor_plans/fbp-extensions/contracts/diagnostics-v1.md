@@ -1,6 +1,6 @@
 # S20 diagnostic contract DG1-r1
 
-Status: DG1 S21 subset adopted through actual S20 merge and explicit S21 execution,2026-11-03. S21 implementation is on its review branch; S22/S23 sections remain future proposals. Canonical for S21–S24; supersedes their earlier illustrative envelopes. Existing EX1 and Snapshot/Diagnostic shapes remain unchanged. [S20 handoff](../S20-execution.md).
+Status: DG1 S21 subset adopted through actual S20 merge and explicit S21 execution,2026-11-03. S21 merged in PR33. Explicit S22 execution on2026-11-04 adopts the S22.A declaration refinement below (DG1-r2); S23 remains a future proposal. Canonical for S21–S24; supersedes their earlier illustrative envelopes. Existing EX1 and Snapshot/Diagnostic shapes remain unchanged. [S20 handoff](../S20-execution.md).
 
 ## Activation, ownership and errors
 
@@ -57,3 +57,16 @@ write rejection disables sink, drops failed batch/pending queue and increments s
 S21 owns model validation/export, one task/attempt producer, function/builtin input bindings, runtime input/output producer, metadata defaults and secret-safe failure normalization. S22 policy/session, S23 sinks and S24 Next UI consume it. Required S21 paths extend its earlier allowlist to `src/component.ts`, `src/function.ts`, `src/components/**` binding-only, `src/runtime/task-attempt.ts`, `src/runtime/ports.ts`, `src/runtime.ts`, model/public barrels and existing test/type fixtures. No later capture/sink/editor implementation in S21.
 
 Canonical proofs X21.1–X21.3 now include same-job multiparent, legacy node-scope, cross-run binding refusal, two-job attribution, retry/cancel/late-settlement and existing EX1 coexistence. Tests may share fixtures; no dummy test is required for every table cell if a real integration assertion already proves it.
+
+## S22.A declaration freeze — 2026-11-04
+
+Explicit S22 execution adopts the session behavior above with these exact refinements (DG1-r2):
+- `StartOptions.capturePolicy` requires all five fields. `allowedNodes`, `denyInputs`, `denyOutputs` are unique arrays of existing node IDs; denies cover the named node's entire direction. Empty allowlist denies all. Limits are integer1–2048 bytes and1–900000 ms. Policy is copied/frozen before factories execute.
+- Rule ports are unique existing names in the union of that node's input/output ports; a selected port matches only the event's actual direction/name. Job selectors use existing job-ID bounds. Maximum256 job selectors across all32 rules. Empty selector arrays match nothing. Unknown keys/accessors/duplicates refuse `INVALID_ARGUMENT` atomically.
+- Session snapshot is `{sessionId,epoch,status,expiresAtMs,rules,effectiveRules,events}`. Status active/expired/disposed/terminated; absolute expiry uses monotonic performance.now milliseconds. Effective rules preserve selectors and AND requested directions with host allow/deny. Epoch starts1; successful update increments it, without extending expiry. Closed update/subscribe refuses `SESSION_CLOSED`; active stale update refuses `CAPTURE_CONFLICT`.
+- Captured transfer records additionally require paired `captureSessionId` UUID and positive integer `captureEpoch`. Session events are the current epoch's records in the single run ring. Global diagnostics retain old epochs until ordinary eviction; existing caller-held snapshots cannot be revoked. No separate history/store exists.
+- Session subscriptions are guarded by the epoch at subscription time; updates retire old callbacks. Dispose, expiry and run termination suppress queued callbacks, release listeners and expiry timer. Dispose is idempotent. An already accepted packet is assessed when each actual transfer occurs, using the then-current policy; pending operation ownership does not grant retrospective capture.
+- Snapshot/update check expiry synchronously, so a delayed timer cannot extend permission. Opening after terminal refuses `RUN_TERMINATED`; opening while another session is active refuses `SESSION_ACTIVE`. Missing host policy still permits a metadata-only session, with both effective directions false.
+- UTF-8 JSON bytes use the existing immutable JSON packet representation and JSON.stringify property order, without hooks. Truncated preview is the longest complete Unicode prefix fitting the host byte ceiling; original byte count is retained. Session ID/epoch accompany truncation too. No payload appears on error/operation/terminal records.
+
+These are implementation fixture choices within S22's owned declaration gate, not S23 transport/sink or S24 UI functionality. Root/model type exports are necessary public declaration plumbing within the existing package; no package/build configuration change.

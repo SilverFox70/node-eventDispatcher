@@ -47,13 +47,18 @@ test('built distributions usable: same-format public helpers and cross-format ha
       }
       const model = await import('event-driven-design/model');
       for (const [f, g] of [[esm,e.graph],[cjs,c.graph]]) {
-        const run = f.startNetwork(g, {diagnostics:{limit:32}});
+        const run = f.startNetwork(g, {diagnostics:{limit:32},capturePolicy:{allowedNodes:['n'],denyInputs:[],denyOutputs:[],maxPayloadBytes:32,maxSessionMs:1000}});
+        const session = run.openDiagnosticsSession({rules:[{nodeId:'n',inputs:true,outputs:true}],expiresInMs:1000});
         const reading = (async()=>{ for await (const result of run.outputs.out) assert.equal(result.value,4); })();
         const input = f.packet(2,{jobId:'installed-diagnostics'});
         await run.send('in',input); run.closeInput('in'); assert.equal((await run.done).status,'completed'); await reading;
         const diagnostic = run.diagnostics(); assert.deepEqual(model.validateDiagnostics(JSON.parse(JSON.stringify(diagnostic))),{ok:true});
         assert.equal(diagnostic.events.find(record=>record.kind==='attempt-started').inputs[0].packetId,input.packetId);
         assert(!diagnostic.events.some(record=>Object.hasOwn(record,'payload')));
+        assert.equal(diagnostic.events.find(record=>record.kind==='received').capture.value,2);
+        assert.equal(diagnostic.events.find(record=>record.kind==='sent').capture.value,4);
+        assert.equal(session.snapshot().status,'terminated');
+        assert(session.snapshot().events.every(record=>record.captureSessionId===session.snapshot().sessionId));
       }
       console.log('same-format helpers: 4; cross-format handles: INVALID_ARGUMENT');
     `]);
