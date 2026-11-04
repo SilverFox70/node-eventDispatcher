@@ -27,7 +27,7 @@ export function defineFunction<I extends Json, O extends Json>(spec: FunctionSpe
       for await (const packet of ctx.inputs.in) {
         const { value: inputValue, ...fields } = packet;
         const metadata = Object.freeze(fields);
-        const value = await ctx.task(attempt => handler(inputValue, Object.freeze({ ...attempt, packet: metadata })));
+        const value = await ctx.task(attempt => handler(inputValue, Object.freeze({ ...attempt, packet: metadata })), { inputs: [packet] });
         validateProcessOutput(ctx, 'out', value);
         await ctx.send('out', derivePacket(value, [packet]));
       }

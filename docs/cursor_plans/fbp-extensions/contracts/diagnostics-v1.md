@@ -1,6 +1,6 @@
 # S20 diagnostic contract DG1-r1
 
-Status: settled design proposal for review, not shipped API. Canonical for S21–S24; supersedes their earlier illustrative envelopes. Existing EX1 and Snapshot/Diagnostic shapes remain unchanged. [S20 handoff](../S20-execution.md).
+Status: DG1 S21 subset adopted through actual S20 merge and explicit S21 execution,2026-11-03. S21 implementation is on its review branch; S22/S23 sections remain future proposals. Canonical for S21–S24; supersedes their earlier illustrative envelopes. Existing EX1 and Snapshot/Diagnostic shapes remain unchanged. [S20 handoff](../S20-execution.md).
 
 ## Activation, ownership and errors
 

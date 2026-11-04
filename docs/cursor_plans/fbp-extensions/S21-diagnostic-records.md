@@ -1,6 +1,6 @@
 # S21 — See safe, correlated error and operation records without enabling payload logging.
 
-Plan revision EXT1-r2. Status **ready-for-review**; execution approval **none**.
+Plan revision EXT1-r2. Status **approved-for-execution**; execution approval **S21.A–C, user request 2026-11-03**.
 Phase: diagnostics. Proposed branch: `codex/fbp-21-diagnostic-records`.
 Order: S20 → S21 → S22.
 
@@ -25,7 +25,7 @@ DG1 extends the production allowlist to src/component.ts, src/function.ts, src/c
 - Allowed: focused test/type fixtures adjacent to the owned modules below; no production changes in this task.
 - Prerequisite: slice prerequisites above and current source/caller inventory.
 - Obligation: Add or extend the focused contract/type characterization for the reviewed schema and refusal rules before implementing behavior. Pin the exact fixture and expected result from the ledger.
-- Condition: [X21.1](conditions.md); Parse diagnostic-v1 received(packet P/job J/node N/port in) and operation-error(operation O/attempt1) fixtures → accept required fields; reject unknown version, missing required correlation and unsafe error-object fields before observer delivery. Existing EX1 records keep their shape.
+- Condition: [X21.1](conditions.md); Parse DG1 received(packet P/job J/node N/port in) and attempt-finished(failed/operation O/attempt1) fixtures → accept required fields; reject unknown version, missing required correlation and unsafe error-object fields before observer delivery. Existing EX1 records keep their shape.
 - Verification/red: Type/contract tests must reach the intended validation boundary; preserve existing v1/EX1 and public package fixtures. A missing export alone is not behavioral red.
 - Complete when: fixture/proposal and exact assertions are recorded with current HEAD and ledger pointer; gaps remain named.
 - Stop: a schema, authority or lifetime choice differs from the accepted domain contract; amend it before dependent tasks.
@@ -55,4 +55,4 @@ DG1 extends the production allowlist to src/component.ts, src/function.ts, src/c
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. The DG1 proposal is settled for review. S20 acceptance/merge and actual execution authorization remain required; future commands are not delivered behavior.
+S20 actually merged and user explicitly authorized S21.A–C. See S21-execution.md for delivered behavior, actual proof and pending publication; no successor is automatically authorized.

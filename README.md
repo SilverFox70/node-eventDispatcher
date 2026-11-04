@@ -2,7 +2,7 @@
 
 *every result can be explained, every node can be tested alone, and every change can be traced.*
 
-NodeDispatcher aims to make asynchronous application behavior inspectable, explainable and testable by design. Typed nodes and explicit data flows provide the structure for understanding results, diagnosing failures and testing changes. The current inspector shows observed execution; complete causal inspection, declared decision reasons and run-to-test comparisons are planned next. Evidence that was not captured cannot be reconstructed, and a graph cannot explain private reasoning inside arbitrary node code.
+NodeDispatcher aims to make asynchronous application behavior inspectable, explainable and testable by design. Typed nodes and explicit data flows provide the structure for understanding results, diagnosing failures and testing changes. The current inspector shows observed execution; complete causal inspection, declared decision reasons and run-to-test comparisons remain planned. Evidence that was not captured cannot be reconstructed, and a graph cannot explain private reasoning inside arbitrary node code.
 
 This project is rebuilding a small, historical JavaScript event dispatcher into a typed **flow-based programming (FBP) library** for Node.js. The aim is to make applications from reusable nodes with explicit input/output contracts, connected by bounded data streams.
 
@@ -24,6 +24,8 @@ The current runtime executes node graphs; these application examples still need 
 ## Current progress
 
 **Foundation implemented and merged through S19.** S19/PR31 completed adoption acceptance. The framework runs typed asynchronous flows from an installed package, with a Next.js consumer, live packet inspection, node input/output dialogs and selectable output stages. The optional live PokéAPI demo and owned HTTP stress harness exercise real network I/O. S19 reconciled the complete developer story and its proof; no npm release or production deployment is claimed.
+
+S21 adds [correlated diagnostic records](docs/architecture/diagnostic-records.md) on this review branch: bounded metadata for actual transfers, operations, attempts and safe errors, with explicit packet/job attribution. Existing trace/UI behavior remains; selective capture and UI controls are later slices. S21 is not yet merged.
 
 You can now build and run real, typed, asynchronous pipelines locally. The inspector now visualizes registered graphs and event relationships; editing and optional durable execution remain on the roadmap below. You can now try the small Next.js example with `npm run demo:next`; it runs a production build at **http://localhost:54545**. Follow **Inspect graphs and events** to watch packets and subscriptions change without refreshing. Choose **Run live Pokémon example** for public API responses; `npm run stress:http` exercises192 requests against our owned loopback service through the full production acceptance suite.
 

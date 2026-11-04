@@ -30,7 +30,7 @@ export function createAdmission(runId: string, limit: number, ledger: Set<string
   return { send };
 }
 
-export function inputIterator(channel: Channel, state: RunState, onEof: () => void, onAbandon?: () => void, guard: () => void = () => {}): AsyncIterableIterator<Packet> {
+export function inputIterator(channel: Channel, state: RunState, onEof: () => void, onAbandon?: () => void, guard: () => void = () => {}, onPacket?: (packet: Packet) => void): AsyncIterableIterator<Packet> {
   let eof = false;
   async function read(): Promise<IteratorResult<Packet, undefined>> {
     guard();
@@ -39,6 +39,7 @@ export function inputIterator(channel: Channel, state: RunState, onEof: () => vo
     const result = await channel.receive();
     if (!state.check()) throw new FlowError('RUN_TERMINATED');
     if (result.done) { eof = true; onEof(); }
+    else onPacket?.(result.value);
     return result;
   }
   return {

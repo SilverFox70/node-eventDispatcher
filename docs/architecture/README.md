@@ -4,6 +4,8 @@
 
 S00–S18B are merged. The package currently delivers a typed in-memory FBP runtime: contracts/components, immutable JSON packets, graph construction/compilation, bounded streams, cancellation/deadlines, explicit retries, branch/merge/keyed joins, testing helpers and installed CJS/ESM consumers. The Next fixture adds live graph/event inspection, optional bounded packet capture, node input/output dialogs, selectable output stages and controlled HTTP stress. [S19 adoption acceptance](../cursor_plans/fbp-slices/S19-execution.md) reconciles the candidate and proof; no npm release or deployment is inferred.
 
+S21 adds [correlated metadata diagnostics](diagnostic-records.md) on its review branch, preserving EX1 and payload-free scope snapshots; no merge is inferred.
+
 Visual graph editing/export tooling, per-node diagnostic policy, a durable host, rich public packet profiles and cyclic graphs remain future extensions. The existing graph builder emits portable JSON GraphSpec; this is not a visual authoring or TypeScript generation claim.
 
 - [Dispatcher API and migration](dispatcher.md): instance ownership, synchronous delivery, bounded metadata logs and the legacy import.

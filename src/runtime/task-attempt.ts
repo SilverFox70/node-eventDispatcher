@@ -4,6 +4,10 @@ import { FlowError } from '../errors.js';
 import { createDeadline } from './deadline.js';
 import type { RunState } from './state.js';
 import type { TaskScope } from './task-scope.js';
+import { diagnosticErrorCode } from './diagnostics/errors.js';
+import type { Diagnostics } from './diagnostics/records.js';
+import type { PacketMetadata } from '../packet.js';
+export type AttemptObservation = Readonly<{ diagnostics: Diagnostics; operationId: string; inputs: readonly PacketMetadata[] }>;
 export type TaskContext = Readonly<{ signal: AbortSignal; attempt: number; attemptId: string }>;
 export type TaskOutcome<T> = { ok: true; value: T } | { ok: false; error: unknown };
 export class NodeTimeoutError extends FlowError {
@@ -12,8 +16,9 @@ export class NodeTimeoutError extends FlowError {
 
 /** One attempt: terminal/revoked leases never regain the ability to publish work. */
 export function taskAttempt<T>(handler: (context: TaskContext) => T | PromiseLike<T>, state: RunState,
-  scope: TaskScope, nodeId: string, attempt: number, timeoutMs: number | undefined, onSettled: () => void) {
-  const started = performance.now();
+  scope: TaskScope, nodeId: string, attempt: number, timeoutMs: number | undefined, onSettled: () => void, observation: AttemptObservation) {
+  const started = performance.now(), attemptId = randomUUID();
+  observation.diagnostics.record({ kind: 'attempt-started', nodeId, operationId: observation.operationId, attemptId, attempt, inputs: observation.inputs });
   const controller = new globalThis.AbortController(), lease = { active: true };
   let settled = false, finished = false;
   let stopTimer: (() => void) | undefined;
@@ -24,6 +29,12 @@ export function taskAttempt<T>(handler: (context: TaskContext) => T | PromiseLik
   function finish(outcome: TaskOutcome<T>): void {
     if (finished) return;
     finished = true; lease.active = false; stopTimer?.();
+    const base = { kind: 'attempt-finished' as const, nodeId, operationId: observation.operationId, attemptId, attempt, durationMs: performance.now() - started };
+    if (outcome.ok) observation.diagnostics.record({ ...base, outcome: 'succeeded' });
+    else {
+      const code = diagnosticErrorCode(outcome.error);
+      observation.diagnostics.record({ ...base, outcome: code === 'NODE_TIMEOUT' ? 'timed-out' : code === 'RUN_TERMINATED' ? 'cancelled' : 'failed', code });
+    }
     scope.run(lease, () => controller.abort());
     resolve(outcome);
   }
@@ -42,7 +53,7 @@ export function taskAttempt<T>(handler: (context: TaskContext) => T | PromiseLik
   }
   void scope.run(lease, () => Promise.resolve().then(() => {
     if (!lease.active || !state.check()) throw new FlowError('RUN_TERMINATED');
-    return handler(Object.freeze({ signal: controller.signal, attempt, attemptId: randomUUID() }));
+    return handler(Object.freeze({ signal: controller.signal, attempt, attemptId }));
   })).then(value => complete({ ok: true, value }), error => complete({ ok: false, error }));
   return { result, settlement, cancel, settled: () => settled };
 }

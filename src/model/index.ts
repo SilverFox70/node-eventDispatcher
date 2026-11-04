@@ -15,3 +15,6 @@ export { toMermaid } from './mermaid.js';
 
 export type { ExecutionTraceEvent, ExecutionTraceSnapshot } from './execution-trace.js';
 export { validateExecutionTrace } from './execution-trace.js';
+
+export type { DiagnosticRecord, DiagnosticSnapshot } from './diagnostics/index.js';
+export { validateDiagnostics } from './diagnostics/index.js';

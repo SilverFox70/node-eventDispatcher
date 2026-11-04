@@ -65,11 +65,19 @@ test('whole flow interrupts backoff and cancellation settlement', async t => {
   const run = startNetwork(graphFor(node, { retry: retry(5, { delayMs: 10 }) }), { timeoutMs: 10 });
   await entered.promise; await flush(); time.fire(10);
   assert.deepEqual(await run.done, { status: 'failed', code: 'TIMEOUT' }); assert.equal(calls, 1); assert.equal(time.timers.size, 0);
+  const observations = run.diagnostics().events;
+  assert.deepEqual(observations.filter(e => e.kind === 'attempt-finished').map(e => e.outcome), ['failed']);
+  assert.deepEqual(observations.filter(e => e.kind === 'operation-finished').map(e => e.outcome), ['cancelled']);
+  assert.equal(observations.at(-1).kind, 'run-terminal');
   const pending = deferred(), started = deferred();
   const second = component('settle', () => async ctx => { await ctx.task(() => { started.resolve(); return pending.promise; }); }, {}, {});
   const stopped = startNetwork(graphFor(second, { taskTimeoutMs: 3, retry: retry(1, { codes: ['NODE_TIMEOUT'], settleTimeoutMs: 10 }) }), { timeoutMs: 10 });
   await started.promise; time.fire(3, [...time.timers].find(timer => timer.delay === 3)); await flush(); time.fire(7, [...time.timers].find(timer => timer.delay === 10));
-  assert.deepEqual(await stopped.done, { status: 'failed', code: 'TIMEOUT' }); pending.resolve(); await flush(); assert.equal(time.timers.size, 0);
+  assert.deepEqual(await stopped.done, { status: 'failed', code: 'TIMEOUT' });
+  const final = stopped.diagnostics(); pending.resolve(); await flush(); assert.equal(time.timers.size, 0);
+  assert.deepEqual(stopped.diagnostics(), final);
+  assert.equal(final.events.filter(e => e.kind === 'attempt-finished').length, 1);
+  assert.equal(final.events.find(e => e.kind === 'attempt-finished').outcome, 'timed-out');
 });
 test('late settled timeout can retry within grace, but zero grace never waits', async t => {
   const time = clock(t);
@@ -119,4 +127,8 @@ test('flow expiry between failure classification and retry prevents extra invoca
   const node = component('edge', () => async ctx => { await ctx.task(() => { calls++; advance = true; throw new FlowError('TEMPORARY'); }); }, {}, {});
   const run = startNetwork(graphFor(node, { retry: retry(1) }), { timeoutMs: 3 });
   assert.deepEqual(await run.done, { status: 'failed', code: 'TIMEOUT' }); assert.equal(calls, 1); assert.equal(time.timers.size, 0);
+  const observations = run.diagnostics().events;
+  assert.deepEqual(observations.filter(e => e.kind === 'attempt-finished').map(e => e.outcome), ['failed']);
+  assert.deepEqual(observations.filter(e => e.kind === 'operation-finished').map(e => e.outcome), ['cancelled']);
+  assert.equal(observations.at(-1).kind, 'run-terminal');
 });
