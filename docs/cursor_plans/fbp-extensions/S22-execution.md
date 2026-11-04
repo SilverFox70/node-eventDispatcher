@@ -46,3 +46,15 @@ Implementation/proof/gates/coverage complete for review. Publication pending at 
 ## Publication receipt
 
 Implementation commit42c1fb225566972ec3e22cee7ad6c28f7b441d56 pushed to origin/codex/fbp-22-node-capture-policy. [PR34](https://github.com/SilverFox70/node-eventDispatcher/pull/34) opened against master; connector confirms correct base/head and open/unmerged state. This publication receipt is documentation-only; CI is separate from local green checks. No successor implementation started.
+
+## CI correction — worker coverage flush
+
+2026-11-04 user requested repair of Core package CI on PR34. Run41850318664 job126645258933 failed only the Next worker SIGINT assertion: executed observedWork missing from V8 evidence. Linux/macOS core jobs passed; Windows core coverage also passed at investigation time. This is verification infrastructure, not a change to S22 execution/capture behavior.
+
+The coverage preload called takeCoverage(), resetting counters, then process.exit() triggered an automatic second write. When both reports received the same millisecond filename, the latter overwrote the useful evidence. Original worker reproduced missing evidence1/100 locally. Deferring readiness alone still missed4/200; that hypothesis was rejected and no readiness workaround was retained. Preserved failure report showed a single timestamped file with no eval/function evidence. The Node v8 declarations document automatic final coverage unless stopCoverage() is invoked.
+
+Fix scripts/next/coverage-exit.mjs to takeCoverage(), stopCoverage(), then preserve the existing signal exit code. Strengthen both POSIX regression cases to assert exit130/143, null terminating signal, exactly one report and the existing executed-function assertion. No sleeps, retries, skips, threshold relaxation or core-source change.
+
+Local evidence /tmp/fbp-s22-ci-fix: red.log original100-worker reproduction; repeated-green.log failed readiness hypothesis; final-repeat.log corrected200 alternating SIGINT/SIGTERM exits with0 missing; focused-final.log4/4 passed; lint-final.log exit0. Full Next final gate is recorded below when completed. Existing library-source coverage remains applicable because no delivered package source, build/lock or coverage threshold changed. User .DS_Store/.feedback-log preserved.
+
+The first full verification after the signal fix (next-final.log) passed both signal cases but failed the inspector's immediate Escape→Space reopening sequence: the pending native close event raced with reopening. Fix only test/next/inspector.test.js to await dialog detachment after Escape/close before further interaction. No application behavior or timeout changes. Final `npm run test:next` exit0:32/32 passed with fixture per-file coverage and both negative controls; next-verified.log and retained fbp-next-MmhTZP/evidence. Final lint-verified.log/guidance links and whitespace passed. Original Linux/macOS/Windows core jobs all ultimately passed; no unrelated core change or full local core rerun was needed. The earlier failed commands remain failed receipts, not relabeled passes.
