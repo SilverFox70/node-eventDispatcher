@@ -14,3 +14,12 @@ void result.outputs.missing;
 }
 void check;
 const spec: GraphSpec = { version: 1, nodes: [], edges: [], inputs: {}, outputs: {} }; void spec;
+
+import { startNetwork, type CompiledGraph, type CapturePolicy, type DiagnosticsSession } from 'event-driven-design';
+declare const compiled: CompiledGraph;
+const capturePolicy: CapturePolicy = { allowedNodes: [], denyInputs: [], denyOutputs: [], maxPayloadBytes: 2048, maxSessionMs: 1000 };
+const run = startNetwork(compiled, { capturePolicy });
+const session: DiagnosticsSession = run.openDiagnosticsSession({ rules: [], expiresInMs: 1000 });
+// @ts-expect-error Epoch ownership survives installed declarations.
+session.update({ rules: [] });
+void session;

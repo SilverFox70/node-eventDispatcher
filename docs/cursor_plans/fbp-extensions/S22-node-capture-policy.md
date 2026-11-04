@@ -1,6 +1,6 @@
 # S22 — Turn input/output capture on for a selected node and turn it off again safely.
 
-Plan revision EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan revision EXT1-r2. Status **complete-for-review**; user requested S22.A–C on2026-11-04. Exact declarations refined in [DG1-r2](contracts/diagnostics-v1.md#s22a-declaration-freeze--2026-11-04); [execution receipt](S22-execution.md).
 Phase: diagnostics. Proposed branch: `codex/fbp-22-node-capture-policy`.
 Order: S21 → S22 → S23.
 
@@ -51,4 +51,4 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. G1–G7 implementation readiness is blocked by the named decisions and predecessor evidence; revalidate at handoff rather than treating future commands as delivered.
+S22.A–C are authorized by the explicit execution request; S21 merge verified. S22 readiness uses verified predecessor merge and the DG1-r2 declaration freeze; see the execution receipt for actual proof and gates. Later slices retain their own readiness gates.

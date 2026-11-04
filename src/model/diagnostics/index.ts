@@ -1,3 +1,8 @@
+import type { Json } from '../../packet.js';
+import { checkCapture } from './capture.js';
+export type DiagnosticCapture = Readonly<{ state: 'captured'; value: Json; bytes: number } | { state: 'truncated'; preview: string; bytes: number }>;
+type TransferCapture = Readonly<{ capture: DiagnosticCapture; captureSessionId: string; captureEpoch: number }> |
+  Readonly<{ capture?: never; captureSessionId?: never; captureEpoch?: never }>;
 import type { PacketMetadata } from '../../packet.js';
 
 type Node = Readonly<{ nodeId: string }>;
@@ -6,8 +11,8 @@ type Attempt = Operation & Readonly<{ attemptId: string; attempt: number }>;
 type Result = Readonly<{ outcome: 'succeeded'; durationMs: number }> |
   Readonly<{ outcome: 'failed' | 'cancelled'; code: string; durationMs: number }>;
 export type DiagnosticData =
-  (Node & Readonly<{ kind: 'input-admitted'; inputName: string; port: string; packet: PacketMetadata }>) |
-  (Node & Readonly<{ kind: 'received' | 'sent'; port: string; packet: PacketMetadata }>) |
+  (Node & Readonly<{ kind: 'input-admitted'; inputName: string; port: string; packet: PacketMetadata }> & TransferCapture) |
+  (Node & Readonly<{ kind: 'received' | 'sent'; port: string; packet: PacketMetadata }> & TransferCapture) |
   (Operation & Readonly<{ kind: 'operation-started'; inputs: readonly PacketMetadata[] }>) |
   (Attempt & Readonly<{ kind: 'attempt-started'; inputs: readonly PacketMetadata[] }>) |
   (Attempt & Readonly<{ kind: 'attempt-finished' }> & (Result |
@@ -55,6 +60,10 @@ function checkEvent(value: unknown, runId: unknown, sequence: number, previousTi
     const outcomes = event.kind === 'attempt-finished' ? ['succeeded', 'failed', 'timed-out', 'cancelled'] : ['succeeded', 'failed', 'cancelled'];
     ensure(outcomes.includes(event.outcome as string) && time(event.durationMs));
     if (event.outcome !== 'succeeded') add('code');
+  }
+  if (['input-admitted', 'received', 'sent'].includes(event.kind as string)) {
+    optional.push('capture', 'captureSessionId', 'captureEpoch');
+    checkCapture(event);
   }
   keys(event, [...base, ...fields], optional);
   if (Object.hasOwn(event, 'nodeId')) ensure(name(event.nodeId));
