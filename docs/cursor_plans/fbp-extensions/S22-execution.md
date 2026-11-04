@@ -42,3 +42,7 @@ Three focused new modules: model capture validation22 lines, host policy58 lines
 Capture remains optional host-authorized in-memory evidence. Existing caller-held snapshots are not revoked by expiry/disable. EX1's separate existing opt-in payload setting is unchanged. No sink/remote endpoint/UI toggle, graph editing, global dedup/payload lookup, database, durable recovery, rich codec or cycles. S23 owns bounded sinks/export and S24 owns demo controls. S22 not merged; next implementation waits for actual merge and explicit execution.
 
 Implementation/proof/gates/coverage complete for review. Publication pending at this receipt revision. User .DS_Store/.feedback-log stay excluded. No merge/npm publication/deployment or Realberry modification.
+
+## Publication receipt
+
+Implementation commit42c1fb225566972ec3e22cee7ad6c28f7b441d56 pushed to origin/codex/fbp-22-node-capture-policy. [PR34](https://github.com/SilverFox70/node-eventDispatcher/pull/34) opened against master; connector confirms correct base/head and open/unmerged state. This publication receipt is documentation-only; CI is separate from local green checks. No successor implementation started.

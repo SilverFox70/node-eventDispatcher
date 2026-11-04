@@ -98,7 +98,9 @@
           "S22.C"
         ],
         "contract": "DG1-r2"
-      }
+      },
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/34",
+      "publication_status": "pr-open"
     },
     {
       "id": "S23",
