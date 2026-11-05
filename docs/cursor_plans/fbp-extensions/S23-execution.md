@@ -39,3 +39,7 @@ S23.A–C implementation, X23.1–3 composed proof, quality and per-file coverag
 ## Publication receipt
 
 Implementation566746010e7d35cadd7f8654aa5a2ac3923892bf pushed to origin/codex/fbp-23-diagnostic-sinks; [PR35](https://github.com/SilverFox70/node-eventDispatcher/pull/35) opened against master. Connector confirms correct base/head and open/unmerged state. This receipt amendment is documentation-only. Hosted CI remains distinct from local proof; no merge or S24 execution is inferred.
+
+## Verified merge for S24
+
+PR35 merged as d30e686ab67723087686d9823863c94bd9770b7c; GitHub read-back and fetched origin/master ancestry verified before S24 branch. Earlier unmerged statements retain their delivery-time meaning.

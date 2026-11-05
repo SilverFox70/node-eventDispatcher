@@ -1,4 +1,8 @@
 'use client';
+import Link from 'next/link';
+import DiagnosticNode from './diagnostic-node';
+import type { DiagnosticView } from '../../lib/diagnostic-model';
+import type { DiagnosticControls } from '../../lib/diagnostic-connection';
 import { useEffect, useId, useRef } from 'react';
 import type { ExecutionTraceEvent, ExecutionTraceSnapshot } from 'event-driven-design/model';
 import type { Vertex } from '../../lib/inspection-diagram';
@@ -18,8 +22,9 @@ function Observation({ event, direction, allowPayloads }: {
 }
 
 /** Present the current run's retained channel observations, never infer a missing value. */
-export default function NodeDetails({ vertex, trace, allowPayloads, close }: {
+export default function NodeDetails({ vertex, trace, allowPayloads, close, diagnostic }: {
   vertex: Vertex; trace: ExecutionTraceSnapshot | null; allowPayloads: boolean; close: () => void;
+  diagnostic?: { view: DiagnosticView; controls: DiagnosticControls; pending: boolean };
 }) {
   const dialog = useRef<HTMLDialogElement>(null), heading = useId();
   useEffect(() => {
@@ -34,6 +39,8 @@ export default function NodeDetails({ vertex, trace, allowPayloads, close }: {
     <header><h2 id={heading}>{vertex.label}</h2><button type="button" autoFocus onClick={() => dialog.current!.close()}>Close node details</button></header>
     <p>{vertex.lines[0]}</p>
     <p>Inputs show packets received by this node. Outputs show packets it sent; delivery alone does not prove business success.</p>
+    {diagnostic ? <DiagnosticNode key={diagnostic.view.runId + vertex.nodeId} nodeId={vertex.nodeId!} {...diagnostic} /> : <>
+    <p><Link href="/diagnostics">Open live diagnostic controls</Link></p>
     {trace ? <>
       <small>Run: {trace.runId}</small>
       {!allowPayloads && <p>Payload capture is off. Enable capture and run the example again to inspect values; previous values cannot be recovered.</p>}
@@ -50,6 +57,7 @@ export default function NodeDetails({ vertex, trace, allowPayloads, close }: {
         })}</div>
       </section>)}
     </> : <p>No execution trace is available for this graph definition.</p>}
+    </>}
     <details><summary>Node definition and state</summary><pre>{vertex.details}</pre></details>
   </dialog>;
 }

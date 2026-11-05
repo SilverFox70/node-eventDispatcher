@@ -1,6 +1,9 @@
 import type { InspectionSnapshot, ExecutionTraceSnapshot } from 'event-driven-design/model';
 
+import type { DiagnosticView } from './diagnostic-model.ts';
+
 type Inventory = {
+  diagnostics?(): DiagnosticView;
   snapshot(): InspectionSnapshot;
   trace?(): ExecutionTraceSnapshot | null;
   subscribe(listener: () => void): () => void;
@@ -32,7 +35,7 @@ export function openInspectionStream(inventory: Inventory, signal: AbortSignal, 
     try {
       const data = new TextEncoder().encode([
         'retry: 1500', 'id: ' + session + ':' + ++sequence,
-        'data: ' + JSON.stringify({ sequence, snapshot: inventory.snapshot(), execution: inventory.trace?.() ?? null }), '', ''
+        'data: ' + JSON.stringify({ sequence, snapshot: inventory.snapshot(), execution: inventory.trace?.() ?? null, ...(inventory.diagnostics ? { diagnostics: inventory.diagnostics() } : {}) }), '', ''
       ].join('\n'));
       if (controller.desiredSize! > 0) { pending = null; controller.enqueue(data); }
       else pending = data;

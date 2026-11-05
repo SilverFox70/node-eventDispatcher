@@ -4,9 +4,9 @@ const { writeFileSync } = require('node:fs');
 const { pathToFileURL } = require('node:url');
 const app = process.env.FBP_NEXT_APP, evidence = process.env.FBP_NEXT_EVIDENCE;
 
-module.exports = async function browserFixture(name) {
+module.exports = async function browserFixture(name, options = {}) {
   const { startServer } = await import('../../scripts/next/server.mjs');
-  const server = await startServer(app, { coverage: join(evidence, 'v8-server'), log: join(evidence, `server-${name}.log`) });
+  const server = await startServer(app, { ...options, coverage: join(evidence, 'v8-server'), log: join(evidence, `server-${name}.log`) });
   const browser = await createRequire(join(app, 'package.json'))('playwright').chromium.launch({ headless: true });
   return {
     server,

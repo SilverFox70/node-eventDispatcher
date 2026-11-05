@@ -152,3 +152,29 @@ test('execution frames require current run and actual graph channels, and accept
     assert.equal(updates.length, valid ? 1 : 0); assert.equal(statuses.at(-1), valid ? 'Live' : 'Invalid inspection data'); stop();
   }
 });
+
+test('automatic account fixture completes and cancels after an observed output with owned cleanup', async () => {
+  const { command } = await import('../../scripts/next/process.mjs');
+  const source = pathToFileURL(join(app, 'lib/inspection-fixture.ts')).href;
+  const result = await command(process.execPath, ['--conditions=react-server', '--input-type=module', '-e', `
+    import assert from 'node:assert/strict';
+    const {createInspectionFixture}=await import(${JSON.stringify(source)});
+    for(const phase of ['completed','output']) {
+      const inventory=createInspectionFixture(true);
+      let notifications=0;
+      await new Promise((resolve,reject)=>{
+        const timer=setTimeout(()=>reject(Error('Expected account lifecycle observation missing')),15000);
+        const stop=inventory.subscribe(()=>{
+          notifications++;
+          const ready=phase==='completed' ? inventory.snapshot().sources[0].run.status==='completed' :
+            inventory.trace().events.some(event=>event.kind==='received'&&event.channelId==='output:summary');
+          if(ready){clearTimeout(timer);stop();resolve();}
+        });
+      });
+      assert(notifications>0);
+      if(phase==='completed')assert.equal(inventory.snapshot().sources[0].run.status,'completed');
+      inventory.dispose(); await new Promise(setImmediate);assert.deepEqual(inventory.snapshot().sources,[]);
+    }
+  `], { cwd: app, env: { NODE_V8_COVERAGE: join(process.env.FBP_NEXT_EVIDENCE, 'v8-test') } });
+  assert.equal(result.code, 0, result.output);
+});

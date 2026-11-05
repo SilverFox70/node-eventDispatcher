@@ -72,3 +72,7 @@ caption { font-weight: 600; text-align: left; padding: .75rem 0; }
 
 .pokemon-results { max-height: 30rem; overflow: auto; align-items: start; }
 .pokemon-results pre { max-height: 14rem; overflow: auto; }
+
+.diagnostic-records { max-height: 28rem; overflow: auto; padding: .5rem; border: 1px solid #d4dce7; }
+.diagnostic-records pre { max-height: 14rem; }
+.diagnostic-error { color: #9d2020; font-weight: 600; }

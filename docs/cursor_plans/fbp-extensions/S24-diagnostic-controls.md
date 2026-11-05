@@ -1,6 +1,6 @@
 # S24 — Use node capture controls and inspect correlated inputs, outputs and errors in the installed demo.
 
-Plan revision EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan revision EXT1-r2. Status **complete-for-review**; user explicitly requested S24.A–C now. [UI24-r1 declaration/proof](S24-execution.md).
 Phase: diagnostics. Proposed branch: `codex/fbp-24-diagnostic-controls`.
 Order: S23 → S24 → S24A.
 
@@ -51,4 +51,4 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. G1–G7 implementation readiness is blocked by the named decisions and predecessor evidence; revalidate at handoff rather than treating future commands as delivered.
+S24.A–C are authorized after verified S23/PR35 merge. UI24-r1 settles the owning local host/client declaration gate over DG1-r3; actual proof/gates are recorded separately from merge. No S24A or visual-authoring execution is authorized.
