@@ -12,6 +12,7 @@ node examples/04-inspection.cjs
 node examples/05-node-authoring.cjs
 node examples/06-testing.cjs
 node examples/07-external-feed.cjs
+node examples/08-diagnostics.cjs
 ```
 
 All examples run offline against the built library. They use the real graph compiler/runtime and finish on their own. No application server, credentials or external repositories are needed. Rebuild after changing library source. These checkout demos are distinct from the historical server/src scripts.
@@ -25,6 +26,7 @@ All examples run offline against the built library. They use the real graph comp
 | [05-node-authoring.cjs](05-node-authoring.cjs) | Inject a local async lookup service using ordinary JavaScript | Found Ada, then missing; two service calls; completed. |
 | [06-testing.cjs](06-testing.cjs) | Public runNode/runGraph helpers with real execution and independent assertions | Node4/6, graph5/7, completed; wrong input rejects INPUT_CONTRACT. |
 | [07-external-feed.cjs](07-external-feed.cjs) | Serial external input feeding with a gated slow consumer and capacity1 edge | Complete50 packets/sum2450; cancel returns0 results and releases waits. |
+| [08-diagnostics.cjs](08-diagnostics.cjs) | Host-authorized capture, optional asynchronous sink, explicit drain/dispose and default payload-omitting JSONL | Result42; completed; drained; zero dropped; versioned metadata export. |
 
 The second and third examples' save functions are asynchronous local stand-ins. They do not persist data. Both branches retain job/key correlation while derived packets record immediate lineage. The output shows results as they arrive; cross-branch arrival order is not guaranteed.
 

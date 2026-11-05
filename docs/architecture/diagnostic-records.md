@@ -14,7 +14,7 @@ stop();
 
 Omit diagnostics options for limit128; permitted integers1–1024. The snapshot has version1, runId, total, dropped and immutable events. Sequence starts1 and never resets. Newest records are retained; dropped counts evicted records. Retaining/copying a snapshot can retain those observations longer than the run's current window, so applications own their copies and subscribers.
 
-Existing `snapshot().diagnostics` and its diagnosticLimit option remain the original lifecycle/validation view. Existing EX1 trace/onTrace/clearTrace remains separate, including opt-in payload capture. Clearing EX1 does not reset correlated diagnostics or duplicate-execution protection. S22 adds the optional selective capture policy below; sinks remain S23.
+Existing `snapshot().diagnostics` and its diagnosticLimit option remain the original lifecycle/validation view. Existing EX1 trace/onTrace/clearTrace remains separate, including opt-in payload capture. Clearing EX1 does not reset correlated diagnostics or duplicate-execution protection. S22 adds the optional selective capture policy below; S23 adds explicit bounded sinks/export below.
 
 ## What gets recorded
 
@@ -80,4 +80,33 @@ One active session is allowed per run (SESSION_ACTIVE otherwise). Snapshot inclu
 
 Each captured transfer carries captureSessionId/captureEpoch and either `{state:'captured',value,bytes}` or `{state:'truncated',preview,bytes}`. Bytes is the original JSON.stringify UTF-8 length using the existing JSON packet property order. Maximum host ceiling2048 bytes; preview contains a complete Unicode prefix within the ceiling and may not parse as JSON. Session duration maximum15minutes. There is one shared diagnostic ring, so eviction can remove session evidence; it never weakens duplicate-execution protection. Previously retained snapshots remain readable after disable/expiry; hosts own downstream retention and access.
 
-The existing EX1 payload option remains separately host-controlled and unchanged. This API adds no sink, remote endpoint or inspector toggle; S23/S24 own those integrations. [S22 proof receipt](../cursor_plans/fbp-extensions/S22-execution.md).
+The existing EX1 payload option remains separately host-controlled and unchanged. The session API adds no remote endpoint or inspector toggle. S23 sinks below consume the existing recorder; S24 owns inspector controls. [S22 proof receipt](../cursor_plans/fbp-extensions/S22-execution.md).
+
+## Bounded sinks and JSONL export (S23)
+
+```ts
+const sink = attachDiagnosticsSink(run, {
+  async write(batch, signal) {
+    // Host-owned adapter; honor signal and handle its own transport authorization.
+    await saveDiagnosticBatch(batch, signal);
+  },
+});
+// Feed and consume business work normally; diagnostics never gate run.done.
+await run.done;
+const drained = await sink.flush({ timeoutMs: 1000 });
+const status = sink.snapshot(); // Inspect drops/errors even when drained.complete is true.
+await sink.dispose();
+const jsonl = exportDiagnostics(run.diagnostics()); // Payloads omitted by default.
+```
+
+No sink is installed automatically. Supply a plain object containing only an own write function; wrap existing service/class adapters in that function. write receives a frozen version1 DiagnosticBatch, at most32 events, run identity, captureMode and cumulative loss counters. Only real future observations enter the sink; attaching never replays earlier work. Explicit export serializes the currently retained snapshot into newline-terminated batches. Default captureMode omitted removes capture values and attribution. `{includeCaptures:true}` exports only existing host-authorized captures; it grants no new capture permission. `/model.validateDiagnosticBatch` validates transported envelopes and original increasing sequences, including gaps. Never add counters from successive batches: each is cumulative.
+
+Options default to recordLimit128, byteLimit262144, batchSize32, includeCaptures:false. Legal maxima are1024 records,1048576 bytes and32 events/batch. Record/UTF-8 event-line byte limits count pending plus in-flight together; bookkeeping/envelope overhead is separately bounded. Oversize/overflow drops newest; status reports exact droppedRecords/droppedBytes without evicting runtime admission protection. JSONL sourceRecords marks older observations already lost from the source ring; their byte size is unknown. A sink's dropped counters cover observations it refused/abandoned while attached; a disabled/detached sink does not claim to count future unobserved work.
+
+Only one write is in flight. Rejection, throw or a non-Promise return disables/detaches delivery and increments sinkErrors, dropping its batch and queued records. It never changes the business outcome or requests retries. flush requires a1–60000ms deadline, with at most64 waiters. Complete means the active controller became idle, not that no records were lost. A busy source can extend flushing to the deadline. Timeout returns false without pretending to stop physical I/O.
+
+Dispose detaches, aborts the supplied signal and returns without awaiting a noncooperative write. Check pendingWrites; late settlement only releases that bounded in-flight resource (and counts rejection), never resumes delivery. Repeated disposal is harmless. Explicit replacement is allowed only after disabled/disposed and pendingWrites0; otherwise SINK_ACTIVE prevents accumulating unresolved writes. Hosts own adapter lifetime, asynchronous/global side effects and access to retained snapshots. No built-in filesystem/network adapter or durable logging guarantee is included.
+
+[S23 receipt](../cursor_plans/fbp-extensions/S23-execution.md) records verification and review status. S24 adds installed demo controls using these APIs.
+
+Runnable offline sink/export example: `node examples/08-diagnostics.cjs` after building. It executes the same runtime and prints payload-omitting JSONL; [example index](../../examples/README.md).

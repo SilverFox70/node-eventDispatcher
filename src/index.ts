@@ -43,3 +43,10 @@ export type { TaskOptions } from './runtime/diagnostics/provenance.js';
 
 export type { CapturePolicy, CaptureRule } from './runtime/diagnostics/policy.js';
 export type { DiagnosticsSession, SessionRequest, SessionUpdate, SessionSnapshot } from './runtime/diagnostics/session.js';
+
+export { attachDiagnosticsSink } from './diagnostics/sink.js';
+export { exportDiagnostics } from './diagnostics/export.js';
+export type { DiagnosticExportOptions } from './diagnostics/export.js';
+export type { DiagnosticSink, DiagnosticSinkSnapshot, DiagnosticSinkController } from './diagnostics/delivery.js';
+export type { DiagnosticSinkOptions } from './diagnostics/options.js';
+export type { DiagnosticBatch } from './model/diagnostics/batch.js';

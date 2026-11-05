@@ -86,8 +86,8 @@
         "X22.3"
       ],
       "status": "approved-for-execution",
-      "execution_status": "complete-for-review",
-      "merge_sha": null,
+      "execution_status": "merged",
+      "merge_sha": "e95a633f4cc5ac2045b21e9480b23915c3a75b74",
       "gate": "D1 diagnostic policy",
       "journal": "S22-execution.md",
       "execution_approval": {
@@ -100,7 +100,7 @@
         "contract": "DG1-r2"
       },
       "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/34",
-      "publication_status": "pr-open"
+      "publication_status": "merged"
     },
     {
       "id": "S23",
@@ -116,10 +116,20 @@
         "X23.2",
         "X23.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
-      "gate": "D1 diagnostic policy"
+      "gate": "D1 diagnostic policy",
+      "journal": "S23-execution.md",
+      "execution_approval": {
+        "authority": "user request 2026-11-04",
+        "tasks": [
+          "S23.A",
+          "S23.B",
+          "S23.C"
+        ],
+        "contract": "DG1-r3"
+      }
     },
     {
       "id": "S24",

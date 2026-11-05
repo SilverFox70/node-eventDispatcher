@@ -23,3 +23,10 @@ const session: DiagnosticsSession = run.openDiagnosticsSession({ rules: [], expi
 // @ts-expect-error Epoch ownership survives installed declarations.
 session.update({ rules: [] });
 void session;
+
+import { attachDiagnosticsSink, exportDiagnostics } from 'event-driven-design';
+import { validateDiagnosticBatch } from 'event-driven-design/model';
+const diagnostics = attachDiagnosticsSink(run, { write: async (batch, signal) => { validateDiagnosticBatch(batch); void signal.aborted; } });
+void exportDiagnostics(run.diagnostics());
+// @ts-expect-error Sink flush retains its deadline contract through installed declarations.
+diagnostics.flush({});
