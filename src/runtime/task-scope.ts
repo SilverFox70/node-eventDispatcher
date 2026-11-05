@@ -6,6 +6,7 @@ export function createTaskScope() {
   const storage = new AsyncLocalStorage<TaskLease>();
   return {
     run<T>(lease: TaskLease, handler: () => T): T { return storage.run(lease, handler); },
+    owns(lease: TaskLease): boolean { return lease.active && storage.getStore() === lease; },
     guard(task = false): void {
       const lease = storage.getStore();
       if (!lease) return;

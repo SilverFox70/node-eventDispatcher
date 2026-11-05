@@ -23,5 +23,5 @@ void fanIn.in.missing;
 const named = defineComponent({ ...double, id: 'double' });
 void named;
 void fork.create()({ inputs: { in: { async *[Symbol.asyncIterator]() { yield packet(1); } } }, signal: new AbortController().signal,
-  task: async handler => handler({ signal: new AbortController().signal, attempt: 1, attemptId: 'test' }),
+  task: async handler => handler({ signal: new AbortController().signal, attempt: 1, attemptId: 'test', recordDecision: () => false }),
   send: async (port, p) => { const n: number = p.value; void [port, n]; } });

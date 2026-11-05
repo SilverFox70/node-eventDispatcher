@@ -1,3 +1,4 @@
+import { createDecisionStream } from './decision-stream.js';
 import type { GraphDefinition } from '../../graph.js';
 import { createCaptureSessions } from './session.js';
 import { performance } from 'node:perf_hooks';
@@ -6,6 +7,12 @@ import type { DiagnosticData, DiagnosticRecord, DiagnosticSnapshot } from '../..
 import { createChanges } from '../../observation/changes.js';
 import { readRecord } from '../../packet/data.js';
 import { FlowError } from '../../errors.js';
+const decisionStreams = new WeakMap<() => DiagnosticSnapshot, ReturnType<typeof createDecisionStream>>();
+export function getDecisionStream(snapshot: () => DiagnosticSnapshot) {
+  const stream = decisionStreams.get(snapshot);
+  if (!stream) throw new FlowError('INVALID_ARGUMENT');
+  return stream;
+}
 const recordObservers = new WeakMap<() => DiagnosticSnapshot, Set<(record: DiagnosticRecord) => void>>();
 /** Private prospective delivery seam; it does not expose a mutable recorder. */
 export function observeDiagnosticRecords(snapshot: () => DiagnosticSnapshot, listener: (record: DiagnosticRecord) => void): () => void {
@@ -30,13 +37,18 @@ export function createDiagnostics(runId: string, definition: GraphDefinition, op
   const started = performance.now(), changes = createChanges(), events: DiagnosticRecord[] = [];
   let total = 0;
   const sessions = createCaptureSessions(definition, policy, () => events);
+  const retained: (() => void)[] = [];
+  function retain(evict: () => void): void {
+    retained.push(evict); if (retained.length > (limit as number)) retained.shift()!();
+  }
+  const decisions = createDecisionStream(runId, started, retain, () => { changes.changed(); sessions.changed(); });
   const observers = new Set<(record: DiagnosticRecord) => void>();
   function snapshot(): DiagnosticSnapshot {
     return Object.freeze({ version: 1, runId, total, dropped: total - events.length, events: Object.freeze([...events]) });
   }
-  recordObservers.set(snapshot, observers);
+  recordObservers.set(snapshot, observers); decisionStreams.set(snapshot, decisions);
   return {
-    sessions,
+    sessions, decisions,
     transfer(kind: 'input-admitted' | 'received' | 'sent', nodeId: string, port: string, packet: Packet, inputName?: string): void {
       const capture = sessions.capture(kind, nodeId, port, packet);
       this.record({ kind, nodeId, port, packet: packetMetadata(packet), ...(kind === 'input-admitted' ? { inputName: inputName! } : {}), ...capture } as DiagnosticData);
@@ -45,7 +57,7 @@ export function createDiagnostics(runId: string, definition: GraphDefinition, op
     record(data: DiagnosticData): void {
       const record = Object.freeze({ ...data, version: 1 as const, runId, sequence: ++total, timeMs: performance.now() - started });
       events.push(record);
-      if (events.length > (limit as number)) events.shift();
+      retain(() => { events.shift(); });
       for (const observer of [...observers]) {
         if (!observers.has(observer)) continue;
         try { observer(record); } catch { observers.delete(observer); }

@@ -1,3 +1,5 @@
+import { readDeclarations } from './runtime/diagnostics/declarations.js';
+import type { DecisionDeclaration } from './model/diagnostics/decisions.js';
 import type { Packet } from './packet.js';
 import type { Contract } from './contracts.js';
 import type { ContractBase } from './model/contracts.js';
@@ -19,7 +21,7 @@ export type ProcessContext<I extends PortMap, O extends PortMap> = Readonly<{
 }>;
 export type ComponentBase = Readonly<{
   id: string; version: number; title: string; description: string;
-  in: PortMap; out: PortMap; create: () => unknown;
+  in: PortMap; out: PortMap; create: () => unknown; decisions?: readonly DecisionDeclaration[];
 }>;
 export type Component<I extends PortMap, O extends PortMap> = Omit<ComponentBase, 'in' | 'out' | 'create'> & Readonly<{
   in: I; out: O; create: () => (ctx: ProcessContext<I, O>) => Promise<void>;
@@ -28,7 +30,7 @@ export type ComponentSpec<I extends PortMap, O extends PortMap> = Readonly<{
   id: string; version: number; title: string; description: string; in: I; out: O;
   create: () => (ctx: ProcessContext<I, O>) => Promise<void>;
   examples?: readonly { in?: Partial<Values<I>>; out?: Partial<Values<O>> }[];
-  effects?: readonly string[]; requiredDependencies?: readonly string[];
+  effects?: readonly string[]; requiredDependencies?: readonly string[]; decisions?: readonly DecisionDeclaration[];
 }>;
 export type Registry = Readonly<Record<string, ComponentBase>>;
 const definitions = new WeakMap<ComponentBase, ComponentDescriptor>();
@@ -62,6 +64,7 @@ export function defineComponent<const I extends PortMap, const O extends PortMap
     spec.title.length === 0 || typeof spec.description !== 'string' || typeof spec.create !== 'function') {
     throw new FlowError('INVALID_ARGUMENT');
   }
+  const decisions = Object.hasOwn(fields, 'decisions') ? { decisions: readDeclarations(fields.decisions) } : {};
   const input = ports(spec.in), output = ports(spec.out);
   const meta: Record<string, unknown> = {};
   for (const key of ['effects', 'requiredDependencies'] as const) {
@@ -92,7 +95,7 @@ export function defineComponent<const I extends PortMap, const O extends PortMap
     description: spec.description, in: descriptors(input), out: descriptors(output), ...meta }) as unknown as ComponentDescriptor;
   checkMeanings(descriptor, new Map());
   const component = Object.freeze({ id: spec.id, version: spec.version, title: spec.title,
-    description: spec.description, in: input, out: output, create: spec.create }) as Component<I, O>;
+    description: spec.description, in: input, out: output, create: spec.create, ...decisions }) as Component<I, O>;
   definitions.set(component, descriptor);
   return component;
 }

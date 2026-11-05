@@ -21,3 +21,6 @@ export { validateDiagnostics } from './diagnostics/index.js';
 
 export { validateDiagnosticBatch } from './diagnostics/batch.js';
 export type { DiagnosticBatch } from './diagnostics/batch.js';
+
+export { validateDecisions, validateDecisionCatalog } from './diagnostics/decisions.js';
+export type { DecisionDeclaration, DecisionRequest, DecisionFact, DecisionOutcome, DecisionRecord, DecisionSnapshot, DecisionCatalog } from './diagnostics/decisions.js';

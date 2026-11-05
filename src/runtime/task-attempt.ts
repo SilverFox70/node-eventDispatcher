@@ -7,8 +7,9 @@ import type { TaskScope } from './task-scope.js';
 import { diagnosticErrorCode } from './diagnostics/errors.js';
 import type { Diagnostics } from './diagnostics/records.js';
 import type { PacketMetadata } from '../packet.js';
-export type AttemptObservation = Readonly<{ diagnostics: Diagnostics; operationId: string; inputs: readonly PacketMetadata[] }>;
-export type TaskContext = Readonly<{ signal: AbortSignal; attempt: number; attemptId: string }>;
+import type { DecisionDeclaration, DecisionRequest } from '../model/diagnostics/decisions.js';
+export type AttemptObservation = Readonly<{ diagnostics: Diagnostics; operationId: string; inputs: readonly PacketMetadata[]; declarations: readonly DecisionDeclaration[] }>;
+export type TaskContext = Readonly<{ signal: AbortSignal; attempt: number; attemptId: string; recordDecision(value: DecisionRequest): boolean }>;
 export type TaskOutcome<T> = { ok: true; value: T } | { ok: false; error: unknown };
 export class NodeTimeoutError extends FlowError {
   constructor(readonly nodeId: string, readonly timeoutMs: number) { super('NODE_TIMEOUT'); }
@@ -20,6 +21,9 @@ export function taskAttempt<T>(handler: (context: TaskContext) => T | PromiseLik
   const started = performance.now(), attemptId = randomUUID();
   observation.diagnostics.record({ kind: 'attempt-started', nodeId, operationId: observation.operationId, attemptId, attempt, inputs: observation.inputs });
   const controller = new globalThis.AbortController(), lease = { active: true };
+  const context: TaskContext = Object.freeze({ signal: controller.signal, attempt, attemptId, recordDecision: (value: DecisionRequest) => recordDecision(value) });
+  const recordDecision = observation.diagnostics.decisions.bind(context, { nodeId, operationId: observation.operationId, attemptId, attempt, inputs: observation.inputs },
+    observation.declarations, () => scope.owns(lease) && (timeoutMs === undefined || performance.now() - started < timeoutMs));
   let settled = false, finished = false;
   let stopTimer: (() => void) | undefined;
   let resolve!: (outcome: TaskOutcome<T>) => void;
@@ -53,7 +57,7 @@ export function taskAttempt<T>(handler: (context: TaskContext) => T | PromiseLik
   }
   void scope.run(lease, () => Promise.resolve().then(() => {
     if (!lease.active || !state.check()) throw new FlowError('RUN_TERMINATED');
-    return handler(Object.freeze({ signal: controller.signal, attempt, attemptId }));
+    return handler(context);
   })).then(value => complete({ ok: true, value }), error => complete({ ok: false, error }));
   return { result, settlement, cancel, settled: () => settled };
 }

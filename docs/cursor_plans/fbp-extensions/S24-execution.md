@@ -61,3 +61,7 @@ README, Next guide, architecture/decision/agent map, sole condition ledger and s
 ## Publication receipt
 
 Implementationfd072804acfc11e667530827673ed64c42cffef0 pushed to origin/codex/fbp-24-diagnostic-controls. [PR36](https://github.com/SilverFox70/node-eventDispatcher/pull/36) opened against master; connector confirms correct base/head, open/unmerged. This publication amendment is documentation-only. Hosted CI remains separate from local evidence; no merge or successor execution is inferred.
+
+## Verified merge for S24A
+
+PR36 merged as bb0ad50c1392d4730992469b0a959d840f604590; connector and fetched ancestry verified before S24A. Earlier review/unmerged entries retain their delivery-time meaning.

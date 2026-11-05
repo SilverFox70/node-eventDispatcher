@@ -66,6 +66,19 @@ test('built distributions usable: same-format public helpers and cross-format ha
         const exported=f.exportDiagnostics(diagnostic).trim().split('\\n').map(JSON.parse);
         assert(exported.every(batch=>model.validateDiagnosticBatch(batch).ok)); await sink.dispose();
       }
+      for (const f of [esm,cjs]) {
+        const definition=f.defineComponent({...f.filter(f.jsonContract,(value,ctx)=>{
+          assert(ctx.recordDecision({code:'SMALL',ruleVersion:'v1',outcome:'drop',facts:[{name:'amount',sourcePacketId:ctx.packet.packetId,fieldPath:'/amount'}]}));return false;
+        }),decisions:[{code:'SMALL',ruleVersion:'v1',outcomes:['drop'],facts:['amount']}]});
+        const builder=f.createGraph(),h=builder.add('eligibility',definition);builder.exposeInput('in',h,'in');builder.exposeOutput('out',h,'out');
+        const registry={'filter@1':definition},compiled=f.compileGraph(builder.toSpec(),registry);assert(compiled.ok);
+        assert(model.validateDecisionCatalog(f.describeDecisions(registry)).ok);assert(model.validateCatalog(f.describeRegistry(registry)).ok);
+        const run=f.startNetwork(compiled.graph);const reading=(async()=>{for await(const value of run.outputs.out)assert.fail('Drop must not output');})();
+        await run.send('in',f.packet({amount:4},{jobId:'installed-decision'}));await run.finish();await reading;
+        const evidence=f.decisionSnapshot(run);assert(model.validateDecisions(JSON.parse(JSON.stringify(evidence))).ok);
+        assert.deepEqual(evidence.events.map(e=>e.format),['nodeflow.decision','nodeflow.filter']);
+        assert.equal(evidence.events[0].inputs[0].jobId,'installed-decision');assert.equal(evidence.events[1].outcome,'drop');
+      }
       console.log('same-format helpers: 4; cross-format handles: INVALID_ARGUMENT');
     `]);
     assert.match(output, /same-format helpers: 4; cross-format handles: INVALID_ARGUMENT/);

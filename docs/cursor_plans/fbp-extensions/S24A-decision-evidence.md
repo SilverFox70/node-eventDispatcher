@@ -1,6 +1,6 @@
 # S24A — Record explicit decisions, including inputs that intentionally produce no output.
 
-Plan EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan EXT1-r2. Status **in-progress**; explicit user request S24A.A–C,2026-11-05. [EV1-r2 declaration/proof](S24A-execution.md).
 Branch `codex/fbp-24a-decision-evidence`. Order is authoritative in [manifest](manifest.json) and [index](INDEX.md).
 Prerequisites: predecessor merged/receipt verified, accepted D1/D5 interfaces and existing diagnostic bounds. No editor, GraphSpec v2 or artifact/SQL storage prerequisite.
 Contract: [explainability](explainability.md), [shared rules](shared-contract.md), [verification/handoff](execution.md).
@@ -27,7 +27,7 @@ Success scenario: Run input amount4 through an eligibility predicate threshold5,
 
 ### S24A.B — Implement the story
 
-- Allowed: src/runtime/diagnostics/**; src/runtime/task-attempt.ts; src/runtime/tasks.ts; src/component.ts; src/function.ts; src/components/filter.ts; src/model/diagnostics/**; public export barrels; focused runtime/type tests.
+- Allowed: src/runtime/diagnostics/**; src/runtime/task-attempt.ts; src/runtime/tasks.ts; src/runtime.ts (registered-component plumbing only); src/runtime/task-scope.ts (lease identity only); src/component.ts; src/function.ts; src/components/filter.ts; src/model/diagnostics/**; public export barrels; focused runtime/type tests.
 - Prerequisite: S24A.A fixtures and meaningful red where practical.
 - Obligation: Add bounded decision records to the task/function context and built-in filter outcome observations without changing predicate signatures or port behavior. Separate runtime-observed disposition from application-authored business reason.
 - Condition: [X24A.2](conditions.md). The success scenario above is part of this production-boundary proof.
