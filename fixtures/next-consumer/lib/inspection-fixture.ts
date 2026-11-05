@@ -1,22 +1,14 @@
 import 'server-only';
 import { setTimeout as delay } from 'node:timers/promises';
-import { createDispatcher, createInspectionScope, createGraph, describeRegistry, compileGraph, startNetwork, packet } from 'event-driven-design';
-import { loadAccount, buildSummary } from './inspection-components.ts';
+import { createDispatcher, createInspectionScope, createGraph, startNetwork, packet } from 'event-driven-design';
+import { accountGraph } from './account-graph.ts';
+import { loadAccount } from './inspection-components.ts';
 
 /** Each connection owns its public fake services, packet run, inventory and observers. */
 export function createInspectionFixture(payloads = false) {
-  const registry = { 'load-account@1': loadAccount, 'account-summary@1': buildSummary };
-  const catalog = describeRegistry(registry), graph = createGraph();
-  const first = graph.add('lookup', loadAccount, { taskTimeoutMs: 2000 });
-  const second = graph.add('summary', buildSummary, { taskTimeoutMs: 2000 });
-  graph.connect(first, 'account', second, 'account', 2);
-  graph.exposeInput('accountId', first, 'accountId'); graph.exposeOutput('summary', second, 'summary');
-  const spec = graph.toSpec();
-  const candidate = process.env.FBP_INSPECTION_BAD_GRAPH === '1' ? { ...spec, edges: [] } : spec;
-  const compiled = compileGraph(candidate, registry);
-  if (!compiled.ok) throw Error('Invalid fixed inspection graph');
+  const { compiled, spec, catalog } = accountGraph();
   const controller = new AbortController();
-  const run = startNetwork(compiled.graph, { signal: controller.signal, timeoutMs: 10000, trace: { payloads } });
+  const run = startNetwork(compiled, { signal: controller.signal, timeoutMs: 10000, trace: { payloads } });
   const draining = (async () => { for await (const output of run.outputs.summary!) void output; })().catch(() => {});
   const feeding = (async () => {
     for (const id of ['acct-101', 'acct-202', 'acct-303']) {

@@ -17,12 +17,12 @@ module.exports = async function httpFixture() {
     notify();
     await setImmediate();
     if (mode === 'disconnect') { response.destroy(); return; }
-    if (mode === 'error') { response.writeHead(503).end('Unavailable'); return; }
+    if (mode === 'error' || (mode === 'stats-error' && resource === 'pokemon')) { response.writeHead(503).end('Unavailable'); return; }
     if (mode === 'malformed') { response.end('{'); return; }
     if (mode === 'oversize') { response.end(' '.repeat(524289)); return; }
     if (mode === 'schema') { response.end('{}'); return; }
     const resultName = mode === 'mismatch' ? 'other' : name;
-    const result = resource === 'pokemon' ? { name: resultName, height: 4, weight: 60, types: [{ type: { name: 'electric' } }] }
+    const result = resource === 'pokemon' ? { name: resultName, height: 4, weight: 60, types: mode === 'large' ? Array.from({ length: 8 }, () => ({ type: { name: '界'.repeat(80) } })) : [{ type: { name: 'electric' } }] }
       : { name: resultName, genera: [{ genus: 'Mouse Pokémon', language: { name: 'en' } }] };
     response.setHeader('content-type', 'application/json'); response.end(JSON.stringify(result));
   });

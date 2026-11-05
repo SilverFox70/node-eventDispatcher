@@ -107,6 +107,6 @@ Only one write is in flight. Rejection, throw or a non-Promise return disables/d
 
 Dispose detaches, aborts the supplied signal and returns without awaiting a noncooperative write. Check pendingWrites; late settlement only releases that bounded in-flight resource (and counts rejection), never resumes delivery. Repeated disposal is harmless. Explicit replacement is allowed only after disabled/disposed and pendingWrites0; otherwise SINK_ACTIVE prevents accumulating unresolved writes. Hosts own adapter lifetime, asynchronous/global side effects and access to retained snapshots. No built-in filesystem/network adapter or durable logging guarantee is included.
 
-[S23 receipt](../cursor_plans/fbp-extensions/S23-execution.md) records verification and review status. S24 adds installed demo controls using these APIs.
+[S23 receipt](../cursor_plans/fbp-extensions/S23-execution.md) records verification and review status. S24 adds [installed demo controls](../nextjs.md#s24-live-diagnostic-controls) using these APIs on its review branch.
 
 Runnable offline sink/export example: `node examples/08-diagnostics.cjs` after building. It executes the same runtime and prints payload-omitting JSONL; [example index](../../examples/README.md).
