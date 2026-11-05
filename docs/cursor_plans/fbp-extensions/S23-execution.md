@@ -35,3 +35,7 @@ Exact source/config fingerprints retained in source-identity.json/config-identit
 Cohesion: four diagnostics modules16–98lines separate option policy, redaction/export, queue/flush lifetime and attachment authority; browser batch validator34lines, existing recorder58lines. Root barrels expose only supported public APIs; private delivery/prospective subscription stay private. No generic utility bucket, duplicated runtime or source-file size exception needed.
 
 S23.A–C implementation, X23.1–3 composed proof, quality and per-file coverage complete for review. README/architecture/agent navigation, authoritative condition pointers and runnable examples updated. S24 controls remain unstarted. Limits: local in-memory lossy telemetry, no automatic adapter or persistence, no retrospective sink replay, no promise to stop noncooperative writes or revoke prior snapshots. Host owns async/global adapter effects and authorization. Publication follows below; no merge/release/deployment or Realberry change is inferred. User .DS_Store/.feedback-log stay excluded.
+
+## Publication receipt
+
+Implementation566746010e7d35cadd7f8654aa5a2ac3923892bf pushed to origin/codex/fbp-23-diagnostic-sinks; [PR35](https://github.com/SilverFox70/node-eventDispatcher/pull/35) opened against master. Connector confirms correct base/head and open/unmerged state. This receipt amendment is documentation-only. Hosted CI remains distinct from local proof; no merge or S24 execution is inferred.
