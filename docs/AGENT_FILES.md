@@ -14,7 +14,7 @@ This map is the repository's cross-tool navigation source. No personal home-dire
 | [Architecture index](architecture/README.md) | Current vs target map and topic routing | Architecture context |
 | [Runnable demos](../examples/README.md) | Offline map/filter and asynchronous branch/merge checkout examples | Trying or demonstrating the delivered runtime |
 | [Reliability/load benchmark](../benchmark/README.md) | S15 real-runtime load shapes, settings, observations and focused reliability commands | Measuring load or extending composed-flow/resource proofs |
-| [Correlated diagnostics](architecture/diagnostic-records.md) | S21 bounded safe metadata, packet-bound operations/attempts, terminal/cancellation observations and browser model | Using or maintaining diagnostic records; payload capture policy remains separate |
+| [Correlated diagnostics](architecture/diagnostic-records.md) | S21–S23 metadata, live capture policy, bounded sinks/JSONL export and browser models | Using or maintaining diagnostic evidence and delivery |
 | [Live execution inspection](architecture/execution-inspection.md) | Optional bounded packet trace, privacy, actual transfer semantics and graphical viewer | Observing runtime packet traffic or adapting the live demo |
 | [Inspection](architecture/inspection.md) | S12 explicit graph/run/dispatcher inventory and browser-safe diagram export | Registering sources, exporting topology or implementing later graphical inspection |
 | [Keyed joins](architecture/keyed-joins.md) | S11 typed result products, job/key groups, bounds and terminal refusal semantics | Collating asynchronous results or implementing downstream inspection/testing |

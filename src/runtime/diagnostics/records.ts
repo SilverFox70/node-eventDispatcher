@@ -6,6 +6,15 @@ import type { DiagnosticData, DiagnosticRecord, DiagnosticSnapshot } from '../..
 import { createChanges } from '../../observation/changes.js';
 import { readRecord } from '../../packet/data.js';
 import { FlowError } from '../../errors.js';
+const recordObservers = new WeakMap<() => DiagnosticSnapshot, Set<(record: DiagnosticRecord) => void>>();
+/** Private prospective delivery seam; it does not expose a mutable recorder. */
+export function observeDiagnosticRecords(snapshot: () => DiagnosticSnapshot, listener: (record: DiagnosticRecord) => void): () => void {
+  const observers = recordObservers.get(snapshot);
+  if (!observers || typeof listener !== 'function') throw new FlowError('INVALID_ARGUMENT');
+  if (observers.size >= 64) throw new RangeError('Diagnostic delivery observer limit reached');
+  observers.add(listener);
+  return () => { observers.delete(listener); };
+}
 export type DiagnosticOptions = Readonly<{ limit?: number }>;
 export function packetMetadata(packet: Packet): PacketMetadata {
   const metadata: PacketMetadata = { version: 1, packetId: packet.packetId, jobId: packet.jobId,
@@ -21,6 +30,11 @@ export function createDiagnostics(runId: string, definition: GraphDefinition, op
   const started = performance.now(), changes = createChanges(), events: DiagnosticRecord[] = [];
   let total = 0;
   const sessions = createCaptureSessions(definition, policy, () => events);
+  const observers = new Set<(record: DiagnosticRecord) => void>();
+  function snapshot(): DiagnosticSnapshot {
+    return Object.freeze({ version: 1, runId, total, dropped: total - events.length, events: Object.freeze([...events]) });
+  }
+  recordObservers.set(snapshot, observers);
   return {
     sessions,
     transfer(kind: 'input-admitted' | 'received' | 'sent', nodeId: string, port: string, packet: Packet, inputName?: string): void {
@@ -29,13 +43,16 @@ export function createDiagnostics(runId: string, definition: GraphDefinition, op
     },
     subscribe: changes.subscribe,
     record(data: DiagnosticData): void {
-      events.push(Object.freeze({ ...data, version: 1 as const, runId, sequence: ++total, timeMs: performance.now() - started }));
+      const record = Object.freeze({ ...data, version: 1 as const, runId, sequence: ++total, timeMs: performance.now() - started });
+      events.push(record);
       if (events.length > (limit as number)) events.shift();
+      for (const observer of [...observers]) {
+        if (!observers.has(observer)) continue;
+        try { observer(record); } catch { observers.delete(observer); }
+      }
       changes.changed(); sessions.changed();
     },
-    snapshot(): DiagnosticSnapshot {
-      return Object.freeze({ version: 1, runId, total, dropped: total - events.length, events: Object.freeze([...events]) });
-    },
+    snapshot,
   };
 }
 export type Diagnostics = ReturnType<typeof createDiagnostics>;

@@ -49,6 +49,7 @@ test('built distributions usable: same-format public helpers and cross-format ha
       for (const [f, g] of [[esm,e.graph],[cjs,c.graph]]) {
         const run = f.startNetwork(g, {diagnostics:{limit:32},capturePolicy:{allowedNodes:['n'],denyInputs:[],denyOutputs:[],maxPayloadBytes:32,maxSessionMs:1000}});
         const session = run.openDiagnosticsSession({rules:[{nodeId:'n',inputs:true,outputs:true}],expiresInMs:1000});
+        const batches = []; const sink = f.attachDiagnosticsSink(run,{write:async batch=>{batches.push(batch);}});
         const reading = (async()=>{ for await (const result of run.outputs.out) assert.equal(result.value,4); })();
         const input = f.packet(2,{jobId:'installed-diagnostics'});
         await run.send('in',input); run.closeInput('in'); assert.equal((await run.done).status,'completed'); await reading;
@@ -59,6 +60,11 @@ test('built distributions usable: same-format public helpers and cross-format ha
         assert.equal(diagnostic.events.find(record=>record.kind==='sent').capture.value,4);
         assert.equal(session.snapshot().status,'terminated');
         assert(session.snapshot().events.every(record=>record.captureSessionId===session.snapshot().sessionId));
+        assert.deepEqual(await sink.flush({timeoutMs:1000}),{complete:true});
+        assert(batches.length>0); assert(batches.every(batch=>model.validateDiagnosticBatch(batch).ok));
+        assert(batches.every(batch=>batch.events.every(record=>!record.capture)));
+        const exported=f.exportDiagnostics(diagnostic).trim().split('\\n').map(JSON.parse);
+        assert(exported.every(batch=>model.validateDiagnosticBatch(batch).ok)); await sink.dispose();
       }
       console.log('same-format helpers: 4; cross-format handles: INVALID_ARGUMENT');
     `]);

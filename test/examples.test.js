@@ -16,6 +16,7 @@ test('offline examples and HTTP boundary: every installed cookbook script runs w
       '04-inspection.cjs': ['flowchart LR', 'subgraph s0', 'subgraph s2'],
       '05-node-authoring.cjs': ['"label":"Ada"', '"kind":"missing"', 'Calls: 2 Run: completed', 'Dependencies: lookup'],
       '06-testing.cjs': ['Node: [ 4, 6 ] completed', 'Graph: [ 5, 7 ] completed', 'Invalid input: INPUT_CONTRACT'],
+      '08-diagnostics.cjs': ['Result: 42', 'Run: completed Sink drained: true', 'Dropped records: 0', 'JSONL (payloads omitted):', '"captureMode":"omitted"'],
       '07-external-feed.cjs': ['External feed: completed packets: 50 edge capacity: 1', 'External feed: cancelled packets: 0 edge capacity: 1'],
     };
     for (const [file, lines] of Object.entries(expected)) {

@@ -18,3 +18,6 @@ export { validateExecutionTrace } from './execution-trace.js';
 
 export type { DiagnosticRecord, DiagnosticSnapshot, DiagnosticCapture } from './diagnostics/index.js';
 export { validateDiagnostics } from './diagnostics/index.js';
+
+export { validateDiagnosticBatch } from './diagnostics/batch.js';
+export type { DiagnosticBatch } from './diagnostics/batch.js';

@@ -4,9 +4,9 @@
 
 S00–S18B are merged. The package currently delivers a typed in-memory FBP runtime: contracts/components, immutable JSON packets, graph construction/compilation, bounded streams, cancellation/deadlines, explicit retries, branch/merge/keyed joins, testing helpers and installed CJS/ESM consumers. The Next fixture adds live graph/event inspection, optional bounded packet capture, node input/output dialogs, selectable output stages and controlled HTTP stress. [S19 adoption acceptance](../cursor_plans/fbp-slices/S19-execution.md) reconciles the candidate and proof; no npm release or deployment is inferred.
 
-S21 [correlated metadata diagnostics](diagnostic-records.md) merged in PR33. S22 adds host-controlled selective capture sessions on its review branch, preserving EX1 and payload-free scope snapshots; S22 merge is not inferred.
+S21 [correlated metadata diagnostics](diagnostic-records.md) merged in PR33. S22 host-controlled selective capture merged in PR34. S23 adds bounded optional sinks and JSONL export on its review branch, preserving EX1 and payload-free scope snapshots; S23 merge is not inferred.
 
-Visual graph editing/export tooling, diagnostic export/UI controls, a durable host, rich public packet profiles and cyclic graphs remain future extensions. The existing graph builder emits portable JSON GraphSpec; this is not a visual authoring or TypeScript generation claim.
+Visual graph editing/export tooling, diagnostic UI controls, a durable host, rich public packet profiles and cyclic graphs remain future extensions. The existing graph builder emits portable JSON GraphSpec; this is not a visual authoring or TypeScript generation claim.
 
 - [Dispatcher API and migration](dispatcher.md): instance ownership, synchronous delivery, bounded metadata logs and the legacy import.
 - [System boundaries](system-boundaries.md): proposed module responsibilities and present source map.
