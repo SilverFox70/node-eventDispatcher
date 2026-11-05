@@ -57,3 +57,7 @@ Toolchain remains Node26.13.0/npm11.20.0 via command-local /tmp/fbp-s21-tools an
 S24.A–C and X24.1–X24.3 complete for review. Core DG1 metadata/capture/export remains unchanged. The controlled app owns bounded connections, data, callbacks and cleanup; passive model admission remains separate from backend application payload evaluation. The original automatic EX1 examples keep their behavior. Runtime capture controls are prospective, not a new flow interpreter, graph editor, durable host or production authentication service. New source modules are6–81lines with clear graph/command/demo/connection/download/view responsibilities; shared DiagramView/NodeDetails avoid a second inspector. No larger handwritten production file exception is required.
 
 README, Next guide, architecture/decision/agent map, sole condition ledger and slice state updated. Publication pending below, not merged. S24A remains unstarted. Preserve .DS_Store/.feedback-log; no merge, npm release, deployment, external business writes or new automation was authorized by this execution.
+
+## Publication receipt
+
+Implementationfd072804acfc11e667530827673ed64c42cffef0 pushed to origin/codex/fbp-24-diagnostic-controls. [PR36](https://github.com/SilverFox70/node-eventDispatcher/pull/36) opened against master; connector confirms correct base/head, open/unmerged. This publication amendment is documentation-only. Hosted CI remains separate from local evidence; no merge or successor execution is inferred.

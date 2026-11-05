@@ -160,7 +160,9 @@
           "S24.C"
         ],
         "contract": "UI24-r1 over DG1-r3"
-      }
+      },
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/36",
+      "publication_status": "pr-open"
     },
     {
       "id": "S24A",
