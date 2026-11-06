@@ -532,7 +532,9 @@
           "S30.C"
         ],
         "contract": "EXT1-r2 live observation over existing execution trace"
-      }
+      },
+      "publication_status": "pr-open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/48"
     },
     {
       "id": "S31",

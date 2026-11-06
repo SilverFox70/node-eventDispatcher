@@ -27,4 +27,4 @@ Node 26.13.0 and npm 11.20.0 with the checked-in lockfile. Commands were run fro
 | `npm run test:next` | Exit 0. All 55 tests, Chromium acceptance and the unchanged per-file 95% gate. Each new debug source reached 100% for lines, statements and branches. Local log `/tmp/fbp-s30-next-proof.log`. |
 | `npm run test:content-workspace` | Exit 0. Workspace-linked browser flow and rebuild propagation. Local log `/tmp/fbp-s30-workspace-final.log`. |
 
-The new debug modules have separate responsibilities for transport, read-model filtering and presentation. S31 owns the fresh-project authoring walkthrough. Publication and merge are tracked separately.
+The new debug modules have separate responsibilities for transport, read-model filtering and presentation. S31 owns the fresh-project authoring walkthrough. Implementation commit `472a956` was pushed and [PR #48](https://github.com/SilverFox70/node-eventDispatcher/pull/48) is open for review.
