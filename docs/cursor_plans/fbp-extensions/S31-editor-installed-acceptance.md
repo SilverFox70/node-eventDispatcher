@@ -10,6 +10,8 @@ Build, wire and test a meaningful flow in a fresh installed Next project.
 
 Ship authoring demo, human/agent node recipe, explicit service injection and acceptance covering the complete editing/test/debug path, root dependency isolation and accessible operation.
 
+Ship a skippable, reopenable first-run walkthrough in the installed demo. Use a separate sample draft to add two nodes, move one, connect them, configure a node, run fixture inputs, inspect intermediate and final output, and undo an edit. Include keyboard steps and a visible explanation of session-only drafts.
+
 Contract: [editor.md](editor.md), [shared rules](shared-contract.md), [verification/handoff](execution.md).
 Prerequisites: S30 merged and its proof handoff verified; D1 model compatibility; D2 package/canvas compatibility accepted for this slice. No unreviewed public signatures.
 Read predecessor journal/merge receipt at execution time; this plan is not that receipt.

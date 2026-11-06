@@ -14,11 +14,19 @@ Palette entries come from an authorized catalog. Cards show business title/purpo
 
 Canonical S20 refinement: [CG2-r1](contracts/configuration-v2.md) selects exact shapes/refusals/factory binding; its rules supersede inconsistent illustrative snippets below. [PK1](contracts/packages-and-storage.md) owns package boundaries.
 
-## Configuration requires a real model amendment
+## Help in the editor
 
-Current GraphSpec v1 is strict and has no configuration field; existing component `create()` closes over dependencies. Do not sneak config into unknown fields or generate ad-hoc component IDs.
+Put short, visible instructions next to unfamiliar controls, empty states and validation errors. Explain what the control does and what to do next. Keep essential instructions available with a keyboard or screen reader. Tooltips can supplement visible help.
 
-Proposed GraphSpec v2 keeps v1 edges/exposed ports/policies and adds per-node JSON `config`. Configured definitions declare a `configuration: Contract<C>` and `create(config: Readonly<C>)` factory. Fixed named input/output contracts remain independent of configuration. A v2 node referencing an unconfigured component must omit config; a configured component must supply it. No implicit defaults; UI can propose an explicit default as editable data.
+Offer an optional **Walkthroughs** entry from the editor. A walkthrough can be skipped, dismissed or reopened, and should use the actual controls and their current labels. Show the keyboard route for each pointer action. Start examples in a separate sample draft so opening a guide preserves the user's work. Running a sample requires the user's explicit **Run test** action and uses fixture data. Explain that drafts are session-only until persistence ships.
+
+Ship guidance with each feature. S28 covers canvas basics and node settings. S29 adds help for fixture inputs, test results and cancellation. S30 explains packet activity, filters and gaps in captured data. S31 assembles and verifies a first-run walkthrough in a fresh installed app.
+
+## Node configuration
+
+GraphSpec v1 is strict and has no configuration field. Use GraphSpec v2 for configured nodes. Component factories still close over trusted service dependencies.
+
+GraphSpec v2 keeps v1 edges/exposed ports/policies and adds per-node JSON `config`. Configured definitions declare a `configuration: Contract<C>` and `create(config: Readonly<C>)` factory. Fixed named input/output contracts remain independent of configuration. A v2 node referencing an unconfigured component must omit config; a configured component must supply it. No implicit defaults; UI can propose an explicit default as editable data.
 
 ```ts
 const transform = defineConfiguredComponent({
@@ -27,13 +35,12 @@ const transform = defineConfiguredComponent({
   in: { value: numberContract }, out: { value: numberContract },
   create: config => async context => { /* ordinary process */ },
 });
-// reviewed builder overload, not currently shipped
 builder.add('scale', transform, { config: { factor: 2 } });
 ```
 
 Compiler deep-copies/validates/freezes JSON config against authoritative registered contracts before any factory executes. Factories execute once per run as today, receiving the pinned instance config; compile never calls a process factory. Service injection stays in trusted registry construction, not stored config. Configuration schemas expose only approved nonsecret fields; secret/service bindings stay host-side and are not accepted as editable fields. No heuristic promises to identify every secret in an arbitrary string. Functions/handler source are not serializable config; applications identify safe dependency roles separately.
 
-Catalog v2 extends descriptors with optional configuration contract metadata; v1 catalogs/graphs remain accepted for existing definitions. Unknown versions refuse. Catalog metadata never provides executable capability or proves backend schema validity. Existing unsupported-schema rules still apply. S25 updates browser model, compiler, registry descriptors, builder, runtime, testing helper/types, inspection and packed CJS/ESM consumers as one contract change. No separate browser evaluator promise.
+Catalog v2 extends descriptors with optional configuration contract metadata; v1 catalogs/graphs remain accepted for existing definitions. Unknown versions refuse. Catalog metadata never provides executable capability or proves backend schema validity. Existing unsupported-schema rules still apply. S25 shipped this contract across the browser model, compiler, registry, builder, runtime, inspection and installed SDK. S28 uses that compiler for field feedback.
 
 ## Editor document operations
 
@@ -42,6 +49,8 @@ Use one immutable command reducer: `addNode`, `removeNode`, `connect`, `disconne
 Drafts may be incomplete and display validation issues; syntactically invalid commands never mutate the document. Reject an incompatible connection, duplicate ID, invalid capacity or cycle through shared validation rules; preserve v1 cardinality rules. Removing a node also removes its incident wires/exposed endpoints in one undoable command. No new execution edge semantics.
 
 ## Backend test adapter proposal
+
+S28 validates a revision-tagged draft against the host registry. Its response includes sanitized compiler issue codes and paths. The test-run adapter adds execution admission and a pinned binding in S29.
 
 Host implements `validateDraft({graph,registryLock})` and `startTest({graphHash,graph,registryLock,input,requestedCapabilities})`. Return safe existing compiler issues and a run handle `{runId,graphHash}` or typed refusal. RegistryLock structure is owned by S32; before then S29 uses the reviewed ephemeral digest-equivalent binding snapshot, not unverified client registry objects.
 

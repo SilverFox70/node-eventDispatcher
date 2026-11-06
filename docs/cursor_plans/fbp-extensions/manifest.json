@@ -457,10 +457,20 @@
         "X28.2",
         "X28.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "in-progress",
       "merge_sha": null,
-      "gate": "D1 model compatibility; D2 package/canvas compatibility"
+      "gate": "D1 model compatibility; D2 package/canvas compatibility",
+      "journal": "S28-execution.md",
+      "execution_approval": {
+        "authority": "user requested continuation after PR #45 merged",
+        "tasks": [
+          "S28.A",
+          "S28.B",
+          "S28.C"
+        ],
+        "contract": "CG2-r1 and editor EXT1-r2"
+      }
     },
     {
       "id": "S29",

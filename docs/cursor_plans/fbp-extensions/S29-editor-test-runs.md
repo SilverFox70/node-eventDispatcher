@@ -10,6 +10,8 @@ Run explicit test inputs against the graph being edited.
 
 Provide a host-owned test-run adapter using the production compiler/runtime, fixture/service capability allowlists, active-run quotas, input validation and owned cancellation. No general remote-code endpoint.
 
+Add a short test-run walkthrough with fixture inputs and an expected result. Explain which draft snapshot the run uses, where to see results, and what Cancel does. Starting the fixture run requires the user to choose Run test.
+
 Contract: [editor.md](editor.md), [shared rules](shared-contract.md), [verification/handoff](execution.md).
 Prerequisites: S28 merged and its proof handoff verified; D1 model compatibility; D2 package/canvas compatibility accepted for this slice. No unreviewed public signatures.
 Read predecessor journal/merge receipt at execution time; this plan is not that receipt.

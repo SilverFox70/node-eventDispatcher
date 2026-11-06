@@ -24,7 +24,7 @@ export function validateGraph(value: unknown, catalog: Catalog): ValidationResul
 
 /** Backend may add an authoritative configuration check to the same wiring pass. */
 export function validateGraphWiring(
-  value: unknown, catalog: Catalog, checkConfig?: (component: string, config: Json) => boolean
+  value: unknown, catalog: Catalog, checkConfig?: (component: string, config: Json, index: number) => boolean
 ): ValidationResult {
   let safeCatalog: Catalog;
   try { safeCatalog = snapshotJsonMetadata(catalog) as unknown as Catalog; }
@@ -65,7 +65,7 @@ export function validateGraphWiring(
       const config = (node as GraphNodeV2).config;
       const configured = component.configuration !== undefined;
       if (configured !== Object.hasOwn(node, 'config') ||
-          (configured && checkConfig && !checkConfig(node.component, config!))) {
+          (configured && checkConfig && !checkConfig(node.component, config!, index))) {
         issue('CONFIG_INVALID', `${path}.config`);
       }
       nodes.set(node.id, component);
