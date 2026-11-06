@@ -100,3 +100,31 @@ Options are inputs (required), timeoutMs (default1000, positive safe integer), m
 Always assert terminal.status. A component failure returns failed plus packets already collected; cancellation returns cancelled normally. Timeout returns failed/TIMEOUT. Unknown input names/invalid options refuse before factories start. Packet/admission refusal rejects with its original runtime error (including INPUT_CONTRACT and DUPLICATE_PACKET); output overflow rejects TEST_OUTPUT_LIMIT, never a truncated success. Owned collectors/feeders settle and the runtime removes its deadline/listeners on every exit. Late service rejection stays handled; arbitrary user code still needs to honor its signal. Collected results are caller-owned memory, not a durable lookup or execution history.
 
 S16 verifies this template from the actual installed tarball, with isolated local tools and no checkout/source aliases. See [the application guide](guide.md) and [migration](migration.md).
+
+## Turn a reviewed run into a regression test
+
+S24C adds a programmatic export path under `event-driven-design/testing`. Select one job from a completed run with verified execution identity and retained input and output captures. Review the proposed inputs, expected outputs, declared decisions and service script results. Use JSON Pointers in `redactionReview.substitutions` for replacement values. For example, `/input/request/0/value` identifies the first request payload. The host approval callback applies the field allowlist and confirms the review ID.
+
+```ts
+import { prepareRegressionFixture, writeRegressionTest } from 'event-driven-design/testing';
+
+const fixture = prepareRegressionFixture(compiledGraph, evidence, selectedJobId, reviewedCase, {
+  roles: ['lookup'],
+  approve: verifyFixtureReview,
+});
+const path = await writeRegressionTest(testDirectory, fixture);
+```
+
+The fixture's provenance lists the input and output capture sequence numbers in exposed port order, then packet order within each port. Use empty arrays for unused ports. Keep all expected outputs in their recorded per-port order. Record expected declared decisions in their observed order. Use ordered `{ outcome: 'result', value }` and `{ outcome: 'error', code }` script entries for each dependency role.
+
+The generated test loads the caller-owned `fixture-bindings.mjs` beside it. Export a `fixtureBindings` object with `executionIdentity`, `roles`, `approve` and a `build(services)` function that returns a compiled graph. Inject the scripted service functions into your existing node recipes. The build and review code belong to your project. The fixture carries data only.
+
+Run the generated test with Node's network permission disabled:
+
+```sh
+node --permission --allow-fs-read='*' --test --test-isolation=none sample-case.test.mjs
+```
+
+The review callback must enforce your own allowlist. The framework also refuses common credential shapes and unresolved placeholders. Generated filenames derive from the validated case ID and are created exclusively, so rerunning the generator against a handwritten file returns an error. The passive fixture can be serialized separately with `JSON.stringify`.
+
+See the [S24C execution receipt](cursor_plans/fbp-extensions/S24C-execution.md) for exact bounds and proof.

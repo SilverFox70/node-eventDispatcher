@@ -1,3 +1,5 @@
+import { decisionSnapshot } from '../runtime/diagnostics/decision-api.js';
+import type { DecisionSnapshot } from '../model/diagnostics/decisions.js';
 import type { Packet } from '../packet.js';
 import { getGraphDefinition } from '../graph.js';
 import type { CompiledGraph } from '../graph.js';
@@ -9,23 +11,24 @@ import type { Snapshot } from '../model/inspection.js';
 
 export type TestOptions = Readonly<{
   inputs: Readonly<Record<string, readonly Packet[]>>;
-  timeoutMs?: number; maxOutputPackets?: number; signal?: AbortSignal;
+  timeoutMs?: number; maxOutputPackets?: number; signal?: AbortSignal; decisionEvidence?: true;
 }>;
 export type TestResult<O = Readonly<Record<string, readonly Packet[]>>> = Readonly<{
-  terminal: Terminal; outputs: O; snapshot: Snapshot;
+  terminal: Terminal; outputs: O; snapshot: Snapshot; decisions?: DecisionSnapshot;
 }>;
 
 /** Exercise the production runtime; ordering between different ingress streams is unspecified. */
 export async function runGraph(graph: CompiledGraph, options: TestOptions): Promise<TestResult> {
   const definition = getGraphDefinition(graph);
   const fields = readRecord(options, 'INVALID_ARGUMENT');
-  if (Object.keys(fields).some(key => !['inputs', 'timeoutMs', 'maxOutputPackets', 'signal'].includes(key))) {
+  if (Object.keys(fields).some(key => !['inputs', 'timeoutMs', 'maxOutputPackets', 'signal', 'decisionEvidence'].includes(key))) {
     throw new FlowError('INVALID_ARGUMENT');
   }
   const timeoutMs = Object.hasOwn(fields, 'timeoutMs') ? fields.timeoutMs : 1000;
   const limit = Object.hasOwn(fields, 'maxOutputPackets') ? fields.maxOutputPackets : 1024;
   if (!Number.isSafeInteger(timeoutMs) || (timeoutMs as number) < 1 ||
     !Number.isSafeInteger(limit) || (limit as number) < 1 || (limit as number) > 100000 ||
+    (Object.hasOwn(fields, 'decisionEvidence') && fields.decisionEvidence !== true) ||
     (Object.hasOwn(fields, 'signal') && !(fields.signal instanceof globalThis.AbortSignal))) {
     throw new FlowError('INVALID_ARGUMENT');
   }
@@ -40,6 +43,7 @@ export async function runGraph(graph: CompiledGraph, options: TestOptions): Prom
     streams.set(name, packets as Packet[]);
   }
   const run = startNetwork(graph, { timeoutMs: timeoutMs as number,
+    ...(fields.decisionEvidence ? { diagnostics: { limit: 1024 } } : {}),
     ...(Object.hasOwn(fields, 'signal') ? { signal: fields.signal as AbortSignal } : {}) });
   const outputs: Record<string, Packet[]> = Object.fromEntries(Object.keys(run.outputs).map(name => [name, []]));
   let collected = 0;
@@ -75,7 +79,7 @@ export async function runGraph(graph: CompiledGraph, options: TestOptions): Prom
     if (refusal) throw refusal.error;
     return Object.freeze({ terminal,
       outputs: Object.freeze(Object.fromEntries(Object.entries(outputs).map(([name, packets]) => [name, Object.freeze(packets)]))),
-      snapshot: run.snapshot() });
+      snapshot: run.snapshot(), ...(fields.decisionEvidence ? { decisions: decisionSnapshot(run) } : {}) });
   } finally {
     run.cancel();
     await Promise.allSettled(work);
