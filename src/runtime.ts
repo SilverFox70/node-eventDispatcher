@@ -157,7 +157,7 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
       const inputPorts = nodeInputs.get(node.id)!, outputPorts = nodeOutputs.get(node.id)!;
       const eof = new Set<string>();
       const nodeSpec = definition.spec.nodes.find(spec => spec.id === node.id)!;
-      const operations = createTasks(state, scope, node.id, nodeSpec, diagnostics);
+      const operations = createTasks(state, scope, node.id, nodeSpec, diagnostics, definition.registry[nodeSpec.component]!);
       // EOF is checked on normal process return; iterator cleanup must preserve an original throw.
       const ctx = Object.freeze({
         signal: state.controller.signal, task: operations.task,

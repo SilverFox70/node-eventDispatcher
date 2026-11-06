@@ -1,3 +1,4 @@
+import type { ComponentBase } from '../component.js';
 import { randomUUID } from 'node:crypto';
 import { performance } from 'node:perf_hooks';
 import { isProxy } from 'node:util/types';
@@ -19,7 +20,7 @@ function errorCode(error: unknown): unknown {
   return typeof error === 'object' && error !== null && !isProxy(error) ? Object.getOwnPropertyDescriptor(error, 'code')?.value : undefined;
 }
 /** One operation owner per node. Retries never overlap an unsettled attempt. */
-export function createTasks(state: RunState, scope: TaskScope, nodeId: string, policy: TaskPolicy, diagnostics: Diagnostics) {
+export function createTasks(state: RunState, scope: TaskScope, nodeId: string, policy: TaskPolicy, diagnostics: Diagnostics, component: ComponentBase) {
   let busy = false, working = false;
   const provenance = createProvenance();
   let failure: { error: unknown } | undefined;
@@ -71,7 +72,7 @@ export function createTasks(state: RunState, scope: TaskScope, nodeId: string, p
         if (!state.check()) throw new FlowError('RUN_TERMINATED');
         pending = true;
         const current = taskAttempt(handler, state, scope, nodeId, attempt, policy.taskTimeoutMs,
-          () => { pending = false; if (ended) busy = false; }, { diagnostics, operationId, inputs });
+          () => { pending = false; if (ended) busy = false; }, { diagnostics, operationId, inputs, declarations: component.decisions ?? [] });
         cancelAttempt = current.cancel;
         const outcome = await current.result;
         if (!state.check()) throw new FlowError('RUN_TERMINATED');

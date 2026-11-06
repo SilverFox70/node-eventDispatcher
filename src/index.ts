@@ -50,3 +50,6 @@ export type { DiagnosticExportOptions } from './diagnostics/export.js';
 export type { DiagnosticSink, DiagnosticSinkSnapshot, DiagnosticSinkController } from './diagnostics/delivery.js';
 export type { DiagnosticSinkOptions } from './diagnostics/options.js';
 export type { DiagnosticBatch } from './model/diagnostics/batch.js';
+
+export { describeDecisions, decisionSnapshot, onDecisions } from './runtime/diagnostics/decision-api.js';
+export type { DecisionDeclaration, DecisionRequest, DecisionFact, DecisionOutcome, DecisionRecord, DecisionSnapshot, DecisionCatalog } from './model/diagnostics/decisions.js';

@@ -1,6 +1,6 @@
 # S20 evidence, decisions and fixtures EV1-r1
 
-Status: selected proposal for S24A–S24F and later artifact integration. Refines [explainability](../explainability.md). No code/payload reconstruction or live-service replay. Exact schema fixtures below must be accepted before these slices’ implementation; S21 does not implement them.
+Status: S24A subset adopted by explicit execution after S24 merge; [EV1-r2 declaration freeze](../S24A-execution.md) refines its exact API/validators. Remaining S24B–S24F/artifact sections are selected future proposals. Refines [explainability](../explainability.md). No code/payload reconstruction or live-service replay. Exact schema fixtures below must be accepted before these slices’ implementation; S21 does not implement them.
 
 ## Identity before artifacts
 

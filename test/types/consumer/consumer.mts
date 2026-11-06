@@ -30,3 +30,11 @@ const diagnostics = attachDiagnosticsSink(run, { write: async (batch, signal) =>
 void exportDiagnostics(run.diagnostics());
 // @ts-expect-error Sink flush retains its deadline contract through installed declarations.
 diagnostics.flush({});
+
+import { decisionSnapshot, describeDecisions, type TaskContext } from 'event-driven-design';
+import { validateDecisions, validateDecisionCatalog } from 'event-driven-design/model';
+validateDecisions(decisionSnapshot(run)); validateDecisionCatalog(describeDecisions({}));
+declare const decisionContext: TaskContext;
+const recorded: boolean = decisionContext.recordDecision({ code: 'OK', ruleVersion: 'v1', outcome: 'keep', facts: [] }); void recorded;
+// @ts-expect-error Raw values are not decision facts in installed declarations.
+decisionContext.recordDecision({ code: 'OK', ruleVersion: 'v1', outcome: 'keep', facts: [{ name: 'input', value: 4 }] });
