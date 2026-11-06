@@ -1,0 +1,26 @@
+@import '@xyflow/react/dist/style.css';
+
+.nodeflow-editor {
+  display: grid;
+  grid-template-columns: minmax(10rem, 1fr) minmax(0, 3fr) minmax(10rem, 1fr);
+  gap: 1rem;
+}
+.nodeflow-editor section { min-width: 0; overflow-wrap: anywhere; }
+.nodeflow-editor ul { padding-inline-start: 1.2rem; }
+.nodeflow-editor small { display: block; }
+.nodeflow-card {
+  background: Canvas;
+  color: CanvasText;
+  border: 1px solid #9aa9bd;
+  border-radius: .4rem;
+  padding: .45rem;
+  max-height: 100px;
+  overflow: hidden;
+  cursor: pointer;
+}
+.nodeflow-card[data-selected="true"] { border: 2px solid #2148ca; }
+.nodeflow-viewport { height: 24rem; border: 1px solid #9aa9bd; }
+.nodeflow-editor button[aria-pressed="true"] { outline: 2px solid currentColor; }
+@media (max-width: 50rem) {
+  .nodeflow-editor { grid-template-columns: 1fr; }
+}

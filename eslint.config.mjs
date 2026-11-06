@@ -3,6 +3,8 @@ import tseslint from 'typescript-eslint';
 
 const typeScriptFiles = [
   'src/**/*.ts',
+  'packages/editor/src/**/*.ts',
+  'packages/editor/src/**/*.tsx',
   'test/types/**/*.ts',
   'test/types/**/*.mts',
   'test/types/**/*.cts',
@@ -13,7 +15,7 @@ const typeScriptFiles = [
 ];
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'coverage/**', 'fixtures/next-consumer/.next/**', 'fixtures/next-consumer/node_modules/**'] },
+  { ignores: ['dist/**', 'packages/editor/dist/**', 'coverage/**', 'fixtures/next-consumer/.next/**', 'fixtures/next-consumer/node_modules/**'] },
   {
     ...js.configs.recommended,
     files: ['scripts/**/*.mjs', 'test/**/*.js', 'examples/**/*.cjs', 'benchmark/**/*.cjs', 'test/node-template-fixture.cjs', 'test/package-fixture.cjs', 'test/next/**/*.cjs'],

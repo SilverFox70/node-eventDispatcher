@@ -8,14 +8,15 @@
     "test": "npm run build && node --test test/*.test.js",
     "build": "node scripts/build.mjs",
     "typecheck": "tsc -p tsconfig.check.json && tsc -p test/types/tsconfig.json",
-    "lint": "eslint src scripts test examples templates/node benchmark fixtures/next-consumer/app fixtures/next-consumer/lib",
-    "check": "npm run build && npm run typecheck && npm run lint",
+    "lint": "eslint src scripts test examples templates/node benchmark fixtures/next-consumer/app fixtures/next-consumer/lib packages/editor/src",
+    "check": "npm run build && npm run typecheck && npm run lint && npm run build:editor",
     "coverage": "npm run build && c8 node --test test/*.test.js && node scripts/coverage-thresholds.mjs",
     "test:package": "npm run build && node --test test/package.test.js test/package-contracts.test.js test/author-recipe.test.js test/examples.test.js",
     "test:next": "node scripts/test-next.mjs",
     "test:content-workspace": "node scripts/test-content-workspace.mjs",
     "demo:next": "node scripts/test-next.mjs --serve",
-    "stress:http": "npm run test:next"
+    "stress:http": "npm run test:next",
+    "build:editor": "npm run build --workspace event-driven-design-editor -- tsconfig.repository.json"
   },
   "keywords": [
     "EDD",
@@ -84,5 +85,8 @@
     "eslint": "10.13.0",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.1"
-  }
+  },
+  "workspaces": [
+    "packages/editor"
+  ]
 }

@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": { "event-driven-design/model": ["../../dist/esm/model/index.d.ts"] }
+  }
+}

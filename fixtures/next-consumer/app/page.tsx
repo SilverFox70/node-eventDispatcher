@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 export default function Page() {
   const displayed = process.env.FBP_DEMO_BAD_CATALOG === '1' ? { ...catalog, version: 99 } : catalog;
   return <main><h1>NodeDispatcher in Next.js</h1><p>A packaged flow running on the server.</p><Demo spec={graphSpec} catalog={displayed as typeof catalog} />
+    <p><Link href="/editor">Open the graph editor</Link></p>
     <p><Link href="/content-review">Open product content review</Link></p>
     <section className="demo-launch" aria-label="Live Pokémon demo">
       <h2>Try a live Pokémon flow</h2>
