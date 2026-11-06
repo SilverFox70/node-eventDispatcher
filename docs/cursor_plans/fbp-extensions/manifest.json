@@ -285,7 +285,8 @@
         ],
         "contract": "EV1-r5 S24D subset"
       },
-      "publication_status": "ready"
+      "publication_status": "pr-open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/40"
     },
     {
       "id": "S24E",

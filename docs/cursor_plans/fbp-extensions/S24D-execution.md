@@ -33,3 +33,5 @@ The shared harness exposes its existing opt-in diagnostic snapshot alongside dec
 - Final focused proof packs and installs a fresh consumer, runs the public testing API with Node network permission denied, and verifies the 10→20 change. Guidance links and whitespace checks passed. Next/browser changes are outside this slice's implementation. S24B's production browser proof remains scoped to that slice.
 - Readability review separates revision validation, observation normalization and result comparison. No new package dependencies, CI changes or runtime policy changes. The pre-change package did not expose a comparison entry point, so no missing-export failure is reported as behavioral red.
 - Implementation and X24D.1–3 proof complete. S24E requires the actual S24D merge and its own request.
+
+Publication receipt: implementation commit `c873990077e77b073a842e9a8e0c9f54950347b1` pushed. GitHub confirmed [PR40](https://github.com/SilverFox70/node-eventDispatcher/pull/40) open against master. This follow-up is documentation only. User-local .DS_Store and .feedback-log remain uncommitted.
