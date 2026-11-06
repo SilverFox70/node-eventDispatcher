@@ -14,4 +14,6 @@ The walkthrough opens a sample draft separately, with no execution until Run tes
 - X29.2 exercises the installed browser walkthrough, reconnects a sample edge, then verifies three outputs and their job, packet and parent lineage. The browser hashes the actual submitted graph and checks the returned receipt.
 - X29.3 edits the output name during a slow run and checks that only the next run uses the new name. Browser cancellation and the API cancellation path both return the runtime cancellation terminal. Browser assets are checked for the server fixture effect marker.
 
-Final packed and workspace verification pending.
+Candidate `562376611417db65ed26f0c9774178a332b6705a` passed build, typecheck, lint and guidance integrity. The final packed production suite passed 54/54 and the unchanged per-file gate, including the unexecuted-source canary. The run panel reached 100% lines and statements and 96.15% branches. The clean npm workspace passed install, build, the same browser scenario and rebuild. S28 core coverage remains applicable because S29 changes neither core runtime nor root package scripts. Local logs: `/tmp/fbp-s29-red.log`, `/tmp/fbp-s29-check-final.log`, `/tmp/fbp-s29-next-final.log`, and `/tmp/fbp-s29-workspace-final.log`.
+
+S29 is complete for review. The sample is available at `/editor?sample=1` in the Next demo. S30 follows the actual merge and adds live transfers and intermediate stage inspection.
