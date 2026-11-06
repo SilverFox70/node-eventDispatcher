@@ -78,6 +78,11 @@ test('built distributions usable: same-format public helpers and cross-format ha
         const evidence=f.decisionSnapshot(run);assert(model.validateDecisions(JSON.parse(JSON.stringify(evidence))).ok);
         assert.deepEqual(evidence.events.map(e=>e.format),['nodeflow.decision','nodeflow.filter']);
         assert.equal(evidence.events[0].inputs[0].jobId,'installed-decision');assert.equal(evidence.events[1].outcome,'drop');
+        const combined={format:'nodeflow.evidence',version:1,runId:run.runId,diagnostics:run.diagnostics(),decisions:evidence,identity:{status:'unverified'}};
+        assert(model.validateCausalEvidence(JSON.parse(JSON.stringify(combined))).ok);
+        const admitted=combined.diagnostics.events.find(record=>record.kind==='input-admitted').packet;
+        const explanation=model.explainCausal(combined,{runId:run.runId,subject:{kind:'input',packetId:admitted.packetId,jobId:admitted.jobId},maxRecords:64},[]);
+        assert(explanation.ok);assert(explanation.explanation.nodes.some(row=>row.stream==='decision'&&row.record.code==='SMALL'));
       }
       console.log('same-format helpers: 4; cross-format handles: INVALID_ARGUMENT');
     `]);

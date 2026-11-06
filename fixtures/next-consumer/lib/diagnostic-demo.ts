@@ -1,14 +1,15 @@
 import 'server-only';
 import { performance } from 'node:perf_hooks';
-import { createInspectionScope, startNetwork, packet, exportDiagnostics, FlowError } from 'event-driven-design';
+import { createInspectionScope, startNetwork, packet, exportDiagnostics, FlowError, decisionSnapshot } from 'event-driven-design';
 import { accountGraph } from './account-graph.ts';
+import { causalGraph } from './causal-demo.ts';
 import { pokemonGraph } from './pokemon-graph.ts';
 import type { DiagnosticView, DiagnosticAction, NodeCapture } from './diagnostic-model.ts';
 
 /** One controlled demo owns its runtime, capture permission and prospective test loads. */
-export function createDiagnosticDemo(example: 'account' | 'pokemon', token: string) {
-  const graph = example === 'pokemon' ? pokemonGraph() : accountGraph();
-  const sourceId = example === 'pokemon' ? 'pokemon-flow' : 'account-flow';
+export function createDiagnosticDemo(example: 'account' | 'pokemon' | 'causal', token: string) {
+  const graph = { account: accountGraph, pokemon: pokemonGraph, causal: causalGraph }[example]();
+  const sourceId = example + '-flow';
   const run = startNetwork(graph.compiled, { timeoutMs: 60000, diagnostics: { limit: 256 }, trace: {},
     capturePolicy: { allowedNodes: graph.spec.nodes.map(node => node.id), denyInputs: [], denyOutputs: [], maxPayloadBytes: 1024, maxSessionMs: 60000 } });
   const session = run.openDiagnosticsSession({ rules: [], expiresInMs: 60000 });
@@ -28,13 +29,18 @@ export function createDiagnosticDemo(example: 'account' | 'pokemon', token: stri
   }
   const stop = run.onDiagnostics(changed), stopTrace = run.onTrace(changed);
   void run.done.then(() => { busy = false; changed(); });
-  const outputName = example === 'pokemon' ? 'cards' : 'summary', inputName = example === 'pokemon' ? 'pokemon' : 'accountId';
+  const outputName = Object.keys(graph.spec.outputs)[0]!, inputName = Object.keys(graph.spec.inputs)[0]!;
   const draining = (async () => {
-    for await (const value of run.outputs[outputName]!) { void value; completed++; if (completed === submitted) busy = false; changed(); }
+    for await (const value of run.outputs[outputName]!) {
+      void value; completed++;
+      const expectedOutputs = example === 'causal' ? (submitted / 3) * 2 : submitted;
+      if (completed === expectedOutputs) busy = false;
+      changed();
+    }
   })().catch(() => {});
   function view(): DiagnosticView {
     const state = session.snapshot();
-    return { version: 1, token, sourceId, runId: run.runId, records: run.diagnostics(), busy, submitted, completed,
+    return { version: 1, token, sourceId, runId: run.runId, records: run.diagnostics(), decisions: decisionSnapshot(run), busy, submitted, completed,
       session: { sessionId: state.sessionId, epoch: state.epoch, status: state.status,
         remainingMs: state.status === 'active' ? Math.max(0, Math.ceil(state.expiresAtMs - performance.now())) : 0,
         effectiveRules: state.effectiveRules.map(({ nodeId, inputs, outputs }) => ({ nodeId, inputs, outputs })) } };
@@ -52,8 +58,8 @@ export function createDiagnosticDemo(example: 'account' | 'pokemon', token: stri
       if (busy) throw new FlowError('BUSY');
       if (batch >= 10) throw new FlowError('LOAD_LIMIT');
       busy = true; submitted += 3; const id = ++batch;
-      const values = example === 'pokemon' ? ['pikachu', 'bulbasaur', 'charmander'] : ['acct-101', 'acct-202', 'acct-303'];
-      void (async () => { for (const value of values) await run.send(inputName, packet(value, { jobId: `demo-${id}-${value}`, key: value })); })().catch(() => run.cancel());
+      const values = { account: ['acct-101', 'acct-202', 'acct-303'], pokemon: ['pikachu', 'bulbasaur', 'charmander'], causal: [4, 6, 8] }[example];
+      void (async () => { for (const value of values) await run.send(inputName, packet(value, { jobId: `demo-${id}-${value}`, key: String(value) })); })().catch(() => run.cancel());
     }
     changed(); return view();
   }

@@ -1,7 +1,7 @@
-import { validateDiagnostics } from 'event-driven-design/model';
-import type { DiagnosticSnapshot, InspectionSnapshot } from 'event-driven-design/model';
+import { validateDiagnostics, validateDecisions } from 'event-driven-design/model';
+import type { DecisionSnapshot, DiagnosticSnapshot, InspectionSnapshot } from 'event-driven-design/model';
 export type NodeCapture = { nodeId: string; inputs: boolean; outputs: boolean };
-export type DiagnosticView = { version: 1; token: string; sourceId: string; runId: string; records: DiagnosticSnapshot;
+export type DiagnosticView = { version: 1; token: string; sourceId: string; runId: string; records: DiagnosticSnapshot; decisions: DecisionSnapshot;
   session: { sessionId: string; epoch: number; status: 'active' | 'expired' | 'disposed' | 'terminated'; remainingMs: number; effectiveRules: NodeCapture[] };
   busy: boolean; submitted: number; completed: number };
 export type DiagnosticAction = { action: 'capture' | 'load' | 'export'; token: string; sourceId: string; runId: string;
@@ -13,10 +13,11 @@ function exact(value: unknown, keys: string[]): asserts value is Record<string, 
 }
 /** Admit passive host state against the selected graph; never evaluate payload contracts in the browser. */
 export function readDiagnosticView(value: unknown, inspection: InspectionSnapshot): DiagnosticView {
-  exact(value, ['version', 'token', 'sourceId', 'runId', 'records', 'session', 'busy', 'submitted', 'completed']);
+  exact(value, ['version', 'token', 'sourceId', 'runId', 'records', 'decisions', 'session', 'busy', 'submitted', 'completed']);
   const source = inspection.sources.find(source => source.id === value.sourceId && source.kind === 'graph');
   if (value.version !== 1 || !uuid(value.token) || !source || source.kind !== 'graph' || source.run?.runId !== value.runId ||
-    !validateDiagnostics(value.records).ok || (value.records as DiagnosticSnapshot).runId !== value.runId || typeof value.busy !== 'boolean' ||
+    !validateDiagnostics(value.records).ok || !validateDecisions(value.decisions).ok ||
+    (value.decisions as DecisionSnapshot).runId !== value.runId || (value.records as DiagnosticSnapshot).runId !== value.runId || typeof value.busy !== 'boolean' ||
     !Number.isSafeInteger(value.submitted) || (value.submitted as number) < 0 || (value.submitted as number) > 30 ||
     !Number.isSafeInteger(value.completed) || (value.completed as number) < 0 || (value.completed as number) > (value.submitted as number)) throw Error('Invalid diagnostic association');
   const session = value.session;
@@ -38,6 +39,6 @@ export function readDiagnosticView(value: unknown, inspection: InspectionSnapsho
 export function latestDiagnosticView(current: DiagnosticView | null, next: DiagnosticView): DiagnosticView {
   if (!current || current.token !== next.token) return next;
   if (next.session.epoch < current.session.epoch || (next.session.epoch === current.session.epoch &&
-    (next.records.total < current.records.total || next.submitted < current.submitted || next.completed < current.completed))) return current;
+    (next.records.total < current.records.total || next.decisions.total < current.decisions.total || next.submitted < current.submitted || next.completed < current.completed))) return current;
   return next;
 }

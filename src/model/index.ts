@@ -24,3 +24,8 @@ export type { DiagnosticBatch } from './diagnostics/batch.js';
 
 export { validateDecisions, validateDecisionCatalog } from './diagnostics/decisions.js';
 export type { DecisionDeclaration, DecisionRequest, DecisionFact, DecisionOutcome, DecisionRecord, DecisionSnapshot, DecisionCatalog } from './diagnostics/decisions.js';
+
+export { validateCausalEvidence } from './diagnostics/causal/evidence.js';
+export type { CausalEvidence, ExecutionIdentity } from './diagnostics/causal/evidence.js';
+export { explainCausal } from './diagnostics/causal/explain.js';
+export type { CausalSubject, CausalGap, Explanation, ExplainResult } from './diagnostics/causal/explain.js';

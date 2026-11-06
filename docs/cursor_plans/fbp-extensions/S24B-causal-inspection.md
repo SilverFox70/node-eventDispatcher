@@ -1,6 +1,6 @@
 # S24B — Explain an output or a missing output using retained run-scoped evidence.
 
-Plan EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan EXT1-r2. Status **approved for execution**. The user requested S24B after the S24A merge. See [execution receipt](S24B-execution.md).
 Branch `codex/fbp-24b-causal-inspection`. Order is authoritative in [manifest](manifest.json) and [index](INDEX.md).
 Prerequisites: predecessor merged/receipt verified, accepted D1/D5 interfaces and existing diagnostic bounds. No editor, GraphSpec v2 or artifact/SQL storage prerequisite.
 Contract: [explainability](explainability.md), [shared rules](shared-contract.md), [verification/handoff](execution.md).
@@ -27,7 +27,7 @@ Success scenario: Fork input A through two transforms then join: select final re
 
 ### S24B.B — Implement the story
 
-- Allowed: src/diagnostics/causal/**; src/model/diagnostics/**; fixtures/next-consumer/app/**; fixtures/next-consumer/lib/**; focused causal/browser tests.
+- Allowed: src/diagnostics/causal/**; src/model/diagnostics/**; src/index.ts and src/model/index.ts (public export wiring); fixtures/next-consumer/app/**; fixtures/next-consumer/lib/**; focused causal/browser tests.
 - Prerequisite: S24B.A fixtures and meaningful red where practical.
 - Obligation: Build bounded run-scoped causal queries over diagnostic transfers, operations and decisions, plus result/input selection in the existing inspector. Traverse full retained ancestry, detect gaps, and attribute version/timing/wait reasons.
 - Condition: [X24B.2](conditions.md). The success scenario above is part of this production-boundary proof.

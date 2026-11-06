@@ -53,3 +53,6 @@ export type { DiagnosticBatch } from './model/diagnostics/batch.js';
 
 export { describeDecisions, decisionSnapshot, onDecisions } from './runtime/diagnostics/decision-api.js';
 export type { DecisionDeclaration, DecisionRequest, DecisionFact, DecisionOutcome, DecisionRecord, DecisionSnapshot, DecisionCatalog } from './model/diagnostics/decisions.js';
+
+export { executionIdentity, implementationIdentity } from './diagnostics/causal/identity.js';
+export type { BuildManifest, ExecutionIdentityInput } from './diagnostics/causal/identity.js';

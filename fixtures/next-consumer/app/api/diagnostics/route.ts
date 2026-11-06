@@ -9,9 +9,9 @@ const demos = new Map<string, ReturnType<typeof createDiagnosticDemo>>();
 
 export function GET(request: Request) {
   const example = new URL(request.url).searchParams.get('example');
-  if (!['account', 'pokemon'].includes(example!)) return Response.json({ code: 'INVALID_ARGUMENT' }, { status: 400 });
+  if (!['account', 'pokemon', 'causal'].includes(example!)) return Response.json({ code: 'INVALID_ARGUMENT' }, { status: 400 });
   if (demos.size >= 16) return Response.json({ code: 'CONNECTION_LIMIT' }, { status: 409 });
-  const token = randomUUID(), demo = createDiagnosticDemo(example as 'account' | 'pokemon', token);
+  const token = randomUUID(), demo = createDiagnosticDemo(example as 'account' | 'pokemon' | 'causal', token);
   demos.set(token, demo);
   const stream = openInspectionStream({ ...demo, dispose() { demos.delete(token); demo.dispose(); } }, request.signal, token);
   return new Response(stream, { headers: { 'content-type': 'text/event-stream', 'cache-control': 'no-store', 'x-accel-buffering': 'no' } });
