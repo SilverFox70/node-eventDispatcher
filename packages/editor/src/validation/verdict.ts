@@ -12,14 +12,14 @@ export function readIssues(value: unknown, revision: number): readonly EditorIss
 }
 
 export function validationView(verdict: Verdict | undefined, revision: number) {
-  if (!verdict) return { issues: [], message: 'Validate the draft to check its settings and wiring.' };
-  if (verdict.revision !== revision) return { issues: [], message: 'Validation is stale. Validate the current draft again.' };
+  if (!verdict) return { issues: [], ready: false, message: 'Validate the draft to check its settings and wiring.' };
+  if (verdict.revision !== revision) return { issues: [], ready: false, message: 'Validation is stale. Validate the current draft again.' };
   if (verdict.status !== 'complete') return {
-    issues: [], message: verdict.status === 'pending' ? 'Backend validation pending.' : 'Backend validation failed. Try again.',
+    issues: [], ready: false, message: verdict.status === 'pending' ? 'Backend validation pending.' : 'Backend validation failed. Try again.',
   };
   const { issues } = verdict;
   const count = issues.length;
   return {
-    issues, message: count ? `Backend found ${count} draft ${count === 1 ? 'issue' : 'issues'}.` : 'Backend validated this draft.',
+    issues, ready: count === 0, message: count ? `Backend found ${count} draft ${count === 1 ? 'issue' : 'issues'}.` : 'Backend validated this draft.',
   };
 }

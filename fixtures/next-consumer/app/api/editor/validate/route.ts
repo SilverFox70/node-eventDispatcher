@@ -2,11 +2,7 @@ import { compileGraph } from 'event-driven-design';
 import { editorRegistry } from '../../../../lib/editor-catalog.ts';
 import { readBoundedJson } from '../../../../lib/read-json.ts';
 
-const reserved = new Set(['serviceBindings', 'credentials']);
-function containsHostBinding(value: unknown): boolean {
-  return value !== null && typeof value === 'object' &&
-    Object.entries(value).some(([key, child]) => reserved.has(key) || containsHostBinding(child));
-}
+import { hostBindingIssues } from '../../../../lib/editor-host-bindings.ts';
 
 export async function POST(request: Request) {
   try {
@@ -16,11 +12,8 @@ export async function POST(request: Request) {
       return Response.json({ code: 'INVALID_ARGUMENT' }, { status: 400 });
     }
     const { graph, revision } = body;
-    if (graph && typeof graph === 'object' && 'nodes' in graph && Array.isArray(graph.nodes)) {
-      const issues = graph.nodes.flatMap((node, index) =>
-        containsHostBinding(node?.config) ? [{ code: 'HOST_BINDING_FORBIDDEN', path: `$.nodes[${index}].config` }] : []);
-      if (issues.length) return Response.json({ revision, issues });
-    }
+    const issues = hostBindingIssues(graph);
+    if (issues.length) return Response.json({ revision, issues });
     const result = compileGraph(graph, editorRegistry, { configurationFields: true });
     return Response.json({ revision, issues: result.ok ? [] : result.issues });
   } catch {

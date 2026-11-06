@@ -15,12 +15,14 @@ export type EditorState = Readonly<{
 }>;
 export type CommandResult = { ok: true; state: EditorState } | { ok: false; issue: EditorIssue; state: EditorState };
 
-export function createEditorState(nodes: readonly EditorNode[] = []): EditorState {
+export function createEditorState(nodes: readonly EditorNode[] = [], initialGraph?: EditorDocument['graph']): EditorState {
+  const graph = initialGraph ? structuredClone(initialGraph)
+    : { version: 2 as const, nodes: structuredClone(nodes), edges: [], inputs: {}, outputs: {} };
   const document: EditorDocument = {
-    graph: { version: 2, nodes: structuredClone(nodes), edges: [], inputs: {}, outputs: {} },
-    layout: { positions: Object.fromEntries(nodes.map((node, index) => [node.id, gridPosition(index)])), groups: {} },
+    graph,
+    layout: { positions: Object.fromEntries(graph.nodes.map((node, index) => [node.id, gridPosition(index)])), groups: {} },
   };
-  return { document, baseline: document, revision: 0, past: [], future: [], used: new Set(nodes.map(node => node.id)) };
+  return { document, baseline: document, revision: 0, past: [], future: [], used: new Set(graph.nodes.map(node => node.id)) };
 }
 
 /** An accepted command commits one snapshot. Refused edits leave revision and history intact. */

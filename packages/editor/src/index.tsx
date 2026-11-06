@@ -1,7 +1,7 @@
 'use client';
 
 import { useId, useMemo, useReducer, useRef, useState } from 'react';
-import type { Catalog } from 'event-driven-design/model';
+import type { Catalog, GraphSpecV2 } from 'event-driven-design/model';
 import { applyEditorCommand, copySelection, createEditorState, draftIssues, paletteEntries } from './model.js';
 import type { EditorNode, EditorState } from './model.js';
 import type { Clipboard, Edit, EditorCommand, EditorIssue } from './document/types.js';
@@ -12,11 +12,15 @@ import { EditorCanvas } from './canvas/editor-canvas.js';
 import { PortCommands } from './canvas/port-commands.js';
 import { ConfigurationPanel } from './configuration/panel.js';
 import { useValidation } from './validation/use-validation.js';
+import { TestRunPanel } from './runs/panel.js';
+import type { TestRunOptions } from './runs/panel.js';
 import { SelectionCommands } from './canvas/selection-commands.js';
 
 export type GraphEditorProps = Readonly<{
   catalog: Catalog;
   validationEndpoint?: string;
+  initialGraph?: GraphSpecV2;
+  testRun?: TestRunOptions;
   initialNodes?: readonly EditorNode[];
 }>;
 type Operation = Edit | { type: 'undo' } | { type: 'redo' };
@@ -24,19 +28,19 @@ type Operation = Edit | { type: 'undo' } | { type: 'redo' };
 type Session = { state: EditorState; selected?: string; issue?: EditorIssue };
 type Action = { type: 'select'; node: string } | { type: 'command'; command: EditorCommand };
 
-function initialize(nodes: readonly EditorNode[]): Session {
-  return { state: createEditorState(nodes) };
+function initialize({ nodes, graph }: { nodes: readonly EditorNode[]; graph: GraphSpecV2 | undefined }): Session {
+  return { state: createEditorState(nodes, graph) };
 }
 
 /** An ephemeral graph editor over application-provided catalog metadata. */
-export function GraphEditor({ catalog, initialNodes = [], validationEndpoint }: GraphEditorProps) {
+export function GraphEditor({ catalog, initialNodes = [], initialGraph, validationEndpoint, testRun }: GraphEditorProps) {
   const [session, update] = useReducer((current: Session, action: Action): Session => {
     if (action.type === 'select') return { ...current, selected: action.node };
     const result = applyEditorCommand(current.state, action.command, catalog);
     if (!result.ok) return { ...current, issue: result.issue };
     const selected = action.command.type === 'addNode' ? action.command.node.id : current.selected;
     return { state: result.state, selected };
-  }, initialNodes, initialize);
+  }, { nodes: initialNodes, graph: initialGraph }, initialize);
   const helpId = useId();
   const commandId = useRef(0);
   const [marks, setMarks] = useState<readonly string[]>([]);
@@ -96,6 +100,7 @@ export function GraphEditor({ catalog, initialNodes = [], validationEndpoint }: 
         mark={id => setMarks(current => current.includes(id) ? current.filter(value => value !== id) : [...current, id])}
         copy={() => setClipboard(copySelection(state.document, marked))} dispatch={dispatch} />
       <PortCommands nodes={canvas} graph={graph} dispatch={dispatch} />
+      {testRun && <TestRunPanel options={testRun} graph={graph} revision={state.revision} ready={validation.ready} />}
       <details><summary>Draft validation ({issues.length})</summary>
         <ul>{issues.map(issue => <li key={`${issue.path}:${issue.code}`}>{issue.code} · {issue.path}</li>)}</ul>
       </details>
