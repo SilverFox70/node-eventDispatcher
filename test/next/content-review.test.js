@@ -68,6 +68,8 @@ test('installed content review shows retry, invalid output and cancellation stat
     await mode.selectOption('invalid'); await submit.click();
     await page.getByRole('status').filter({ hasText: 'OUTPUT_CONTRACT' }).waitFor();
     await mode.selectOption('slow'); await submit.click();
+    await page.getByText('Review complete', { exact: true }).waitFor();
+    await submit.click();
     await page.getByText('Reviewing', { exact: true }).waitFor();
     await page.getByRole('button', { name: 'Cancel review' }).click();
     await page.getByText('Review cancelled', { exact: true }).waitFor();

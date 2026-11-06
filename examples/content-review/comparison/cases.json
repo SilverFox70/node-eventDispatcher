@@ -1,0 +1,11 @@
+[
+  {"name":"chair","product":{"slug":"chair","title":"Chair","description":"Oak chair.","altText":"Oak chair from the side.","archived":false},"media":["pass"],"status":"completed","preview":"Chair","fields":[],"attempts":[1],"aborts":0},
+  {"name":"table","product":{"slug":"Table?","title":"Table","description":"","altText":"","archived":false},"media":["missing-alt"],"status":"completed","preview":null,"fields":["description","altText","slug"],"attempts":[1],"aborts":0},
+  {"name":"lamp","product":{"slug":"lamp","title":"Lamp","description":"Desk lamp.","altText":"Lamp on a desk.","archived":true},"media":[],"status":"completed","preview":null,"fields":[],"attempts":[],"aborts":0},
+  {"name":"retry","product":{"slug":"chair","title":"Chair","description":"Oak chair.","altText":"Oak chair from the side.","archived":false},"media":["retry","pass"],"status":"completed","preview":"Chair","fields":[],"attempts":[1,2],"aborts":0},
+  {"name":"invalid-output","product":{"slug":"chair","title":"Chair","description":"Oak chair.","altText":"Oak chair from the side.","archived":false},"media":["invalid"],"status":"failed","code":"OUTPUT_CONTRACT","preview":null,"fields":[],"attempts":[1],"aborts":0},
+  {"name":"cancel","product":{"slug":"chair","title":"Chair","description":"Oak chair.","altText":"Oak chair from the side.","archived":false},"media":["cancel"],"status":"cancelled","code":"CANCELLED","preview":null,"fields":[],"attempts":[1],"aborts":1},
+  {"name":"timeout","product":{"slug":"chair","title":"Chair","description":"Oak chair.","altText":"Oak chair from the side.","archived":false},"media":["wait"],"status":"failed","code":"NODE_TIMEOUT","preview":null,"fields":[],"attempts":[1],"aborts":1},
+  {"name":"permanent-error","product":{"slug":"chair","title":"Chair","description":"Oak chair.","altText":"Oak chair from the side.","archived":false},"media":["error"],"status":"failed","preview":null,"fields":[],"attempts":[1],"aborts":0,"code":"COMPONENT_FAILED"},
+  {"name":"already-cancelled","product":{"slug":"chair","title":"Chair","description":"Oak chair.","altText":"Oak chair from the side.","archived":false},"media":[],"status":"cancelled","preview":null,"fields":[],"attempts":[],"aborts":0,"code":"CANCELLED","preAbort":true}
+]

@@ -1,6 +1,6 @@
 # S24F — Measure whether the application is easier to diagnose, test and change.
 
-Plan EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan EXT1-r2. Status **approved for execution**. The user requested S24F after the S24E merge. See [execution receipt](S24F-execution.md).
 Branch `codex/fbp-24f-comparative-value`. Order is authoritative in [manifest](manifest.json) and [index](INDEX.md).
 Prerequisites: predecessor merged/receipt verified, accepted D1/D5 interfaces and existing diagnostic bounds. No editor, GraphSpec v2 or artifact/SQL storage prerequisite.
 Contract: [explainability](explainability.md), [shared rules](shared-contract.md), [verification/handoff](execution.md).

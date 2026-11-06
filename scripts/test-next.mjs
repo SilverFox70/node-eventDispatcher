@@ -55,10 +55,18 @@ try {
     console.log('Demo ready:', serving.url, '(Ctrl+C to stop)');
     await new Promise(resolve => { process.once('SIGINT', resolve); process.once('SIGTERM', resolve); });
   } else {
-    await checked(process.execPath, [join(app, 'node_modules/playwright/cli.js'), 'install', ...(process.platform === 'linux' && process.env.CI ? ['--with-deps'] : []), 'chromium'], {
+    const playwright = join(app, 'node_modules/playwright/cli.js');
+    if (process.platform === 'linux' && process.env.CI) {
+      await checked('sudo', ['--non-interactive', 'env', 'DEBIAN_FRONTEND=noninteractive', 'NEEDRESTART_MODE=l',
+        process.execPath, playwright, 'install-deps', 'chromium'], {
+        cwd: app, log: join(evidence, 'browser-dependencies.log'),
+      });
+    }
+    await checked(process.execPath, [playwright, 'install', 'chromium'], {
       cwd: app, env: { PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') }, log: join(evidence, 'browser-install.log'),
     });
-    const tests = ['consumer', 'inspector', 'inspector-state', 'coverage-signal', 'execution', 'demo-address', 'http', 'diagnostics', 'diagnostic-state', 'diagnostic-api', 'content-review'].map(name => join(root, `test/next/${name}.test.js`));
+    cpSync(join(root, 'examples/content-review'), join(app, 'lib/s24f'), { recursive: true });
+    const tests = ['consumer', 'inspector', 'inspector-state', 'coverage-signal', 'execution', 'demo-address', 'http', 'diagnostics', 'diagnostic-state', 'diagnostic-api', 'content-review', 'content-comparison'].map(name => join(root, `test/next/${name}.test.js`));
     const tested = await command(process.execPath, ['--test', '--test-reporter=tap', ...tests], {
       cwd: root, env: { FBP_NEXT_APP: app, FBP_NEXT_EVIDENCE: evidence, NODE_V8_COVERAGE: join(evidence, 'v8-test'), PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') },
       log: join(evidence, 'consumer-tests.log'),
