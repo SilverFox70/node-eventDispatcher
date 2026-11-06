@@ -1,6 +1,6 @@
 # S24C — Export a reviewed, sanitized observed case as a regression fixture.
 
-Plan EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan EXT1-r2. Status **approved for execution**. The user requested S24C after the S24B merge. See [execution receipt](S24C-execution.md).
 Branch `codex/fbp-24c-run-to-test`. Order is authoritative in [manifest](manifest.json) and [index](INDEX.md).
 Prerequisites: predecessor merged/receipt verified, accepted D1/D5 interfaces and existing diagnostic bounds. No editor, GraphSpec v2 or artifact/SQL storage prerequisite.
 Contract: [explainability](explainability.md), [shared rules](shared-contract.md), [verification/handoff](execution.md).
@@ -27,7 +27,7 @@ Success scenario: Capture one complete fixture case, replace sensitive fields wi
 
 ### S24C.B — Implement the story
 
-- Allowed: src/testing/fixtures/**; src/diagnostics/fixture-export/**; src/model/diagnostics/**; public testing exports; fixtures/next-consumer/**; scripts/** packed acceptance; docs/node-authoring.md.
+- Allowed: src/testing/fixtures/**; src/diagnostics/fixture-export/**; src/model/diagnostics/**; public testing exports and opt-in decision observation in src/testing/run-graph.ts; fixtures/next-consumer/**; scripts/** packed acceptance; docs/node-authoring.md.
 - Prerequisite: S24C.A fixtures and meaningful red where practical.
 - Obligation: Export bounded fixture-v1 evidence plus ordinary public runNode/runGraph test scaffold; require explicit redaction and dependency fixture bindings, refuse incomplete essential inputs, and never execute captured commands/services.
 - Condition: [X24C.2](conditions.md). The success scenario above is part of this production-boundary proof.

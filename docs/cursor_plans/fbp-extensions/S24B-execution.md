@@ -37,3 +37,5 @@ Repository root, pinned Node 26.13.0 and npm 11.20.0. Core lock SHA256 `7a72e971
 - Guidance integrity and git diff whitespace checks passed. Extension order and condition owners are unchanged. Only the implementation branch and its review publication are authorized. S24C waits for the actual S24B merge.
 
 Publication receipt: implementation commit `245b09ccd138a5e05cbf7b326ddcb6f0e8d3a59f` pushed. GitHub confirmed [PR38](https://github.com/SilverFox70/node-eventDispatcher/pull/38) open against master at the verified S24A merge. This follow-up changes documentation only. User-local .DS_Store and .feedback-log remain uncommitted.
+
+Merge receipt: GitHub confirmed PR38 merged. Fetched origin/master contains `17633bca95ccdbe9be0ff037d6e856acb6ada4e9`, the S24C branch base.
