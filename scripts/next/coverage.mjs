@@ -1,5 +1,5 @@
 import { readFileSync, readdirSync, existsSync, realpathSync, writeFileSync } from 'node:fs';
-import { join, resolve, relative, sep } from 'node:path';
+import { dirname, join, resolve, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { mappedFunctions, prepareCoverage } from './coverage-ranges.mjs';
@@ -15,6 +15,7 @@ const walk = dir => readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isD
 export async function measureFixture(app, evidence) {
   app = realpathSync(app);
   const editorSource = join(app, 'node_modules/event-driven-design-editor/src');
+  const editorDist = join(app, 'node_modules/event-driven-design-editor/dist') + sep;
   const expected = [...walk(join(app, 'app')), ...walk(join(app, 'lib')), ...walk(editorSource)].filter(file => {
     if (!/\.(ts|tsx)$/.test(file) || file.endsWith('.d.ts')) return false;
     const source = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest);
@@ -31,7 +32,7 @@ export async function measureFixture(app, evidence) {
       const path = fileURLToPath(script.url);
       if (!existsSync(path)) continue;
       const canonical = realpathSync(path);
-      if (!owned.has(canonical) && !canonical.startsWith(join(app, '.next') + sep)) continue;
+      if (!owned.has(canonical) && !canonical.startsWith(join(app, '.next') + sep) && !canonical.startsWith(editorDist)) continue;
       if (!groups.has(canonical)) groups.set(canonical, { scripts: [], captures: [] });
       groups.get(canonical).scripts.push({ ...script, url: canonical });
       groups.get(canonical).captures.push(file);
@@ -45,7 +46,8 @@ export async function measureFixture(app, evidence) {
       if (!normalizedMaps.has(canonical)) {
         const map = JSON.parse(readFileSync(path + '.map', 'utf8'));
         map.sources = map.sources.map((source, index) => {
-          const editor = source.match(/^webpack:\/\/[^/]+\/\.\.\/src\/(.+)$/);
+          if (canonical.startsWith(editorDist)) return resolve(dirname(canonical), source);
+          const editor = source.match(/^webpack:\/\/[^/]+\/(?:\.\.\/)+src\/(.+)$/);
           if (editor) {
             const target = resolve(editorSource, editor[1]);
             if (owned.has(target) && map.sourcesContent?.[index] === readFileSync(target, 'utf8')) return target;

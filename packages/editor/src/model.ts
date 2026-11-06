@@ -1,19 +1,16 @@
 import type { Catalog, ComponentDescriptorV2, PortDescriptor } from 'event-driven-design/model';
 
-export type EditorNode = Readonly<{ id: string; component: string }>;
+export { applyEditorCommand, createEditorState } from './document/state.js';
+export { copySelection } from './document/clipboard.js';
+export { draftIssues } from './document/topology.js';
+export type { CommandResult, EditorState } from './document/state.js';
+export type { EditorNode, EditorCommand, EditorDocument, EditorIssue } from './document/types.js';
 export type PaletteEntry = Readonly<{ identity: string; descriptor: ComponentDescriptorV2 }>;
 
 export function paletteEntries(catalog: Catalog): readonly PaletteEntry[] {
   return catalog.components.map(descriptor => ({
     identity: `${descriptor.id}@${descriptor.version}`, descriptor,
   }));
-}
-
-export function placeNode(nodes: readonly EditorNode[], component: string): readonly EditorNode[] {
-  const ids = new Set(nodes.map(node => node.id));
-  let index = nodes.length + 1;
-  while (ids.has(`node-${index}`)) index++;
-  return [...nodes, { id: `node-${index}`, component }];
 }
 
 export function portType(port: PortDescriptor): string {

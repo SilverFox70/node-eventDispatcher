@@ -1,72 +1,105 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { Background, Controls, ReactFlow } from '@xyflow/react';
+import { useMemo, useReducer, useRef, useState } from 'react';
 import type { Catalog } from 'event-driven-design/model';
-import { paletteEntries, placeNode } from './model.js';
-import type { EditorNode } from './model.js';
+import { applyEditorCommand, copySelection, createEditorState, draftIssues, paletteEntries } from './model.js';
+import type { EditorNode, EditorState } from './model.js';
+import type { Clipboard, Edit, EditorCommand, EditorIssue } from './document/types.js';
+import { nextNodeId } from './document/clipboard.js';
 import { NodeDetails } from './node-details.js';
-import { CanvasNodeCard } from './canvas-node.js';
 import type { CanvasNode } from './canvas-node.js';
-
-const nodeTypes = { component: CanvasNodeCard };
+import { EditorCanvas } from './canvas/editor-canvas.js';
+import { PortCommands } from './canvas/port-commands.js';
+import { SelectionCommands } from './canvas/selection-commands.js';
 
 export type GraphEditorProps = Readonly<{
   catalog: Catalog;
   initialNodes?: readonly EditorNode[];
 }>;
+type Operation = Edit | { type: 'undo' } | { type: 'redo' };
 
-/** An ephemeral palette and canvas over application-provided catalog metadata. */
+type Session = { state: EditorState; selected?: string; issue?: EditorIssue };
+type Action = { type: 'select'; node: string } | { type: 'command'; command: EditorCommand };
+
+function initialize(nodes: readonly EditorNode[]): Session {
+  return { state: createEditorState(nodes) };
+}
+
+/** An ephemeral graph editor over application-provided catalog metadata. */
 export function GraphEditor({ catalog, initialNodes = [] }: GraphEditorProps) {
-  const [draft, setDraft] = useState({ nodes: initialNodes, selected: undefined as string | undefined });
+  const [session, update] = useReducer((current: Session, action: Action): Session => {
+    if (action.type === 'select') return { ...current, selected: action.node };
+    const result = applyEditorCommand(current.state, action.command, catalog);
+    if (!result.ok) return { ...current, issue: result.issue };
+    const selected = action.command.type === 'addNode' ? action.command.node.id : current.selected;
+    return { state: result.state, selected };
+  }, initialNodes, initialize);
+  const commandId = useRef(0);
+  const [marks, setMarks] = useState<readonly string[]>([]);
+  const [clipboard, setClipboard] = useState<Clipboard>();
+  const { state, issue } = session;
+  const { graph, layout } = state.document;
   const entries = useMemo(() => paletteEntries(catalog), [catalog]);
   const byIdentity = useMemo(() => new Map(entries.map(item => [item.identity, item.descriptor])), [entries]);
-  const selected = draft.nodes.find(node => node.id === draft.selected);
+  const selected = graph.nodes.find(node => node.id === session.selected);
   const selectedDescriptor = selected && byIdentity.get(selected.component);
-  const canvas: CanvasNode[] = draft.nodes.map((node, index) => {
+  const marked = marks.filter(id => Object.hasOwn(layout.positions, id));
+  const issues = useMemo(() => draftIssues(graph, catalog), [graph, catalog]);
+  const canvas: CanvasNode[] = graph.nodes.map(node => {
     const descriptor = byIdentity.get(node.component);
     return {
-      id: node.id, type: 'component', position: { x: (index % 3) * 200, y: Math.floor(index / 3) * 130 },
+      id: node.id, type: 'component', position: layout.positions[node.id]!,
       data: { label: descriptor?.title ?? `Unavailable · ${node.component}`, descriptor },
-      width: 175, height: 100, selected: node.id === draft.selected,
+      width: 175, height: 100, selected: node.id === session.selected,
     };
   });
-  function select(id: string) {
-    setDraft(current => ({ ...current, selected: id }));
+
+  function select(node: string) { update({ type: 'select', node }); }
+  function dispatch(operation: Operation) {
+    update({ type: 'command', command: { ...operation, id: `edit-${++commandId.current}`, expectedRevision: state.revision } });
   }
 
   return <div className="nodeflow-editor">
     <section aria-label="Node palette">
       <h2>Node palette</h2>
       <ul>{entries.map(({ identity, descriptor }) => <li key={identity}>
-        <button type="button" aria-label={`Add ${descriptor.title}`} onClick={() => setDraft(current => {
-          const nodes = placeNode(current.nodes, identity);
-          return { nodes, selected: nodes.at(-1)?.id };
-        })}>{descriptor.title}</button>
+        <button type="button" aria-label={`Add ${descriptor.title}`} onClick={() =>
+          dispatch({ type: 'addNode', node: { id: nextNodeId(state.used, graph.nodes.length + 1), component: identity } })
+        }>{descriptor.title}</button>
         <small>{identity}</small>
       </li>)}</ul>
     </section>
     <section aria-label="Graph canvas">
       <h2>Canvas</h2>
-      <div className="nodeflow-viewport">
-        <ReactFlow nodes={canvas} nodeTypes={nodeTypes} onNodeClick={(_, node) => select(node.id)}
-          nodesDraggable={false} nodesConnectable={false} nodesFocusable={false}
-          edgesFocusable={false} deleteKeyCode={null}>
-          <Background />
-          <Controls showInteractive={false} />
-        </ReactFlow>
+      <div role="group" aria-label="Edit history">
+        <button type="button" disabled={!state.past.length} onClick={() => dispatch({ type: 'undo' })}>Undo</button>{' '}
+        <button type="button" disabled={!state.future.length} onClick={() => dispatch({ type: 'redo' })}>Redo</button>{' '}
+        <output aria-label="Draft changes">{state.document === state.baseline ? 'No edits' : 'Edited draft'}</output>
       </div>
-      <h3>Nodes on canvas</h3>
-      <ul>{canvas.map(node => <li key={node.id}>
-        <button type="button" aria-label={`Select ${node.data.label} · ${node.id}`} aria-pressed={node.selected}
-          onClick={() => select(node.id)}>{node.data.label} · {node.id}</button>
-      </li>)}</ul>
+      {issue && <p role="alert">{issue.code} · {issue.path}</p>}
+      <EditorCanvas nodes={canvas} wires={graph.edges} select={select} dispatch={dispatch} />
+      <SelectionCommands nodes={canvas} groups={layout.groups} marked={marked} clipboard={clipboard} select={select}
+        mark={id => setMarks(current => current.includes(id) ? current.filter(value => value !== id) : [...current, id])}
+        copy={() => setClipboard(copySelection(state.document, marked))} dispatch={dispatch} />
+      <PortCommands nodes={canvas} graph={graph} dispatch={dispatch} />
+      <details><summary>Draft validation ({issues.length})</summary>
+        <ul>{issues.map(issue => <li key={`${issue.path}:${issue.code}`}>{issue.code} · {issue.path}</li>)}</ul>
+      </details>
     </section>
     <section aria-label="Selected node">
       <h2>Selected node</h2>
       {selected ? <>
         <h3>{selectedDescriptor?.title ?? 'Unavailable component'}</h3>
         <p>{selected.id} · {selected.component}</p>
+        <button type="button" onClick={() => dispatch({ type: 'removeNode', node: selected.id })}>Delete selected node</button>
+        <div className="nodeflow-move" role="group" aria-label="Move selected node">
+          {([{ name: 'Left', x: -20, y: 0 }, { name: 'Right', x: 20, y: 0 },
+            { name: 'Up', x: 0, y: -20 }, { name: 'Down', x: 0, y: 20 }]).map(delta =>
+            <button key={delta.name} type="button" onClick={() => {
+              const point = layout.positions[selected.id]!;
+              dispatch({ type: 'moveNode', node: selected.id, position: { x: point.x + delta.x, y: point.y + delta.y } });
+            }}>{delta.name}</button>)}
+        </div>
         {selectedDescriptor && <NodeDetails descriptor={selectedDescriptor} />}
       </> : <p>Select a node to inspect its ports.</p>}
     </section>
