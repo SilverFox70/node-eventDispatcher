@@ -16,4 +16,8 @@ The S24F checkpoint shows equivalent outputs and effects against the TypeScript 
 
 Node 26.13.0 and npm 11.20.0. Build, typecheck, lint and guidance passed. The focused graph/catalog suite passed 25/25. The complete core coverage run passed 305/305, including isolated package consumers and the stress fixtures. The unchanged per-file threshold passed, with 100% statements, lines and branches in the component definition, builder, compiler, graph/catalog models and isolated node runner. Core log: `/tmp/fbp-s25-coverage-final.log`.
 
-The existing inspection path retains the v2 spec and catalog, and Mermaid renders the topology. The authoring UI and its configuration editor belong to subsequent slices. The production Next.js regression run and publication are pending.
+The existing inspection path retains the v2 spec and catalog, and Mermaid renders the topology. The authoring UI and its configuration editor belong to subsequent slices. The production Next.js regression run passed 53/53 from an isolated packed consumer, including Chromium, HTTP stress, the client/server import boundary and the fixture coverage gate. The unchanged coverage canary correctly refused unexecuted code. Next log: `/tmp/fbp-s25-next.log`. The isolated candidate matched the committed source and test files in `59c3ef175ebf84c7deb89fd16f9629aa4bffeec0`.
+
+## Handoff
+
+S25 is complete for review. No dependencies, package scripts or coverage thresholds changed. The existing runtime remains the only execution path, and the browser model remains passive. S26 follows the actual S25 merge and owns the installable Next.js node palette and canvas.
