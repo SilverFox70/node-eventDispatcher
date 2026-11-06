@@ -36,6 +36,26 @@ function verifyRunProtocol(app) {
     await assert.rejects(requestRun('/test', {}), /RUN_REQUEST_FAILED/);
   `], { cwd: app, encoding: 'utf8', timeout: 20000 });
   assert.equal(child.status, 0, child.stderr);
+  const markup = spawnSync(process.execPath, ['--input-type=module', '-e', `
+    import assert from 'node:assert/strict';
+    import { createElement } from 'react';
+    import { renderToStaticMarkup } from 'react-dom/server';
+    const path = new URL('./runs/report.js', import.meta.resolve('event-driven-design-editor/model'));
+    const { RunReport } = await import(path);
+    const render = props => renderToStaticMarkup(createElement(RunReport, { revision: 2, ...props }));
+    assert.equal(render({}), '');
+    assert.match(render({ issue: 'Invalid input' }), /role="alert">Invalid input/);
+    const result = { revision: 2, graphHash: 'hash', runId: 'run', terminal: { status: 'completed' },
+      outputs: { result: [{ value: 5 }] } };
+    const completed = render({ result });
+    assert.match(completed, /result · 1 packets/);
+    assert(!completed.includes('earlier draft'));
+    const cancelled = render({ result: { ...result, revision: 1,
+      terminal: { status: 'cancelled', code: 'CANCELLED' }, outputs: {} } });
+    assert.match(cancelled, /Test cancelled · CANCELLED/);
+    assert.match(cancelled, /earlier draft/);
+  `], { cwd: app, encoding: 'utf8', timeout: 20000 });
+  assert.equal(markup.status, 0, markup.stderr);
 }
 
 async function verifyRunAdmission(page, server, app) {
