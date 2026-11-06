@@ -4,12 +4,13 @@ import type { Json } from '../../packet.js';
 import type { FixtureApproval } from '../fixtures/review.js';
 import type { FixtureServices } from '../fixtures/run.js';
 
+import { AssertionError } from 'node:assert';
 import { isDeepStrictEqual } from 'node:util';
 import { FlowError } from '../../errors.js';
 import { copyJson } from '../../packet/json.js';
 import { hashEvidence } from '../../diagnostics/causal/identity.js';
 import { runGraph } from '../run-graph.js';
-import { fixtureInputs } from '../fixtures/run.js';
+import { assertFixtureExpectations, fixtureInputs } from '../fixtures/run.js';
 import { bindRevision, fixtureDigest, readRevision, readSide } from './revision.js';
 import { observeComparison } from './observations.js';
 
@@ -29,7 +30,7 @@ export type ComparisonChange = Readonly<{
 export type RevisionDigests = Readonly<{ execution: string; graph: string; code: string; contracts: string }>;
 export type ComparisonResult = Readonly<{
   status: 'not-comparable'; reason: 'FIXTURE_MISMATCH' | 'FIXTURE_REFUSED' | 'REVISION_UNVERIFIED' |
-    'BINDING_MISMATCH' | 'INCOMPATIBLE_CONTRACT' | 'INCOMPLETE_EVIDENCE';
+    'BINDING_MISMATCH' | 'INCOMPATIBLE_CONTRACT' | 'INCOMPLETE_EVIDENCE' | 'BASELINE_MISMATCH';
 } | {
   status: 'equal-on-fixtures' | 'changed-on-fixtures'; caseId: string;
   fixtureDigest: string; dependencyScriptDigest: string;
@@ -61,9 +62,17 @@ export async function compareFixture(pair: Readonly<{ baseline: ComparisonSide; 
     async function run(revision: typeof left) {
       const result = await runGraph(revision.graph, { inputs: fixtureInputs(fixture), decisionEvidence: true, maxOutputPackets: 64 });
       revision.checkConsumed();
-      return observeComparison(result, revision.origins);
+      return { result, series: observeComparison(result, revision.origins) };
     }
-    const leftSeries = await run(left), rightSeries = await run(right);
+    const { result: baselineResult, series: leftSeries } = await run(left);
+    if (baselineResult.terminal.status !== 'completed') return refused('BASELINE_MISMATCH');
+    try {
+      assertFixtureExpectations(baselineResult, fixture);
+    } catch (error) {
+      if (error instanceof AssertionError) return refused('BASELINE_MISMATCH');
+      throw error;
+    }
+    const { series: rightSeries } = await run(right);
     const changes: ComparisonChange[] = [], unchanged: ComparisonChange[] = [];
     const keys = [...new Set([...leftSeries.keys(), ...rightSeries.keys()])].sort();
     for (const key of keys) {

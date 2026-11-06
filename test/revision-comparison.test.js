@@ -21,6 +21,7 @@ function comparisonCase(core, z, runId) {
         input: amount, output: options.stringOutput ? core.contract('text@1', z.string()) : amount,
         decisions: [{ code: 'TAX', ruleVersion: version, outcomes: ['business-result'], facts: ['amount', 'policy'] }],
         handler: (value, context) => {
+          options.onRun?.();
           if (!options.skipService) lookup();
           if (options.failure) throw new core.FlowError('COMPONENT_FAILED');
           context.recordDecision({ code: options.rejected ? 'MISSING' : 'TAX', ruleVersion: version, outcome: 'business-result', facts: [
@@ -123,6 +124,21 @@ test('mismatched facts, unavailable provenance and unknown roles stop before gra
   assert.equal(builds, 0);
 });
 
+test('baseline output or decision drift and failure refuse before candidate execution', async () => {
+  const { baseline, fixture, side } = comparisonCase(core, z, randomUUID());
+  let candidateRuns = 0;
+  const candidate = side('v2', 0.20, { onRun: () => { candidateRuns++; } });
+  const noDecisions = { ...fixture, expected: { ...fixture.expected, decisions: [] } };
+  for (const pair of [
+    { baseline: { ...baseline, build: side('v1', 0.15).build }, candidate },
+    { baseline: { ...baseline, fixture: noDecisions }, candidate: { ...candidate, fixture: noDecisions } },
+    { baseline: { ...baseline, build: side('v1', 0.10, { failure: true }).build }, candidate },
+  ]) {
+    assert.deepEqual(await compareFixture(pair), { status: 'not-comparable', reason: 'BASELINE_MISMATCH' });
+    assert.equal(candidateRuns, 0);
+  }
+});
+
 test('contract refusal and missing evidence are distinct from an observed failure', async () => {
   const { baseline, candidate, side } = comparisonCase(core, z, randomUUID());
   const incompatible = await compareFixture({ baseline, candidate: side('v2', 0.20, { stringOutput: true }) });
@@ -161,7 +177,12 @@ test('lineage occurrences align across multiple fresh packets and unsafe gaps re
   const { baseline, fixture } = comparisonCase(core, z, randomUUID());
   const repeated = { ...fixture, input: { amount: [{ value: 100, key: 'first' }, { value: 100, key: 'second' }] },
     dependencyScripts: { rates: [{ outcome: 'result', value: true }, { outcome: 'result', value: true }] },
-    provenance: { ...fixture.provenance, inputSequences: [1, 2] } };
+    expected: {
+      outputs: { tax: [{ value: 10, key: 'first' }, { value: 10, key: 'second' }],
+        base: [{ value: 100, key: 'first' }, { value: 100, key: 'second' }] },
+      decisions: [...fixture.expected.decisions, ...fixture.expected.decisions],
+    },
+    provenance: { ...fixture.provenance, inputSequences: [1, 2], outputSequences: [10, 11, 12, 13] } };
   const side = { ...baseline, fixture: repeated };
   const result = await compareFixture({ baseline: side, candidate: side });
   assert.equal(result.status, 'equal-on-fixtures');

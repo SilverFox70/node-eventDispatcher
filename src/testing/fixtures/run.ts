@@ -5,6 +5,7 @@ import type { Json } from '../../packet.js';
 import type { CompiledGraph } from '../../graph.js';
 import type { RegressionFixture } from '../../model/diagnostics/fixtures/fixture.js';
 import { runGraph } from '../run-graph.js';
+import type { TestResult } from '../run-graph.js';
 import { checkFixtureRoles, reviewedFixture } from './review.js';
 import type { FixtureApproval } from './review.js';
 import { checkFixtureContracts } from './contracts.js';
@@ -52,6 +53,11 @@ export async function runRegressionFixture(value: unknown, bindings: FixtureBind
   checkConsumed();
   const decisions = result.decisions!;
   if (decisions.dropped || decisions.rejected) throw new FlowError('FIXTURE_INCOMPLETE');
+  assertFixtureExpectations(result, fixture);
+}
+
+export function assertFixtureExpectations(result: TestResult, fixture: RegressionFixture): void {
+  const decisions = result.decisions!;
   const outputs = Object.fromEntries(Object.entries(result.outputs).map(([port, packets]) => [port,
     packets.map(item => ({ value: item.value, ...(item.key === undefined ? {} : { key: item.key }) }))]));
   deepStrictEqual(JSON.parse(JSON.stringify(outputs)), JSON.parse(JSON.stringify(fixture.expected.outputs)), 'Fixture outputs changed');
