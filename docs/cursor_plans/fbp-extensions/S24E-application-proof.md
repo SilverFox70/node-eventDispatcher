@@ -1,6 +1,6 @@
 # S24E — Use the framework for an understandable content-validation and preview application.
 
-Plan EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan EXT1-r2. Status **approved for execution**. The user requested the next slice after PR #40 passed CI and merged. See [execution receipt](S24E-execution.md).
 Branch `codex/fbp-24e-application-proof`. Order is authoritative in [manifest](manifest.json) and [index](INDEX.md).
 Prerequisites: predecessor merged/receipt verified, accepted D1/D5 interfaces and existing diagnostic bounds. No editor, GraphSpec v2 or artifact/SQL storage prerequisite.
 Contract: [explainability](explainability.md), [shared rules](shared-contract.md), [verification/handoff](execution.md).
@@ -29,7 +29,7 @@ Consumption contract: [local workspace](local-workspace.md). Also prove local np
 
 ### S24E.B — Implement the story
 
-- Allowed: examples/content-review/**; fixtures/next-consumer/**; templates/** demo only; scripts/** installed demo proof; docs/**; README.md.
+- Allowed: examples/content-review/**; fixtures/next-consumer/**; templates/** demo only; scripts/** and package.json command wiring for installed and workspace proof; docs/**; README.md.
 - Prerequisite: S24E.A fixtures and meaningful red where practical.
 - Obligation: Build one installed Next application using current graph APIs, not the future editor: schema admission, parallel content/media/rule checks, keyed collation, explicit eligibility filter and preview/report. Support form and JSON-upload entry points through the same graph.
 - Condition: [X24E.2](conditions.md). The success scenario above is part of this production-boundary proof.

@@ -109,3 +109,15 @@ The demo retains256 diagnostic records and at most1024 UTF-8 bytes per captured 
 The local demo host explicitly owns at most16 connections. Each receives an unguessable capability; POSTs require the matching source, run, session and epoch, received loopback Host/protocol origin, strict known fields and at most4096 body bytes. Foreign/stale/closed/busy/over-limit controls are refused before their effect. That is a bounded local-demo authority boundary, not a production login/tenant-authorization service. Old callbacks/aborted requests cannot populate replacement views; downloads use short-lived browser URLs. The browser validates metadata and association only; backend/runtime payload contracts remain authoritative.
 
 S24 adds no core schema, remote sink, persistence or graph editor. [S24 plan/receipt](cursor_plans/fbp-extensions/S24-execution.md) separates implementation, packaged browser/API/coverage proof and publication from merge. Test providers are owned loopback fixtures; provider availability is never correctness evidence.
+
+## Product content review
+
+Run `npm run demo:next` and open [Product content review](http://localhost:54545/content-review). Submit the chair form for a preview. Upload a JSON object with the same fields to use the same validation and graph. Set description or altText to an empty string for actionable findings. Set archived to true to see why the input was filtered. Open the explanation beneath the result to see the recorded decisions and packet ancestry.
+
+The media selector simulates slow work, one retryable error and invalid output using a local service. Cancel sends the request abort signal to the graph. A content finding is normal report data. Invalid node output terminates the run.
+
+Run `npm run test:content-workspace` to build this same app in a fresh npm workspace. The command writes a workspace manifest and lockfile from the pinned package inputs, installs third-party dependencies, links the framework source, and builds the library before Next. It then edits only the temporary framework source, rebuilds and restarts the app, and verifies the changed review outcome. The application nodes stay in the app. A framework edit requires rebuilding the framework and restarting the Next production build.
+
+The installed acceptance suite captures a synthetic chair run, substitutes reviewed values, writes a sanitized test scaffold and replays the fixture through the testing API. The live browser view exposes lineage and decisions without turning arbitrary user input into an export.
+
+See the [S24E execution receipt](cursor_plans/fbp-extensions/S24E-execution.md).
