@@ -439,7 +439,9 @@
           "S27.C"
         ],
         "contract": "EXT1-r2 visual authoring commands"
-      }
+      },
+      "publication_status": "pr-open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/45"
     },
     {
       "id": "S28",
