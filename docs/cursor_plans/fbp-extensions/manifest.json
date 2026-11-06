@@ -316,7 +316,8 @@
         ],
         "contract": "S24E product review"
       },
-      "publication_status": "ready"
+      "publication_status": "pr-open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/41"
     },
     {
       "id": "S24F",
