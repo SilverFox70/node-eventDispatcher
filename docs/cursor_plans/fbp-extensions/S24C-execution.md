@@ -31,4 +31,6 @@ The existing runGraph helper owns execution. A narrow opt-in decision snapshot o
 - Installed replay passed with Node's network permission disabled and failed with the intentionally changed result. The generated test also refused an unrestricted process before loading the fixture binding file. No consumer writes reach the checkout or production services.
 - Guidance integrity and whitespace checks passed. No Next UI/server code changed. The owned downstream boundary is the generated test in a clean packed consumer. The existing production Next receipt remains scoped to S24B.
 - Readability review separates passive schema, capture authorization, substitution comparison, scaffold writing, runtime contract checks and fixture replay. No new dependencies, manifest entry points, CI commands or competing executor.
-- Implementation complete and verified for X24C.1–3. Publication ready. S24D requires the actual S24C merge.
+- Implementation complete and verified for X24C.1–3. Publication open for review. S24D requires the actual S24C merge.
+
+Publication receipt: implementation commit `0021737d80c5d7860933b1f395059de45bbbb81d` pushed. GitHub confirmed [PR39](https://github.com/SilverFox70/node-eventDispatcher/pull/39) open against master. The follow-up records documentation only. User-local .DS_Store and .feedback-log remain uncommitted.
