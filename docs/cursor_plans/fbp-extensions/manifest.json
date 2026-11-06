@@ -377,7 +377,9 @@
           "S25.C"
         ],
         "contract": "CG2-r1"
-      }
+      },
+      "publication_status": "pr-open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/43"
     },
     {
       "id": "S26",

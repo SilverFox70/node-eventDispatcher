@@ -21,3 +21,5 @@ The existing inspection path retains the v2 spec and catalog, and Mermaid render
 ## Handoff
 
 S25 is complete for review. No dependencies, package scripts or coverage thresholds changed. The existing runtime remains the only execution path, and the browser model remains passive. S26 follows the actual S25 merge and owns the installable Next.js node palette and canvas.
+
+Publication: [PR #43](https://github.com/SilverFox70/node-eventDispatcher/pull/43) opened against master with verified candidate `a99cddc24f666b4d5b1f9091f6aae63787545ccd`.
