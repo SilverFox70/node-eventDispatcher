@@ -426,10 +426,20 @@
         "X27.2",
         "X27.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "in-progress",
       "merge_sha": null,
-      "gate": "D1 model compatibility; D2 package/canvas compatibility"
+      "gate": "D1 model compatibility; D2 package/canvas compatibility",
+      "journal": "S27-execution.md",
+      "execution_approval": {
+        "authority": "user requested S27 and two-Alert browser regression after PR #44 merged",
+        "tasks": [
+          "S27.A",
+          "S27.B",
+          "S27.C"
+        ],
+        "contract": "EXT1-r2 visual authoring commands"
+      }
     },
     {
       "id": "S28",

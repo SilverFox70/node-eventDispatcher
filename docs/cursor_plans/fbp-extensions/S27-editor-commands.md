@@ -1,6 +1,6 @@
 # S27 — Wire, rearrange and undo graph edits without accidentally executing them.
 
-Plan revision EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan revision EXT1-r2. Status **approved-for-execution**. See the [execution receipt](S27-execution.md).
 Phase: editor. Proposed branch: `codex/fbp-27-editor-commands`.
 Order: S26 → S27 → S28.
 
@@ -28,7 +28,7 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 ### S27.B — Implement the bounded feature
 
-- Allowed: packages/editor/src/document/**; packages/editor/src/canvas/**; packages/editor/src/model/**.
+- Allowed: packages/editor/src/document/**; packages/editor/src/canvas/**; packages/editor/src/model.ts and packages/editor/src/model/**. The existing client entry, card and styles wire the commands to the S26 canvas.
 - Prerequisite: S27.A evidence; meaningful red where feasible, and accepted interfaces.
 - Obligation: Implement one document command reducer for add/remove/connect/disconnect/move/group/expose-port, copy/paste with fresh identities, undo/redo and dirty state; keep layout separate from graph semantics.
 - Condition: [X27.2](conditions.md). Create a two-node connection, undo, redo and move it: topology updates immediately, undo restores exact semantic content, and moving only changes layout hash.
@@ -51,4 +51,4 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. G1–G7 implementation readiness is blocked by the named decisions and predecessor evidence; revalidate at handoff rather than treating future commands as delivered.
+The user approved S27.A–C after the S26 merge and requested the two-Alert browser regression.
