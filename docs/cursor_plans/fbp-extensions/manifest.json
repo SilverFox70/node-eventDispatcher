@@ -501,7 +501,9 @@
           "S29.C"
         ],
         "contract": "EXT1-r2 fixture test-run admission"
-      }
+      },
+      "publication_status": "pr-open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/47"
     },
     {
       "id": "S30",
