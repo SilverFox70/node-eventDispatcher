@@ -98,7 +98,7 @@ export async function measureFixture(app, evidence) {
   const failures = [];
   for (const path of expected) {
     if (!report[path]) { failures.push(relative(app, path) + ': missing source coverage'); continue; }
-    const gated = withoutDelimiterStatements(report[path], sourceFiles.get(path));
+    const gated = withoutDelimiterStatements(coverage.fileCoverageFor(path).toJSON(), sourceFiles.get(path));
     const summary = createFileCoverage(gated).toSummary();
     console.log(relative(app, path), JSON.stringify(summary.data));
     for (const metric of ['statements', 'lines', 'branches']) if (summary[metric].pct < 95) failures.push(`${relative(app, path)} ${metric} ${summary[metric].pct}%`);
