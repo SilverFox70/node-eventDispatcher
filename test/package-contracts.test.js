@@ -84,6 +84,19 @@ test('built distributions usable: same-format public helpers and cross-format ha
         const explanation=model.explainCausal(combined,{runId:run.runId,subject:{kind:'input',packetId:admitted.packetId,jobId:admitted.jobId},maxRecords:64},[]);
         assert(explanation.ok);assert(explanation.explanation.nodes.some(row=>row.stream==='decision'&&row.record.code==='SMALL'));
       }
+      for (const [f, testing] of [[esm, {runNode}], [cjs, ct]]) {
+        const definition = f.defineConfiguredComponent({
+          id: 'constant', version: 1, title: 'Constant', description: '', configuration: f.jsonContract,
+          in: {}, out: {value: f.jsonContract}, create: config => async ctx => ctx.send('value', f.packet(config))
+        });
+        const builder = f.createGraph(), h = builder.add('constant', definition, {config: 4});
+        builder.exposeOutput('value', h, 'value');
+        const spec = builder.toSpec(), registry = {'constant@1': definition}, catalog = f.describeRegistry(registry);
+        assert.equal(spec.version, 2); assert.equal(catalog.version, 2);
+        assert(model.validateGraph(spec, catalog).ok); assert(f.compileGraph(spec, registry).ok);
+        const result = await testing.runNode(definition, {config: 4, inputs: {}});
+        assert.equal(result.terminal.status, 'completed'); assert.equal(result.outputs.value[0].value, 4);
+      }
       console.log('same-format helpers: 4; cross-format handles: INVALID_ARGUMENT');
     `]);
     assert.match(output, /same-format helpers: 4; cross-format handles: INVALID_ARGUMENT/);

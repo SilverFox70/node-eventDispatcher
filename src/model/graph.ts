@@ -1,4 +1,5 @@
-import type { Catalog } from './catalog.js';
+import type { Json } from '../packet.js';
+import type { Catalog, ComponentDescriptorV2 } from './catalog.js';
 import { validateCatalog } from './catalog.js';
 import { contractsCompatible, snapshotJsonMetadata } from './contracts.js';
 import type { ValidationResult } from './contracts.js';
@@ -6,13 +7,25 @@ import { assertGraphShape, isName } from './graph/structure.js';
 import { readTaskPolicy } from './graph/task-policy.js';
 import type { TaskPolicy } from './graph/task-policy.js';
 export type Endpoint = Readonly<{ node: string; port: string }>;
-export type GraphSpec = Readonly<{
-  version: 1; nodes: readonly (Readonly<{ id: string; component: string }> & TaskPolicy)[];
+type GraphNode = Readonly<{ id: string; component: string }> & TaskPolicy;
+export type GraphNodeV2 = GraphNode & Readonly<{ config?: Json }>;
+type Wiring = Readonly<{
   edges: readonly Readonly<{ from: Endpoint; to: Endpoint; capacity?: number }>[];
   inputs: Readonly<Record<string, Endpoint>>; outputs: Readonly<Record<string, Endpoint>>;
 }>;
+export type GraphSpecV1 = Wiring & Readonly<{ version: 1; nodes: readonly GraphNode[] }>;
+export type GraphSpecV2 = Wiring & Readonly<{ version: 2; nodes: readonly GraphNodeV2[] }>;
+export type GraphSpec = GraphSpecV1 | GraphSpecV2;
+
 /** Validate serializable wiring without invoking application code. */
 export function validateGraph(value: unknown, catalog: Catalog): ValidationResult {
+  return validateGraphWiring(value, catalog);
+}
+
+/** Backend may add an authoritative configuration check to the same wiring pass. */
+export function validateGraphWiring(
+  value: unknown, catalog: Catalog, checkConfig?: (component: string, config: Json) => boolean
+): ValidationResult {
   let safeCatalog: Catalog;
   try { safeCatalog = snapshotJsonMetadata(catalog) as unknown as Catalog; }
   catch { return { ok: false, issues: [{ code: 'INVALID_CATALOG', path: '$' }] }; }
@@ -28,7 +41,7 @@ export function validateGraph(value: unknown, catalog: Catalog): ValidationResul
       return { ok: false, issues: [{ code: 'GRAPH_LIMIT', path: '$' }] };
     }
     const components = new Map(safeCatalog.components.map(item => [`${item.id}@${item.version}`, item]));
-    const nodes = new Map<string, Catalog['components'][number]>();
+    const nodes = new Map<string, ComponentDescriptorV2>();
     const ids = new Set<string>();
     spec.nodes.forEach((node, index) => {
       const path = `$.nodes[${index}]`;
@@ -44,9 +57,18 @@ export function validateGraph(value: unknown, catalog: Catalog): ValidationResul
       }
       if (ids.has(node.id)) issue('DUPLICATE_ID', `${path}.id`);
       ids.add(node.id);
-      const component = components.get(node.component);
-      if (!component) issue('UNKNOWN_COMPONENT', `${path}.component`);
-      else nodes.set(node.id, component);
+      const component: ComponentDescriptorV2 | undefined = components.get(node.component);
+      if (!component) {
+        issue('UNKNOWN_COMPONENT', `${path}.component`);
+        return;
+      }
+      const config = (node as GraphNodeV2).config;
+      const configured = component.configuration !== undefined;
+      if (configured !== Object.hasOwn(node, 'config') ||
+          (configured && checkConfig && !checkConfig(node.component, config!))) {
+        issue('CONFIG_INVALID', `${path}.config`);
+      }
+      nodes.set(node.id, component);
     });
     const counts = new Map<string, number>();
     const adjacency = new Map<string, string[]>();

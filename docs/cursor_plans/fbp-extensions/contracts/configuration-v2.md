@@ -1,6 +1,6 @@
 # S20 configured graph contract CG2-r1
 
-Status: settled design proposal; implementation S25 only. Existing source remains v1. Canonical refinement of [editor proposal](../editor.md); no v2 runtime acceptance is claimed in S20.
+CG2-r1 is the accepted design for S25 and refines the [editor proposal](../editor.md). The [S25 execution receipt](../S25-execution.md) records proof and handoff.
 
 ## Chosen shape
 

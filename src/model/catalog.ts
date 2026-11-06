@@ -6,7 +6,10 @@ export type ComponentDescriptor = Readonly<{
   examples?: readonly { in?: Readonly<Record<string, Json>>; out?: Readonly<Record<string, Json>> }[];
   effects?: readonly string[]; requiredDependencies?: readonly string[];
 }>;
-export type Catalog = Readonly<{ version: 1; components: readonly ComponentDescriptor[] }>;
+export type ComponentDescriptorV2 = ComponentDescriptor & Readonly<{ configuration?: PortDescriptor }>;
+export type CatalogV1 = Readonly<{ version: 1; components: readonly ComponentDescriptor[] }>;
+export type CatalogV2 = Readonly<{ version: 2; components: readonly ComponentDescriptorV2[] }>;
+export type Catalog = CatalogV1 | CatalogV2;
 
 import { FlowError } from '../errors.js';
 import { assertDescriptorSchema, assertJsonMetadata, canonicalSchema, metadataArray, metadataRecord } from './contracts.js';
@@ -18,6 +21,18 @@ function identifier(value: unknown): asserts value is string {
 function keys(fields: Record<string, unknown>, allowed: string[]): void {
   if (Object.keys(fields).some(key => !allowed.includes(key))) throw new FlowError('INVALID_CATALOG');
 }
+function validateDescriptor(raw: unknown, meanings: Map<string, string>): void {
+  const port = metadataRecord(raw);
+  keys(port, ['contractId', 'representationId', 'schema']);
+  identifier(port.contractId);
+  if (port.contractId.lastIndexOf('@') < 1 || port.contractId.endsWith('@')) throw new FlowError('INVALID_CATALOG');
+  if (port.representationId !== 'json@1') throw new FlowError('UNSUPPORTED_REPRESENTATION');
+  assertDescriptorSchema(port.schema, port.contractId === 'json@1');
+  if (port.contractId === 'json@1' && canonicalSchema(port.schema) !== '{}') throw new FlowError('INVALID_CATALOG');
+  const meaning = canonicalSchema(port.schema);
+  if (meanings.has(port.contractId) && meanings.get(port.contractId) !== meaning) throw new FlowError('CONTRACT_ID_CONFLICT');
+  meanings.set(port.contractId, meaning);
+}
 /** Validate metadata and identity consistency, not arbitrary browser payload schemas. */
 export function validateCatalog(value: unknown): ValidationResult {
   let path = '$';
@@ -25,13 +40,15 @@ export function validateCatalog(value: unknown): ValidationResult {
     assertJsonMetadata(value);
     const catalog = metadataRecord(value);
     keys(catalog, ['version', 'components']);
-    if (catalog.version !== 1) throw new FlowError('INVALID_CATALOG');
+    if (catalog.version !== 1 && catalog.version !== 2) throw new FlowError('INVALID_CATALOG');
     const identities = new Set<string>();
     const meanings = new Map<string, string>();
     for (const [index, item] of metadataArray(catalog.components).entries()) {
       path = `$.components[${index}]`;
       const component = metadataRecord(item);
-      keys(component, ['id', 'version', 'title', 'description', 'in', 'out', 'examples', 'effects', 'requiredDependencies']);
+      const allowed = ['id', 'version', 'title', 'description', 'in', 'out', 'examples', 'effects', 'requiredDependencies'];
+      if (catalog.version === 2) allowed.push('configuration');
+      keys(component, allowed);
       identifier(component.id);
       if (!Number.isSafeInteger(component.version) || (component.version as number) < 1 ||
         typeof component.title !== 'string' || component.title.length === 0 || typeof component.description !== 'string') throw new FlowError('INVALID_CATALOG');
@@ -42,17 +59,12 @@ export function validateCatalog(value: unknown): ValidationResult {
         for (const [name, raw] of Object.entries(metadataRecord(component[side]))) {
           path = `$.components[${index}].${side}.${name}`;
           identifier(name);
-          const port = metadataRecord(raw);
-          keys(port, ['contractId', 'representationId', 'schema']);
-          identifier(port.contractId);
-          if (port.contractId.lastIndexOf('@') < 1 || port.contractId.endsWith('@')) throw new FlowError('INVALID_CATALOG');
-          if (port.representationId !== 'json@1') throw new FlowError('UNSUPPORTED_REPRESENTATION');
-          assertDescriptorSchema(port.schema, port.contractId === 'json@1');
-          if (port.contractId === 'json@1' && canonicalSchema(port.schema) !== '{}') throw new FlowError('INVALID_CATALOG');
-          const meaning = canonicalSchema(port.schema);
-          if (meanings.has(port.contractId) && meanings.get(port.contractId) !== meaning) throw new FlowError('CONTRACT_ID_CONFLICT');
-          meanings.set(port.contractId, meaning);
+          validateDescriptor(raw, meanings);
         }
+      }
+      if (Object.hasOwn(component, 'configuration')) {
+        path = `$.components[${index}].configuration`;
+        validateDescriptor(component.configuration, meanings);
       }
       for (const field of ['effects', 'requiredDependencies']) {
         if (component[field] !== undefined) metadataArray(component[field]).forEach(identifier);

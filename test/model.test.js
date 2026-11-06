@@ -45,7 +45,7 @@ test('invalid catalog and unsupported descriptor table', () => {
     { type: 'string', format: 'email' }, { type: 'string', pattern: 3 }, { type: 'object' }, { properties: [] },
     { items: null }, { anyOf: [] }, { anyOf: [false] }, { required: [1] }, { enum: [] }, { enum: [{}] }, { const: {} }, { unknown: true }, { additionalProperties: true }];
   for (const schema of invalidSchemas) assert.equal(validateCatalog(withSchema(schema)).ok, false, JSON.stringify(schema));
-  const variants = [null, [], {}, { ...catalog, version: 2 }, { ...catalog, extra: true },
+  const variants = [null, [], {}, { ...catalog, version: 3 }, { ...catalog, extra: true },
     { ...catalog, components: [null] }, { ...catalog, components: [{ ...catalog.components[0], version: 0 }] }];
   for (const value of variants) assert.equal(validateCatalog(value).ok, false);
   const repr = clone(catalog); repr.components[0].in.value.representationId = 'binary@1';

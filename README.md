@@ -64,6 +64,8 @@ The first doubles1/2/3/4 and filters the results to6/8. The second splits one ac
 
 For the Next.js application at `http://localhost:54545`, run `npm run demo:next` (Ctrl+C to stop) or `npm run test:next` for production HTTP/browser acceptance. See [the Next.js guide](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/nextjs.md). Dependency/browser installation is setup; demo requests use local fakes.
 
+Reusable node definitions can now declare typed per-instance configuration. The compiler validates each binding before any node starts, and the same configuration works with the isolated node test harness. See the [application guide](docs/guide.md#configure-each-node-instance).
+
 ## Try the current APIs
 
 After building this checkout, or installing its locally packed tarball:
