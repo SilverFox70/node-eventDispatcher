@@ -1,5 +1,6 @@
 import { runGraph } from 'event-driven-design/testing';
 import { admitRun, runKey } from '../../../../lib/editor-run-admission.ts';
+import { liveRuns } from '../../../../lib/editor-live-runs.ts';
 import { readBoundedJson } from '../../../../lib/read-json.ts';
 
 const active = new Map<string, AbortController>();
@@ -12,9 +13,13 @@ export async function POST(request: Request) {
     if (active.size) return error('RUN_QUOTA', 429);
     const controller = new AbortController();
     active.set(admission.id, controller);
+    liveRuns.begin(admission.id);
     try {
       const signal = AbortSignal.any([request.signal, controller.signal]);
-      const result = await runGraph(admission.graph, { inputs: admission.inputs, signal, timeoutMs: 5000, maxOutputPackets: 300 });
+      const result = await runGraph(admission.graph, { inputs: admission.inputs, signal, timeoutMs: 5000, maxOutputPackets: 300,
+        trace: { limit: 128, payloads: admission.capture },
+        observe: run => liveRuns.attach(admission.id, admission.revision, admission.graphHash, run),
+      });
       return Response.json({
         revision: admission.revision, graphHash: admission.graphHash, runId: result.snapshot.runId,
         terminal: result.terminal, outputs: result.outputs,
@@ -23,6 +28,7 @@ export async function POST(request: Request) {
       return error('RUN_FAILED', 422);
     } finally {
       active.delete(admission.id);
+      liveRuns.finish(admission.id);
     }
   } catch {
     return error('INVALID_ARGUMENT', 400);
@@ -42,4 +48,11 @@ export async function DELETE(request: Request) {
   } catch {
     return error('INVALID_ARGUMENT', 400);
   }
+}
+
+export function GET(request: Request) {
+  const id = request.headers.get('x-flow-run-key');
+  if (!runKey(id)) return error('INVALID_ARGUMENT', 400);
+  const view = liveRuns.read(id);
+  return view ? Response.json(view, { headers: { 'cache-control': 'no-store' } }) : error('RUN_NOT_FOUND', 404);
 }

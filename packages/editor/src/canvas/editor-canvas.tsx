@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Background, Controls, Position, ReactFlow } from '@xyflow/react';
 import type { Connection, Edge, NodeChange } from '@xyflow/react';
+import type { ExecutionTraceEvent } from 'event-driven-design/model';
 import { CanvasNodeCard } from '../canvas-node.js';
 import type { CanvasNode } from '../canvas-node.js';
 import { wireId } from '../document/topology.js';
@@ -10,14 +11,22 @@ const nodeTypes = { component: CanvasNodeCard };
 type Props = {
   nodes: CanvasNode[];
   wires: readonly Wire[];
+  activity?: readonly ExecutionTraceEvent[];
   select: (id: string) => void;
   dispatch: (command: Edit) => void;
 };
 
-export function EditorCanvas({ nodes, wires, select, dispatch }: Props) {
+export function EditorCanvas({ nodes, wires, activity, select, dispatch }: Props) {
   const [preview, setPreview] = useState<{ id: string; position: Point }>();
-  const visible = nodes.map(node => preview?.id === node.id ? { ...node, position: preview.position } : node);
-  const edges: Edge[] = wires.map(wire => ({
+  const transfers = activity ?? [];
+  const channels = new Set(transfers.map(event => event.channelId));
+  const touched = new Set(transfers.map(event => event.kind === 'sent' ? event.from?.node : event.to?.node));
+  const visible = nodes.map(node => ({
+    ...node, position: preview?.id === node.id ? preview.position : node.position,
+    className: touched.has(node.id) ? 'nodeflow-node-active' : '',
+  }));
+  const edges: Edge[] = wires.map((wire, index) => ({
+    animated: channels.has(`edge:${index}`),
     id: wireId(wire), source: wire.from.node, target: wire.to.node,
     sourceHandle: wire.from.port, targetHandle: wire.to.port,
     sourcePosition: Position.Right, targetPosition: Position.Left,

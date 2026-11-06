@@ -7,12 +7,14 @@ import type { CompiledGraph } from '../graph.js';
 import { FlowError } from '../errors.js';
 import { readArray, readRecord } from '../packet/data.js';
 import { startNetwork } from '../runtime.js';
-import type { Terminal } from '../runtime.js';
+import type { NetworkRun, Terminal } from '../runtime.js';
+import type { TraceOptions } from '../runtime/trace.js';
 import type { Snapshot } from '../model/inspection.js';
 
 export type TestOptions = Readonly<{
   inputs: Readonly<Record<string, readonly Packet[]>>;
   timeoutMs?: number; maxOutputPackets?: number; signal?: AbortSignal; decisionEvidence?: true;
+  trace?: TraceOptions; observe?: (run: NetworkRun) => void;
 }>;
 export type TestResult<O = Readonly<Record<string, readonly Packet[]>>> = Readonly<{
   terminal: Terminal; outputs: O; snapshot: Snapshot; decisions?: DecisionSnapshot; diagnostics?: DiagnosticSnapshot;
@@ -22,13 +24,14 @@ export type TestResult<O = Readonly<Record<string, readonly Packet[]>>> = Readon
 export async function runGraph(graph: CompiledGraph, options: TestOptions): Promise<TestResult> {
   const definition = getGraphDefinition(graph);
   const fields = readRecord(options, 'INVALID_ARGUMENT');
-  if (Object.keys(fields).some(key => !['inputs', 'timeoutMs', 'maxOutputPackets', 'signal', 'decisionEvidence'].includes(key))) {
+  if (Object.keys(fields).some(key => !['inputs', 'timeoutMs', 'maxOutputPackets', 'signal', 'decisionEvidence', 'trace', 'observe'].includes(key))) {
     throw new FlowError('INVALID_ARGUMENT');
   }
   const timeoutMs = Object.hasOwn(fields, 'timeoutMs') ? fields.timeoutMs : 1000;
   const limit = Object.hasOwn(fields, 'maxOutputPackets') ? fields.maxOutputPackets : 1024;
   if (!Number.isSafeInteger(timeoutMs) || (timeoutMs as number) < 1 ||
     !Number.isSafeInteger(limit) || (limit as number) < 1 || (limit as number) > 100000 ||
+    (Object.hasOwn(fields, 'observe') && typeof fields.observe !== 'function') ||
     (Object.hasOwn(fields, 'decisionEvidence') && fields.decisionEvidence !== true) ||
     (Object.hasOwn(fields, 'signal') && !(fields.signal instanceof globalThis.AbortSignal))) {
     throw new FlowError('INVALID_ARGUMENT');
@@ -44,6 +47,7 @@ export async function runGraph(graph: CompiledGraph, options: TestOptions): Prom
     streams.set(name, packets as Packet[]);
   }
   const run = startNetwork(graph, { timeoutMs: timeoutMs as number,
+    ...(Object.hasOwn(fields, 'trace') ? { trace: fields.trace as TraceOptions } : {}),
     ...(fields.decisionEvidence ? { diagnostics: { limit: 1024 } } : {}),
     ...(Object.hasOwn(fields, 'signal') ? { signal: fields.signal as AbortSignal } : {}) });
   const outputs: Record<string, Packet[]> = Object.fromEntries(Object.keys(run.outputs).map(name => [name, []]));
@@ -59,6 +63,7 @@ export async function runGraph(graph: CompiledGraph, options: TestOptions): Prom
     }));
   }
   try {
+    (fields.observe as TestOptions['observe'])?.(run);
     for (const [name, stream] of Object.entries(run.outputs)) {
       observe((async () => {
         for await (const packet of stream) {

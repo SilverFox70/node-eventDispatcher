@@ -20,3 +20,5 @@ From the NodeDispatcher checkout, run `npm run build` and `npm run build:editor`
 Supply a host-owned `validationEndpoint` to enable backend validation. It accepts JSON `{ graph, revision }` and returns `{ revision, issues }` using safe compiler issue codes and paths. Use `compileGraph(graph, registry, { configurationFields: true })` on the server to get field paths. Keep the registry and service bindings server-side. The editor discards responses that do not belong to its current draft.
 
 Supply `testRun={{ endpoint, sampleHref }}` to connect the fixture-run panel. The host validates the graph and inputs before execution. The optional sample link opens a separate draft. The returned run is tied to the submitted graph digest and revision.
+
+The live view reads bounded, revision-tagged snapshots from the host test endpoint using the per-run key. The fixture supports opt-in packet capture, job and stage selection, pause display, and reconnect without losing the draft. The live view belongs to the run's original graph revision.

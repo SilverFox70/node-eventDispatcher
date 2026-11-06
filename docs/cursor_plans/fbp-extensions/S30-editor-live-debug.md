@@ -1,6 +1,6 @@
 # S30 — Follow real packet transfers and relationships while testing a graph.
 
-Plan revision EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan revision EXT1-r2. Status **approved-for-execution**. See the [execution receipt](S30-execution.md).
 Phase: editor. Proposed branch: `codex/fbp-30-editor-live-debug`.
 Order: S29 → S30 → S31.
 
@@ -30,7 +30,7 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 ### S30.B — Implement the bounded feature
 
-- Allowed: packages/editor/src/debug/**; packages/editor/src/canvas/**; fixtures/next-consumer/**.
+- Allowed: packages/editor/src/debug/**; packages/editor/src/canvas/**; fixtures/next-consumer/**. The existing editor and test panel connect the live view. The public test harness gains optional observation of its owned runtime and trace without adding a second execution path.
 - Prerequisite: S30.A evidence; meaningful red where feasible, and accepted interfaces.
 - Obligation: Bind node/edge activity, operation state, scoped diagnostics, selectable stage output and bounded timeline to live run identity; preserve defined/publisher/subscription distinctions and pause-display semantics.
 - Condition: [X30.2](conditions.md). Delay one async branch: the other branch lights on actual delivery, join remains waiting, then emits once; selecting a node shows its own input/output by job while the final stage remains selectable.
@@ -53,4 +53,4 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. G1–G7 implementation readiness is blocked by the named decisions and predecessor evidence; revalidate at handoff rather than treating future commands as delivered.
+The user approved S30.A–C and requested the slow-branch, intermediate-output and reconnect browser proof.
