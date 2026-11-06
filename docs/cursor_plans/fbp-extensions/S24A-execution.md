@@ -53,3 +53,5 @@ Final source-tree SHA256 (sorted src/**/*.ts path + NUL + bytes): `d1df5db11adf9
 Implementation: complete. Behavioral proof: verified for X24A.1–3. Quality and coverage: passed. Publication: pushed and [PR37](https://github.com/SilverFox70/node-eventDispatcher/pull/37) opened against master; not merged. S24B remains unstarted and requires this branch's actual merge plus its own request.
 
 Publication receipt: implementation commit `d01c09bcfdced8b7e39b2fa453871a75e530f6f1` pushed to origin/codex/fbp-24a-decision-evidence. GitHub confirms PR37 open, base `bb0ad50c1392d4730992469b0a959d840f604590`. This follow-up changes documentation only. CI results are independent of the local gate receipts above. Unrelated .DS_Store/.feedback-log remain uncommitted.
+
+Merge receipt: GitHub confirmed PR37 merged. Fetched origin/master contains merge commit `618b65bf439c4723347fef847caf64ed1193b68e`, the S24B branch base.

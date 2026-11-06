@@ -20,7 +20,7 @@ export const loadAccount = defineComponent({
       const found = await context.task(async ({ signal }) => {
         await delay(450, undefined, { signal });
         return samples[incoming.value];
-      });
+      }, { inputs: [incoming] });
       await context.send('account', derivePacket(found, [incoming]));
     }
   }
@@ -33,7 +33,7 @@ export const buildSummary = defineComponent({
       const formatted = await context.task(async ({ signal }) => {
         await delay(250, undefined, { signal });
         return { accountId: incoming.value.id, display: incoming.value.name + ' · ' + incoming.value.status };
-      });
+      }, { inputs: [incoming] });
       await context.send('summary', derivePacket(formatted, [incoming]));
     }
   }

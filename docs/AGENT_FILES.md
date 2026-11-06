@@ -15,6 +15,7 @@ This map is the repository's cross-tool navigation source. No personal home-dire
 | [Runnable demos](../examples/README.md) | Offline map/filter and asynchronous branch/merge checkout examples | Trying or demonstrating the delivered runtime |
 | [Reliability/load benchmark](../benchmark/README.md) | S15 real-runtime load shapes, settings, observations and focused reliability commands | Measuring load or extending composed-flow/resource proofs |
 | [Correlated diagnostics](architecture/diagnostic-records.md) | S21–S24 metadata, live capture policy, bounded sinks/JSONL export, browser models and Next controls | Using or maintaining diagnostic evidence and delivery |
+| [Causal inspection](architecture/causal-inspection.md) | S24B run-scoped packet lineage, decision evidence and build identity | Explaining a retained input/output or maintaining the causal model |
 | [Decision evidence](architecture/decision-evidence.md) | S24A trusted reason declarations, attempt-bound reports, observed filter dispositions and shared retention | Authoring/maintaining decisions; S24B explanation queries/UI remain separate |
 | [Live execution inspection](architecture/execution-inspection.md) | Optional bounded packet trace, privacy, actual transfer semantics and graphical viewer | Observing runtime packet traffic or adapting the live demo |
 | [Inspection](architecture/inspection.md) | S12 explicit graph/run/dispatcher inventory and browser-safe diagram export | Registering sources, exporting topology or implementing later graphical inspection |

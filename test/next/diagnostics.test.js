@@ -93,13 +93,29 @@ test('one HTTP branch captures real jobs while its sibling stays off; safe error
     await closeDialog(page); await page.getByRole('button', { name: 'Inspect Fetch Pokémon species', exact: true }).click();
     await modal.getByText('Capture is off for this node. Only metadata is recorded.', { exact: true }).waitFor();
     assert((await modal.textContent()).includes('Payload was not captured at this transfer.'));
-    await closeDialog(page); upstream.mode('large');
+    await closeDialog(page);
+    const causal = page.getByRole('region', { name: 'Causal explanation' });
+    const subject = causal.getByLabel('Input or output');
+    async function selectPacket(label) {
+      const option = subject.getByRole('option', { name: label });
+      await option.waitFor({ state: 'attached' });
+      await subject.selectOption(await option.getAttribute('value'));
+    }
+    await selectPacket(/^Output · demo-1-pikachu/);
+    const captured = causal.getByText('Captured payload', { exact: true });
+    await captured.first().click();
+    await causal.locator('pre:visible').first().waitFor();
+    upstream.mode('large');
     await page.getByRole('button', { name: 'Send three test jobs' }).click();
     await page.getByText('Test jobs: 6/6 · Ready · Session active', { exact: true }).waitFor();
     await page.getByRole('button', { name: 'Inspect Fetch Pokémon stats', exact: true }).click();
     await modal.getByLabel('Diagnostic job').selectOption('demo-2-pikachu');
     await modal.getByText('Payload truncated; preview is not necessarily valid JSON.', { exact: true }).waitFor();
-    await closeDialog(page); upstream.mode('stats-error'); await page.getByRole('button', { name: 'Start a new run' }).click();
+    await closeDialog(page);
+    await selectPacket(/^Output · demo-2-pikachu/);
+    await causal.getByText('Some captured payloads were truncated.', { exact: true }).waitFor();
+    await causal.getByText('Truncated payload preview', { exact: true }).first().click();
+    upstream.mode('stats-error'); await page.getByRole('button', { name: 'Start a new run' }).click();
     await page.waitForFunction(old => !globalThis.document.querySelector('[data-testid="diagnostic-run"]')?.textContent?.includes(old), run);
     await page.getByText('Connection: Live', { exact: true }).waitFor();
     await page.getByRole('button', { name: 'Send three test jobs' }).click();
@@ -109,6 +125,10 @@ test('one HTTP branch captures real jobs while its sibling stays off; safe error
     assert(!(await modal.textContent()).includes('HTTP 503')); assert(!(await modal.textContent()).includes('Unavailable'));
     await modal.getByLabel('Diagnostic job').selectOption('demo-1-pikachu');
     await modal.getByText('Code: COMPONENT_FAILED', { exact: true }).first().waitFor();
+    await closeDialog(page);
+    await selectPacket(/^Input · demo-1-pikachu/);
+    await causal.getByText('Run failed', { exact: false }).waitFor();
+    await causal.getByText(/stats · attempt-finished · failed.*COMPONENT_FAILED/).waitFor();
   } finally { upstream.mode('success'); await view.close(); }
 });
 
@@ -130,4 +150,49 @@ test('changing source during held HTTP work cancels it and never merges old reco
     await closeDialog(page); await page.getByRole('link', { name: 'Back to graph inspector' }).click();
     await page.getByRole('heading', { name: 'Graph and execution inspector' }).waitFor();
   } finally { upstream.mode('success'); await view.close(); }
+});
+
+test('causal inspector traces both join branches and distinguishes a declared drop from an output', async () => {
+  const view = await fixture.open(), page = view.page;
+  try {
+    await page.addInitScript(() => {
+      const NativeEventSource = globalThis.EventSource;
+      globalThis.EventSource = class extends NativeEventSource {
+        constructor(url) { super(url); globalThis.causalConnection = this; }
+      };
+    });
+    await page.goto(fixture.server.url + '/diagnostics');
+    await page.getByLabel('Diagnostic example').selectOption('causal');
+    await page.getByText(/Source causal-flow/).waitFor();
+    await page.getByText('Connection: Live', { exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Send three test jobs' }).click();
+    await page.getByText('Outputs: 2/3 · Ready · Session active', { exact: true }).waitFor();
+    const panel = page.getByRole('region', { name: 'Causal explanation' });
+    const selection = panel.getByLabel('Input or output');
+    const output = await selection.getByRole('option', { name: /^Output · demo-1-6/ }).getAttribute('value');
+    await selection.selectOption(output);
+    await panel.getByText(/left · attempt-finished · succeeded/).waitFor();
+    await panel.getByText(/right · attempt-finished · succeeded/).waitFor();
+    await panel.getByText(/input-admitted · eligibility.in/).waitFor();
+    assert.equal(await panel.getByText('Some payloads were not captured.').count(), 1);
+    const input = await selection.getByRole('option', { name: /^Input · demo-1-4/ }).getAttribute('value');
+    await selection.selectOption(input);
+    await panel.getByText(/Filter observed drop/).waitFor();
+    await panel.getByText(/Node reported drop · BELOW_THRESHOLD · rule v1/).waitFor();
+    assert.equal(await panel.getByText(/join.out/).count(), 0);
+    await page.evaluate(() => globalThis.causalConnection.dispatchEvent(new globalThis.Event('error')));
+    await panel.getByText(/connection was interrupted/).waitFor();
+    await panel.getByText('Evidence: Partial').waitFor();
+    await page.evaluate(() => globalThis.causalConnection.dispatchEvent(new globalThis.Event('open')));
+    await page.getByText('Connection: Live', { exact: true }).waitFor();
+    for (let batch = 2; batch <= 7; batch++) {
+      await page.getByRole('button', { name: 'Send three test jobs' }).click();
+      await page.getByText(`Outputs: ${batch * 2}/${batch * 3} · Ready · Session active`, { exact: true }).waitFor();
+    }
+    await panel.getByText('The selected packet is no longer retained.').waitFor();
+    await page.getByRole('button', { name: 'Start a new run' }).click();
+    await page.getByText('Connection: Live', { exact: true }).waitFor();
+    assert.equal(await selection.inputValue(), '');
+    assert.equal(await panel.getByText(/BELOW_THRESHOLD/).count(), 0);
+  } finally { await view.close(); }
 });

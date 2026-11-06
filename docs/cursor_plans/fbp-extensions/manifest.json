@@ -176,8 +176,8 @@
         "X24A.3"
       ],
       "status": "approved-for-execution",
-      "execution_status": "complete-for-review",
-      "merge_sha": null,
+      "execution_status": "merged",
+      "merge_sha": "618b65bf439c4723347fef847caf64ed1193b68e",
       "gate": "D1 diagnostic/task context amendment; D5 evidence/fixture/comparison contract; predecessor proof",
       "order": 5,
       "previous": "S24",
@@ -192,7 +192,7 @@
         ],
         "contract": "EV1-r2 S24A subset"
       },
-      "publication_status": "pr-open",
+      "publication_status": "merged",
       "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/37"
     },
     {
@@ -206,13 +206,25 @@
         "X24B.2",
         "X24B.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
       "gate": "D1 diagnostic/task context amendment; D5 evidence/fixture/comparison contract; predecessor proof",
       "order": 6,
       "previous": "S24A",
-      "next": "S24C"
+      "next": "S24C",
+      "journal": "S24B-execution.md",
+      "execution_approval": {
+        "authority": "user request 2026-11-05 after PR37 merge",
+        "tasks": [
+          "S24B.A",
+          "S24B.B",
+          "S24B.C"
+        ],
+        "contract": "EV1-r3 S24B subset"
+      },
+      "publication_status": "pr-open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/38"
     },
     {
       "id": "S24C",

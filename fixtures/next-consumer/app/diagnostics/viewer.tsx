@@ -5,6 +5,7 @@ import { connectDiagnosticControls } from '../../lib/diagnostic-connection';
 import type { DiagnosticControls, DiagnosticState } from '../../lib/diagnostic-connection';
 import { downloadDiagnostics } from '../../lib/diagnostic-download';
 import DiagramView from '../inspector/diagram';
+import CausalDetails from './causal-details';
 import NodeDetails from '../inspector/node-details';
 
 export default function DiagnosticInspector() {
@@ -24,7 +25,7 @@ export default function DiagnosticInspector() {
     <p role="status">Connection: {state?.status ?? 'Connecting'}</p>
     <p>Capture starts off. Select a node, enable its input/output capture, then send a test load. Capture changes never restart this run.</p>
     <label>Diagnostic example<select value={example} onChange={event => setExample(event.target.value)}>
-      <option value="account">Local sample accounts</option><option value="pokemon">Pokémon HTTP branches</option>
+      <option value="account">Local sample accounts</option><option value="pokemon">Pokémon HTTP branches</option><option value="causal">Eligibility and parallel results</option>
     </select></label>
     {example === 'pokemon' && <p>Each explicit load makes up to six public GETs using the existing cache. No automatic retries.</p>}
     <div className="execution-controls">
@@ -34,10 +35,11 @@ export default function DiagnosticInspector() {
       <button type="button" disabled={!view || state.pending || state.status !== 'Live'} onClick={() => { void downloadDiagnostics(controls.current!, includeCaptures); }}>Download diagnostic JSONL</button>
     </div>
     {state?.error && <p role="alert">{state.error}</p>}
-    {view && <><p>Test jobs: {view.completed}/{view.submitted} · {view.busy ? 'Working' : 'Ready'} · Session {view.session.status}</p>
+    {view && <><p>{example === 'causal' ? 'Outputs' : 'Test jobs'}: {view.completed}/{view.submitted} · {view.busy ? 'Working' : 'Ready'} · Session {view.session.status}</p>
       <small data-testid="diagnostic-run">Source {view.sourceId} · Run {view.runId}</small>
       <p>Retained records: {view.records.events.length} · Evicted: {view.records.dropped}</p></>}
     {diagram && <DiagramView diagram={diagram} trace={state!.execution} selected={selected} select={setSelected} />}
+    {view && source?.kind === 'graph' && <CausalDetails key={view.runId} view={view} spec={source.spec} live={state!.status === 'Live'} />}
     {detail?.nodeId && view && controls.current && <NodeDetails vertex={detail} trace={state!.execution} allowPayloads={false}
       close={() => setSelected(null)} diagnostic={{ view, controls: controls.current, pending: state!.pending || state!.status !== 'Live' }} />}
   </section>;

@@ -14,7 +14,7 @@ function specimen() {
     catalog: { version: 1, components: [{ id: 'echo', version: 1, title: 'Echo', description: '',
       in: { in: { contractId: 'json@1', representationId: 'json@1', schema: {} } }, out: { out: { contractId: 'json@1', representationId: 'json@1', schema: {} } } }] },
     run: { runId, status: 'running', nodes: [{ id: 'stats', status: 'running' }], channels: [], diagnostics: [] } }] };
-  const view = { version: 1, token: randomUUID(), sourceId: 'flow', runId, records, busy: false, submitted: 0, completed: 0,
+  const view = { version: 1, token: randomUUID(), sourceId: 'flow', runId, records, decisions: { format: 'nodeflow.decisions', version: 1, runId, total: 0, dropped: 0, rejected: 0, events: [] }, busy: false, submitted: 0, completed: 0,
     session: { sessionId: randomUUID(), epoch: 1, status: 'active', remainingMs: 1000, effectiveRules: [] } };
   return { inspection, view };
 }
@@ -25,6 +25,8 @@ test('diagnostic frame admission rejects malformed state and cross-source/run/se
   assert.equal(readDiagnosticView(view, inspection), view);
   const mutations = [null, [], {}, { ...view, extra: 1 }, { ...view, version: 2 }, { ...view, token: 'bad' }, { ...view, sourceId: 'other' },
     { ...view, runId: randomUUID() }, { ...view, records: { ...view.records, runId: randomUUID() } }, { ...view, busy: 1 },
+    { ...view, decisions: { ...view.decisions, version: 2 } },
+    { ...view, decisions: { ...view.decisions, runId: randomUUID() } },
     { ...view, submitted: -1 }, { ...view, submitted: 31 }, { ...view, completed: 1 },
     ...[{ epoch: 0 }, { status: 'other' }, { remainingMs: -1 }, { remainingMs: 60001 }, { sessionId: 'bad' },
       { effectiveRules: {} }, { effectiveRules: Array(33).fill({}) }, { effectiveRules: [{ nodeId: 'other', inputs: true, outputs: false }] },
@@ -40,6 +42,7 @@ test('diagnostic frame admission rejects malformed state and cross-source/run/se
   assert.equal(latestDiagnosticView(current, { ...current, submitted: 0, completed: 0 }), current);
   assert.equal(latestDiagnosticView(current, { ...current, completed: 0 }), current);
   assert.equal(latestDiagnosticView(current, { ...current, records: { ...view.records, total: -1 } }), current);
+  assert.equal(latestDiagnosticView(current, { ...current, decisions: { ...view.decisions, total: -1 } }), current);
 });
 
 function connectionHarness(connect, initial = specimen()) {
