@@ -8,6 +8,7 @@ const { join } = require('node:path');
 const { verifyConfigurationMarkup, verifyConfigurationModel, verifyRoute, verifySettings, verifySpecimens } = require('./editor-configuration.cjs');
 const { verifyRunProtocol, verifyRunAdmission, verifyEditorRun } = require('./editor-run.cjs');
 const { verifyLiveEditor, verifyLiveMarkupAndHost, verifyLiveModel } = require('./editor-live.cjs');
+const { verifyWalkthrough } = require('./editor-walkthrough.cjs');
 const proveDocument = require('./editor-document.cjs');
 
 async function captureEditorCoverage(page, app, evidence, scenario) {
@@ -197,6 +198,7 @@ test('two Alert cards move independently and undo restores removed wiring withou
     await verifyLiveEditor(page, server);
     await captureEditorCoverage(page, app, evidence, 'live-run');
     assert(!server.logs().includes('FBP_EDITOR_FACTORY_CALLED'));
+    await verifyWalkthrough(page, server);
   } finally {
     await browser?.close();
     await server.stop();

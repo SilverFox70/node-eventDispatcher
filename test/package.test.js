@@ -9,6 +9,13 @@ test('consumer uses packed package: built distributions usable', () => {
   const consumer = installedPackage();
   const { fixture, root, files, run, installed } = consumer;
   try {
+    run(process.execPath, ['--input-type=commonjs', '-e', `
+      const assert = require('node:assert/strict');
+      require('event-driven-design');
+      for (const name of ['event-driven-design-editor', '@xyflow/react', 'better-sqlite3', 'pg']) {
+        assert.throws(() => require.resolve(name), { code: 'MODULE_NOT_FOUND' });
+      }
+    `]);
     for (const format of ['esm', 'cjs']) {
       for (const entry of ['index', 'model/index', 'testing/index']) {
         for (const extension of ['js', 'js.map', 'd.ts', 'd.ts.map']) assert(files.includes(`dist/${format}/${entry}.${extension}`));

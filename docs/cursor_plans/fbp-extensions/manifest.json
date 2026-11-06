@@ -520,8 +520,8 @@
         "X30.3"
       ],
       "status": "approved-for-execution",
-      "execution_status": "complete-for-review",
-      "merge_sha": null,
+      "execution_status": "merged",
+      "merge_sha": "9ea2d21c35d30258b9c7b00fddd2bd294a391c5b",
       "gate": "D1 model compatibility; D2 package/canvas compatibility",
       "journal": "S30-execution.md",
       "execution_approval": {
@@ -533,7 +533,7 @@
         ],
         "contract": "EXT1-r2 live observation over existing execution trace"
       },
-      "publication_status": "pr-open",
+      "publication_status": "merged",
       "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/48"
     },
     {
@@ -550,10 +550,15 @@
         "X31.2",
         "X31.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
-      "gate": "D1 model compatibility; D2 package/canvas compatibility"
+      "gate": "D1 model compatibility; D2 package/canvas compatibility",
+      "journal": "S31-execution.md",
+      "execution_approval": {
+        "authority": "user requested S31 after PR #48 merged",
+        "tasks": ["S31.A", "S31.B", "S31.C"]
+      }
     },
     {
       "id": "S32",

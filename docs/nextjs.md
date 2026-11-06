@@ -121,3 +121,9 @@ Run `npm run test:content-workspace` to build this same app in a fresh npm works
 The installed acceptance suite captures a synthetic chair run, substitutes reviewed values, writes a sanitized test scaffold and replays the fixture through the testing API. The live browser view exposes lineage and decisions without turning arbitrary user input into an export.
 
 See the [S24E execution receipt](cursor_plans/fbp-extensions/S24E-execution.md).
+
+## Build and test a graph in the editor
+
+Open **Graph editor** and expand **First-run walkthrough**. The practice draft opens in a separate tab. Add and configure two Inventory Alert nodes, wire them together, expose graph ports, and validate the draft. Run the supplied test input to inspect the intermediate and final payloads. The first node uses a threshold of 5 and emits `low: true` for quantity 4. The second uses a threshold of 2 and emits `low: false`. Closing the practice tab discards its session-only edits.
+
+The demo imports `GraphEditor` and `event-driven-design-editor/styles.css` through their public entry points. Build the application registry and inject any services in server-only code. Send the browser only the catalog from `describeRegistry`. For a working service-injection example, see [the content review node definitions](../fixtures/next-consumer/lib/content-review/nodes.ts) and [their graph](../fixtures/next-consumer/lib/content-review/graph.ts). Authors and agents can change a registered node in source and exercise it independently with `runNode` before adding it to a graph. Keep credentials and service instances in the host, and use owned fixture services when testing.
