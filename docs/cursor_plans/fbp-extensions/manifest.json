@@ -223,7 +223,8 @@
         ],
         "contract": "EV1-r3 S24B subset"
       },
-      "publication_status": "ready"
+      "publication_status": "pr-open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/38"
     },
     {
       "id": "S24C",
