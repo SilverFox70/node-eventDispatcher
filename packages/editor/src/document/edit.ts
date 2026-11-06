@@ -29,6 +29,17 @@ export function editDocument(document: EditorDocument, command: Edit, catalog: C
           positions: { ...layout.positions, [node.id]: position } },
       };
     }
+    case 'setConfig': {
+      const node = graph.nodes.find(node => node.id === command.node);
+      if (!node) return refusal('UNKNOWN_NODE', '$.nodes');
+      const descriptor = catalog.components.find(item => `${item.id}@${item.version}` === node.component);
+      if (!descriptor || !('configuration' in descriptor)) return refusal('CONFIG_INVALID', '$.nodes');
+      const { config: previous, ...rest } = node;
+      if (Object.is(previous, command.config)) return document;
+      const changed = command.config === undefined ? rest : { ...rest, config: command.config };
+      const next = { ...graph, nodes: graph.nodes.map(item => item === node ? changed : item) };
+      return topologyIssue(next, catalog) ?? { ...document, graph: next };
+    }
     case 'removeNode': {
       const id = command.node;
       if (!Object.hasOwn(layout.positions, id)) return refusal('UNKNOWN_NODE', '$.nodes');

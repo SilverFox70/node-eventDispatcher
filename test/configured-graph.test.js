@@ -116,3 +116,20 @@ test('raw v2 graph configuration is deeply captured and null stays explicit', as
   assert.deepEqual(observed, [{ nested: [{ active: true }] }, null]);
   assert(Object.isFrozen(observed[0].nested[0]));
 });
+
+test('opt-in configuration field paths come from the compiler without invoking factories', () => {
+  let calls = 0;
+  const component = f.defineConfiguredComponent({
+    id: 'multiply', version: 1, title: 'Multiply', description: '', in: {}, out: {},
+    configuration: config, create: () => { calls++; return async () => {}; },
+  });
+  const registry = { 'multiply@1': component }, node = { id: 'a', component: 'multiply@1' };
+  const broken = spec(2, [{ ...node, config: { factor: 'two' } }]);
+  assert.deepEqual(f.compileGraph(broken, registry), invalid);
+  assert.deepEqual(f.compileGraph(broken, registry, { configurationFields: true }), {
+    ok: false, issues: [{ code: 'CONFIG_INVALID', path: '$.nodes[0].config["factor"]' }],
+  });
+  assert.deepEqual(f.compileGraph(spec(2, [node]), registry, { configurationFields: true }), invalid);
+  assert.equal(f.compileGraph(spec(2, [{ ...node, config: { factor: 2 } }]), registry, { configurationFields: true }).ok, true);
+  assert.equal(calls, 0);
+});

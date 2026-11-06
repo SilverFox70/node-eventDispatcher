@@ -1,6 +1,6 @@
 # S28 — Configure a node and see authoritative errors on its actual fields and ports.
 
-Plan revision EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan revision EXT1-r2. Status **approved-for-execution**. See the [execution receipt](S28-execution.md).
 Phase: editor. Proposed branch: `codex/fbp-28-editor-configuration`.
 Order: S27 → S28 → S29.
 
@@ -9,6 +9,8 @@ Order: S27 → S28 → S29.
 Configure a node and see authoritative errors on its actual fields and ports.
 
 Implement safe schema-driven configuration fields and backend validation adapter. Preserve unsupported-schema refusal; show pending/stale verdict state and useful node purpose/config summaries.
+
+Add visible help for selecting, dragging, wiring, deleting and undoing a node, including keyboard equivalents. Explain the difference between a node setting and a packet value beside the configuration fields. Show an example value, how to fix a refused value, and when validation is pending or stale.
 
 Contract: [editor.md](editor.md), [shared rules](shared-contract.md), [verification/handoff](execution.md).
 Prerequisites: S27 merged and its proof handoff verified; D1 model compatibility; D2 package/canvas compatibility accepted for this slice. No unreviewed public signatures.
@@ -28,7 +30,7 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 ### S28.B — Implement the bounded feature
 
-- Allowed: packages/editor/src/configuration/**; packages/editor/src/validation/**; fixtures/next-consumer/app/api/**; fixtures/next-consumer/lib/**.
+- Allowed: packages/editor/src/configuration/**; packages/editor/src/validation/**; fixtures/next-consumer/app/api/**; fixtures/next-consumer/lib/**. The editor shell and document command connect these controls. The compiler and public type barrels provide opt-in sanitized field paths through the existing validator.
 - Prerequisite: S28.A evidence; meaningful red where feasible, and accepted interfaces.
 - Obligation: Implement safe schema-driven configuration fields and backend validation adapter. Preserve unsupported-schema refusal; show pending/stale verdict state and useful node purpose/config summaries.
 - Condition: [X28.2](conditions.md). Edit valid configuration and request validation: server verdict matches compiler path and the selected node shows the sanitized field issue for invalid input; no browser schema claim substitutes for backend evaluation.
@@ -51,4 +53,4 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. G1–G7 implementation readiness is blocked by the named decisions and predecessor evidence; revalidate at handoff rather than treating future commands as delivered.
+The user approved S28.A–C after the S27 merge. The existing compiler remains the validation authority.

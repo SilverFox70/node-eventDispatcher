@@ -10,6 +10,8 @@ Follow real packet transfers and relationships while testing a graph.
 
 Bind node/edge activity, operation state, scoped diagnostics, selectable stage output and bounded timeline to live run identity; preserve defined/publisher/subscription distinctions and pause-display semantics.
 
+Add inline help and a short “follow one packet” example. Show how to select a job and node, inspect intermediate and final output, and tell apart a waiting branch, an uncaptured payload and a gap in the event history.
+
 Contract: [editor.md](editor.md), [shared rules](shared-contract.md), [verification/handoff](execution.md).
 Prerequisites: S29 merged and its proof handoff verified; D1 model compatibility; D2 package/canvas compatibility accepted for this slice. No unreviewed public signatures.
 Read predecessor journal/merge receipt at execution time; this plan is not that receipt.

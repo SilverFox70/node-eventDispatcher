@@ -11,13 +11,14 @@ import { readRecord } from './packet/data.js';
 
 declare const compiled: unique symbol;
 export type CompiledGraph = Readonly<{ [compiled]: true }>;
+export type CompileOptions = Readonly<{ configurationFields?: true }>;
 export type CompileResult = { ok: true; graph: CompiledGraph } | Extract<ValidationResult, { ok: false }>;
 export type GraphDefinition = Readonly<{ spec: GraphSpec; catalog: Catalog; registry: Registry; factories: ReadonlyMap<string, () => unknown> }>;
 
 const definitions = new WeakMap<CompiledGraph, GraphDefinition>();
 
 /** Capture authoritative definitions without invoking any process factory. */
-export function compileGraph(spec: unknown, registry: Registry): CompileResult {
+export function compileGraph(spec: unknown, registry: Registry, options?: CompileOptions): CompileResult {
   let catalog: Catalog;
   let capturedRegistry: Registry;
   let snapshot: GraphSpec;
@@ -34,9 +35,21 @@ export function compileGraph(spec: unknown, registry: Registry): CompileResult {
   } catch {
     return { ok: false, issues: [{ code: 'INVALID_GRAPH', path: '$' }] };
   }
-  const result = validateGraphWiring(snapshot, catalog, (identity, config) =>
-    getContractIssues(capturedRegistry[identity]!.configuration!, config).length === 0);
-  if (!result.ok) return result;
+  const fields = new Map<string, string[]>();
+  const result = validateGraphWiring(snapshot, catalog, (identity, config, index) => {
+    const issues = getContractIssues(capturedRegistry[identity]!.configuration!, config);
+    if (issues.length && options?.configurationFields) {
+      const root = `$.nodes[${index}].config`;
+      fields.set(root, [...new Set(issues.map(issue =>
+        root + issue.path.map(key => `[${JSON.stringify(key)}]`).join('')
+      ))].sort());
+    }
+    return issues.length === 0;
+  });
+  if (!result.ok) return options?.configurationFields ? {
+    ok: false,
+    issues: result.issues.flatMap(issue => (fields.get(issue.path) ?? [issue.path]).map(path => ({ code: issue.code, path }))),
+  } : result;
   const factories = new Map<string, () => unknown>();
   for (const node of snapshot.nodes) {
     const component = capturedRegistry[node.component]!;

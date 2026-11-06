@@ -1,4 +1,4 @@
-import type { Endpoint, GraphSpecV2 } from 'event-driven-design/model';
+import type { Json, Endpoint, GraphSpecV2 } from 'event-driven-design/model';
 
 export type EditorNode = GraphSpecV2['nodes'][number];
 export type Wire = GraphSpecV2['edges'][number];
@@ -11,6 +11,7 @@ export type EditorDocument = Readonly<{ graph: GraphSpecV2; layout: Layout }>;
 export type Clipboard = Readonly<{ nodes: readonly EditorNode[]; wires: readonly Wire[]; positions: Layout['positions'] }>;
 export type Edit =
   | { type: 'addNode'; node: EditorNode }
+  | { type: 'setConfig'; node: string; config?: Json }
   | { type: 'removeNode'; node: string }
   | { type: 'moveNode'; node: string; position: Position }
   | { type: 'connect'; wire: Wire }

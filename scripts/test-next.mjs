@@ -65,19 +65,31 @@ try {
     await new Promise(resolve => { process.once('SIGINT', resolve); process.once('SIGTERM', resolve); });
   } else {
     const playwright = join(app, 'node_modules/playwright/cli.js');
-    if (process.platform === 'linux' && process.env.CI) {
-      await checked('sudo', ['--non-interactive', 'env', 'DEBIAN_FRONTEND=noninteractive', 'NEEDRESTART_MODE=l',
+    const browserEnv = { PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') };
+    await checked(process.execPath, [playwright, 'install', 'chromium'], {
+      cwd: app, env: browserEnv, log: join(evidence, 'browser-install.log'),
+    });
+    const launch = ['--input-type=module', '-e',
+      "import { chromium } from 'playwright'; const browser = await chromium.launch({ timeout: 15000 }); await browser.close();"];
+    const probe = await command(process.execPath, launch, {
+      cwd: app, env: browserEnv, log: join(evidence, 'browser-launch.log'), timeoutMs: 30000,
+    });
+    if (probe.code !== 0 && process.platform === 'linux' && process.env.CI) {
+      // Hosted runners may already be able to launch Chromium without installing extra packages.
+      await checked('sudo', ['--non-interactive', 'env', 'DEBIAN_FRONTEND=noninteractive', 'NEEDRESTART_SUSPEND=1',
         process.execPath, playwright, 'install-deps', 'chromium'], {
         cwd: app, log: join(evidence, 'browser-dependencies.log'),
       });
+      await checked(process.execPath, launch, {
+        cwd: app, env: browserEnv, log: join(evidence, 'browser-launch-after-deps.log'), timeoutMs: 30000,
+      });
+    } else {
+      assert.equal(probe.code, 0, probe.output || `Chromium launch stopped with ${probe.signal}`);
     }
-    await checked(process.execPath, [playwright, 'install', 'chromium'], {
-      cwd: app, env: { PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') }, log: join(evidence, 'browser-install.log'),
-    });
     cpSync(join(root, 'examples/content-review'), join(app, 'lib/s24f'), { recursive: true });
     const tests = ['consumer', 'inspector', 'inspector-state', 'coverage-signal', 'execution', 'demo-address', 'http', 'diagnostics', 'diagnostic-state', 'diagnostic-api', 'editor', 'content-review', 'content-comparison'].map(name => join(root, `test/next/${name}.test.js`));
     const tested = await command(process.execPath, ['--test', '--test-reporter=tap', ...tests], {
-      cwd: root, env: { FBP_NEXT_APP: app, FBP_NEXT_EVIDENCE: evidence, NODE_V8_COVERAGE: join(evidence, 'v8-test'), PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') },
+      cwd: root, env: { FBP_NEXT_APP: app, FBP_NEXT_EVIDENCE: evidence, NODE_V8_COVERAGE: join(evidence, 'v8-test'), ...browserEnv },
       log: join(evidence, 'consumer-tests.log'),
     });
     console.log(tested.output); assert.equal(tested.code, 0, 'Next consumer tests failed; see evidence.');

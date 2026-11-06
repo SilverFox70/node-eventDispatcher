@@ -66,7 +66,7 @@ For the Next.js application at `http://localhost:54545`, run `npm run demo:next`
 
 Reusable node definitions can now declare typed per-instance configuration. The compiler validates each binding before any node starts, and the same configuration works with the isolated node test harness. See the [application guide](docs/guide.md#configure-each-node-instance).
 
-The optional editor is available in the Next demo. Choose **Open the graph editor** from the demo home page, or visit `http://localhost:54545/editor`. Add Inventory Alert nodes, drag either card to move it, and connect its output to another Alert’s input. The node details offer keyboard movement and deletion. Undo restores removed nodes and wires. The draft lives on the current page. Settings and test runs follow in later slices.
+The optional editor is available in the Next demo. Choose **Open the graph editor** from the demo home page, or visit `http://localhost:54545/editor`. Add Inventory Alert nodes, drag either card to move it, and connect its output to another Alert’s input. The node details offer keyboard movement and deletion. Undo restores removed nodes and wires. The draft lives on the current page. Select a configured node to edit its settings, then choose **Validate draft** for backend feedback on settings and wiring. Test runs follow in S29.
 
 ## Try the current APIs
 

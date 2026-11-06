@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useReducer, useRef, useState } from 'react';
+import { useId, useMemo, useReducer, useRef, useState } from 'react';
 import type { Catalog } from 'event-driven-design/model';
 import { applyEditorCommand, copySelection, createEditorState, draftIssues, paletteEntries } from './model.js';
 import type { EditorNode, EditorState } from './model.js';
@@ -10,10 +10,13 @@ import { NodeDetails } from './node-details.js';
 import type { CanvasNode } from './canvas-node.js';
 import { EditorCanvas } from './canvas/editor-canvas.js';
 import { PortCommands } from './canvas/port-commands.js';
+import { ConfigurationPanel } from './configuration/panel.js';
+import { useValidation } from './validation/use-validation.js';
 import { SelectionCommands } from './canvas/selection-commands.js';
 
 export type GraphEditorProps = Readonly<{
   catalog: Catalog;
+  validationEndpoint?: string;
   initialNodes?: readonly EditorNode[];
 }>;
 type Operation = Edit | { type: 'undo' } | { type: 'redo' };
@@ -26,7 +29,7 @@ function initialize(nodes: readonly EditorNode[]): Session {
 }
 
 /** An ephemeral graph editor over application-provided catalog metadata. */
-export function GraphEditor({ catalog, initialNodes = [] }: GraphEditorProps) {
+export function GraphEditor({ catalog, initialNodes = [], validationEndpoint }: GraphEditorProps) {
   const [session, update] = useReducer((current: Session, action: Action): Session => {
     if (action.type === 'select') return { ...current, selected: action.node };
     const result = applyEditorCommand(current.state, action.command, catalog);
@@ -34,14 +37,17 @@ export function GraphEditor({ catalog, initialNodes = [] }: GraphEditorProps) {
     const selected = action.command.type === 'addNode' ? action.command.node.id : current.selected;
     return { state: result.state, selected };
   }, initialNodes, initialize);
+  const helpId = useId();
   const commandId = useRef(0);
   const [marks, setMarks] = useState<readonly string[]>([]);
   const [clipboard, setClipboard] = useState<Clipboard>();
   const { state, issue } = session;
   const { graph, layout } = state.document;
+  const validation = useValidation(graph, state.revision);
   const entries = useMemo(() => paletteEntries(catalog), [catalog]);
   const byIdentity = useMemo(() => new Map(entries.map(item => [item.identity, item.descriptor])), [entries]);
   const selected = graph.nodes.find(node => node.id === session.selected);
+  const selectedPath = `$.nodes[${graph.nodes.findIndex(node => node.id === session.selected)}]`;
   const selectedDescriptor = selected && byIdentity.get(selected.component);
   const marked = marks.filter(id => Object.hasOwn(layout.positions, id));
   const issues = useMemo(() => draftIssues(graph, catalog), [graph, catalog]);
@@ -69,8 +75,16 @@ export function GraphEditor({ catalog, initialNodes = [] }: GraphEditorProps) {
         <small>{identity}</small>
       </li>)}</ul>
     </section>
-    <section aria-label="Graph canvas">
+    <section aria-label="Graph canvas" aria-describedby={helpId}>
       <h2>Canvas</h2>
+      <p id={helpId}>Use Select in the node list or click a card. Drag a card to move it, or use the movement buttons.</p>
+      <p>Drag between port handles or use Connect ports. Use Delete selected node to remove a card and its wires. Undo restores them.</p>
+      {validationEndpoint && <>
+        <button type="button" onClick={() => void validation.validate(validationEndpoint)}>Validate draft</button>
+        <p role="status">{validation.message}</p>
+        <ul aria-label="Backend issues">{validation.issues.map(issue =>
+          <li key={`${issue.path}:${issue.code}`}>{issue.code} · {issue.path}</li>)}</ul>
+      </>}
       <div role="group" aria-label="Edit history">
         <button type="button" disabled={!state.past.length} onClick={() => dispatch({ type: 'undo' })}>Undo</button>{' '}
         <button type="button" disabled={!state.future.length} onClick={() => dispatch({ type: 'redo' })}>Redo</button>{' '}
@@ -92,7 +106,7 @@ export function GraphEditor({ catalog, initialNodes = [] }: GraphEditorProps) {
         <h3>{selectedDescriptor?.title ?? 'Unavailable component'}</h3>
         <p>{selected.id} · {selected.component}</p>
         <button type="button" onClick={() => dispatch({ type: 'removeNode', node: selected.id })}>Delete selected node</button>
-        <div className="nodeflow-move" role="group" aria-label="Move selected node">
+        <div className="nodeflow-move" role="group" aria-label="Move selected node" aria-describedby={helpId}>
           {([{ name: 'Left', x: -20, y: 0 }, { name: 'Right', x: 20, y: 0 },
             { name: 'Up', x: 0, y: -20 }, { name: 'Down', x: 0, y: 20 }]).map(delta =>
             <button key={delta.name} type="button" onClick={() => {
@@ -100,7 +114,11 @@ export function GraphEditor({ catalog, initialNodes = [] }: GraphEditorProps) {
               dispatch({ type: 'moveNode', node: selected.id, position: { x: point.x + delta.x, y: point.y + delta.y } });
             }}>{delta.name}</button>)}
         </div>
-        {selectedDescriptor && <NodeDetails descriptor={selectedDescriptor} />}
+        {selectedDescriptor && <NodeDetails descriptor={selectedDescriptor} path={selectedPath} issues={validation.issues} />}
+        {selectedDescriptor?.configuration && <ConfigurationPanel key={selected.id}
+          descriptor={selectedDescriptor.configuration} value={selected.config}
+          path={selectedPath + ".config"} issues={validation.issues}
+          change={config => dispatch({ type: 'setConfig', node: selected.id, ...(config === undefined ? {} : { config }) })} />}
       </> : <p>Select a node to inspect its ports.</p>}
     </section>
   </div>;

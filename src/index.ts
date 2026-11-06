@@ -15,7 +15,7 @@ export type { ContractBase, PortDescriptor } from './model/contracts.js';
 export type { Catalog, CatalogV1, CatalogV2, ComponentDescriptor, ComponentDescriptorV2 } from './model/catalog.js';
 export type { ContractIssue } from './model/contracts.js';
 export { compileGraph } from './graph.js';
-export type { CompiledGraph, CompileResult } from './graph.js';
+export type { CompiledGraph, CompileResult, CompileOptions } from './graph.js';
 export type { GraphSpec, GraphSpecV1, GraphSpecV2, Endpoint } from './model/graph.js';
 export { createGraph } from './builder.js';
 export type { GraphBuilder, NodeHandle } from './builder.js';
