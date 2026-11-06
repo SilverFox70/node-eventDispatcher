@@ -396,7 +396,7 @@
         "X26.3"
       ],
       "status": "approved-for-execution",
-      "execution_status": "in-progress",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
       "gate": "D1 model compatibility; D2 package/canvas compatibility",
       "journal": "S26-execution.md",
