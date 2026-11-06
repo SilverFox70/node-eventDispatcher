@@ -12,7 +12,7 @@ const spec = () => ({ version: 1, nodes: [{ id: 'a', component: 'a@1' }], edges:
   inputs: { input: { node: 'a', port: 'in' } }, outputs: { output: { node: 'a', port: 'out' } } });
 test('reject graph before effects; browser and server graph issues agree', () => {
   const cases = [
-    [s => { s.version = 2; }, 'INVALID_GRAPH'],
+    [s => { s.version = 3; }, 'INVALID_GRAPH'],
     [s => { s.extra = true; }, 'INVALID_GRAPH'],
     [s => { s.nodes[0].id = ''; }, 'INVALID_GRAPH'],
     [s => { s.nodes[0].component = ''; }, 'INVALID_GRAPH'],
@@ -89,7 +89,7 @@ test('graph shape, names and capacities are deterministic', () => {
   assert.equal(compileGraph({ version: 1, nodes: [], edges: [], inputs: {}, outputs: {} }, registry).ok, true);
 });
 test('catalog refusal, duplicate unknown IDs and no executable authority from metadata', () => {
-  assert.equal(validateGraph(spec(), { version: 2, components: [] }).ok, false);
+  assert.equal(validateGraph(spec(), { version: 3, components: [] }).ok, false);
   assert.equal(validateGraph(spec(), null).ok, false);
   assert.equal(compileGraph(spec(), { 'a@1': {} }).ok, false);
   assert.equal(compileGraph(spec(), describeRegistry(registry)).ok, false);

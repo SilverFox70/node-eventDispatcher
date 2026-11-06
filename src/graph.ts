@@ -1,17 +1,18 @@
 import type { Registry } from './component.js';
 import { describeRegistry } from './component.js';
-import { validateGraph } from './model/graph.js';
+import { validateGraphWiring } from './model/graph.js';
 import type { GraphSpec } from './model/graph.js';
 import type { Catalog } from './model/catalog.js';
 import { snapshotJsonMetadata } from './model/contracts.js';
 import type { ValidationResult } from './model/contracts.js';
 import { FlowError } from './errors.js';
+import { getContractIssues } from './contracts.js';
 import { readRecord } from './packet/data.js';
 
 declare const compiled: unique symbol;
 export type CompiledGraph = Readonly<{ [compiled]: true }>;
 export type CompileResult = { ok: true; graph: CompiledGraph } | Extract<ValidationResult, { ok: false }>;
-export type GraphDefinition = Readonly<{ spec: GraphSpec; catalog: Catalog; registry: Registry }>;
+export type GraphDefinition = Readonly<{ spec: GraphSpec; catalog: Catalog; registry: Registry; factories: ReadonlyMap<string, () => unknown> }>;
 
 const definitions = new WeakMap<CompiledGraph, GraphDefinition>();
 
@@ -33,13 +34,22 @@ export function compileGraph(spec: unknown, registry: Registry): CompileResult {
   } catch {
     return { ok: false, issues: [{ code: 'INVALID_GRAPH', path: '$' }] };
   }
-  const result = validateGraph(snapshot, catalog);
+  const result = validateGraphWiring(snapshot, catalog, (identity, config) =>
+    getContractIssues(capturedRegistry[identity]!.configuration!, config).length === 0);
   if (!result.ok) return result;
+  const factories = new Map<string, () => unknown>();
+  for (const node of snapshot.nodes) {
+    const component = capturedRegistry[node.component]!;
+    const config = 'config' in node ? node.config : undefined;
+    factories.set(node.id, component.configuration
+      ? () => component.create(config as never)
+      : () => component.create());
+  }
   const graph = Object.freeze({}) as CompiledGraph;
   definitions.set(graph, Object.freeze({
     spec: snapshot,
     catalog,
-    registry: capturedRegistry,
+    registry: capturedRegistry, factories,
   }));
   return { ok: true, graph };
 }

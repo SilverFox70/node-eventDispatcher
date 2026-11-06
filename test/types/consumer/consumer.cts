@@ -38,3 +38,12 @@ declare const decisionContext: TaskContext;
 const recorded: boolean = decisionContext.recordDecision({ code: 'OK', ruleVersion: 'v1', outcome: 'keep', facts: [] }); void recorded;
 // @ts-expect-error Raw values are not decision facts in installed declarations.
 decisionContext.recordDecision({ code: 'OK', ruleVersion: 'v1', outcome: 'keep', facts: [{ name: 'input', value: 4 }] });
+
+import { defineConfiguredComponent } from 'event-driven-design';
+const configured = defineConfiguredComponent({
+  id: 'configured', version: 1, title: 'Configured', description: '', configuration: numeric,
+  in: {}, out: {}, create: value => async () => { const factor: number = value; void factor; }
+});
+void runNode(configured, { config: 2, inputs: {} });
+// @ts-expect-error Installed CJS declarations retain the configuration type.
+void runNode(configured, { config: 'two', inputs: {} });

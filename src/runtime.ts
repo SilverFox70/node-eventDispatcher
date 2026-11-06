@@ -180,7 +180,7 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
       void Promise.resolve().then(() => {
         if (!state.check()) return;
         const spec = definition.spec.nodes.find(spec => spec.id === node.id)!;
-        const process = definition.registry[spec.component]!.create();
+        const process = definition.factories.get(spec.id)!();
         if (typeof process !== 'function') throw new FlowError('COMPONENT_FAILED');
         return (process as (context: typeof ctx) => unknown)(ctx);
       }).then(() => {

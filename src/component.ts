@@ -1,9 +1,9 @@
 import { readDeclarations } from './runtime/diagnostics/declarations.js';
 import type { DecisionDeclaration } from './model/diagnostics/decisions.js';
-import type { Packet } from './packet.js';
+import type { Json, Packet } from './packet.js';
 import type { Contract } from './contracts.js';
-import type { ContractBase } from './model/contracts.js';
-import type { ComponentDescriptor, Catalog } from './model/catalog.js';
+import type { ContractBase, PortDescriptor } from './model/contracts.js';
+import type { ComponentDescriptorV2, Catalog } from './model/catalog.js';
 import { assertContract } from './contracts.js';
 import { FlowError } from './errors.js';
 import { readArray, readRecord } from './packet/data.js';
@@ -22,6 +22,7 @@ export type ProcessContext<I extends PortMap, O extends PortMap> = Readonly<{
 export type ComponentBase = Readonly<{
   id: string; version: number; title: string; description: string;
   in: PortMap; out: PortMap; create: () => unknown; decisions?: readonly DecisionDeclaration[];
+  configuration?: never;
 }>;
 export type Component<I extends PortMap, O extends PortMap> = Omit<ComponentBase, 'in' | 'out' | 'create'> & Readonly<{
   in: I; out: O; create: () => (ctx: ProcessContext<I, O>) => Promise<void>;
@@ -32,8 +33,19 @@ export type ComponentSpec<I extends PortMap, O extends PortMap> = Readonly<{
   examples?: readonly { in?: Partial<Values<I>>; out?: Partial<Values<O>> }[];
   effects?: readonly string[]; requiredDependencies?: readonly string[]; decisions?: readonly DecisionDeclaration[];
 }>;
-export type Registry = Readonly<Record<string, ComponentBase>>;
-const definitions = new WeakMap<ComponentBase, ComponentDescriptor>();
+export type ConfiguredComponent<C extends Json, I extends PortMap, O extends PortMap> =
+  Omit<Component<I, O>, 'configuration' | 'create'> & Readonly<{
+    configuration: Contract<C>;
+    create: (config: Readonly<C>) => (ctx: ProcessContext<I, O>) => Promise<void>;
+  }>;
+export type ConfiguredComponentSpec<C extends Json, I extends PortMap, O extends PortMap> =
+  Omit<ComponentSpec<I, O>, 'create'> & Pick<ConfiguredComponent<C, I, O>, 'configuration' | 'create'>;
+
+// Registry entries erase the factory argument. Only a validated compiled binding may supply it.
+export type RegistryComponent = ComponentBase | (Omit<ComponentBase, 'configuration' | 'create'> &
+  Readonly<{ configuration: ContractBase; create: (config: never) => unknown }>);
+export type Registry = Readonly<Record<string, RegistryComponent>>;
+const definitions = new WeakMap<RegistryComponent, ComponentDescriptorV2>();
 
 function identifier(value: unknown): asserts value is string {
   if (typeof value !== 'string' || value.length === 0 || value.length > 128) throw new FlowError('INVALID_ARGUMENT');
@@ -43,13 +55,18 @@ function ports(value: PortMap): PortMap {
   for (const [name, item] of Object.entries(entries)) { identifier(name); assertContract(item as ContractBase); }
   return Object.freeze(entries) as PortMap;
 }
-function descriptors(value: PortMap): ComponentDescriptor['in'] {
+function descriptorFor(item: ContractBase): PortDescriptor {
+  return Object.freeze({ contractId: item.id, representationId: item.representationId, schema: item.schema });
+}
+function descriptors(value: PortMap): ComponentDescriptorV2['in'] {
   return Object.freeze(Object.fromEntries(Object.entries(value).map(([name, item]) => [name,
-    Object.freeze({ contractId: item.id, representationId: item.representationId, schema: item.schema })
+    descriptorFor(item)
   ])));
 }
-function checkMeanings(descriptor: ComponentDescriptor, seen: Map<string, string>): void {
-  for (const port of [...Object.values(descriptor.in), ...Object.values(descriptor.out)]) {
+function checkMeanings(descriptor: ComponentDescriptorV2, seen: Map<string, string>): void {
+  const contracts = [...Object.values(descriptor.in), ...Object.values(descriptor.out)];
+  if (descriptor.configuration) contracts.push(descriptor.configuration);
+  for (const port of contracts) {
     const schema = canonicalSchema(port.schema);
     if (seen.has(port.contractId) && seen.get(port.contractId) !== schema) throw new FlowError('CONTRACT_ID_CONFLICT');
     seen.set(port.contractId, schema);
@@ -58,6 +75,22 @@ function checkMeanings(descriptor: ComponentDescriptor, seen: Map<string, string
 
 /** Capture definition metadata without calling the process factory. */
 export function defineComponent<const I extends PortMap, const O extends PortMap>(spec: ComponentSpec<I, O>): Component<I, O> {
+  return define(spec) as Component<I, O>;
+}
+
+/** Register a factory with a JSON configuration contract and fixed ports. */
+export function defineConfiguredComponent<C extends Json, const I extends PortMap, const O extends PortMap>(
+  spec: ConfiguredComponentSpec<C, I, O>
+): ConfiguredComponent<C, I, O> {
+  const fields = readRecord(spec, 'INVALID_ARGUMENT');
+  assertContract(fields.configuration);
+  return define(spec, fields.configuration) as ConfiguredComponent<C, I, O>;
+}
+
+function define<I extends PortMap, O extends PortMap>(
+  spec: Omit<ComponentSpec<I, O>, 'create'> & { create: (config: never) => unknown },
+  configuration?: ContractBase
+): RegistryComponent {
   const fields = readRecord(spec, 'INVALID_ARGUMENT');
   identifier(fields.id);
   if (!Number.isSafeInteger(spec.version) || spec.version < 1 || typeof spec.title !== 'string' ||
@@ -92,23 +125,26 @@ export function defineComponent<const I extends PortMap, const O extends PortMap
     meta.examples = spec.examples;
   }
   const descriptor = snapshotJsonMetadata({ id: spec.id, version: spec.version, title: spec.title,
-    description: spec.description, in: descriptors(input), out: descriptors(output), ...meta }) as unknown as ComponentDescriptor;
+    description: spec.description, in: descriptors(input), out: descriptors(output), ...meta,
+    ...(configuration ? { configuration: descriptorFor(configuration) } : {}) }) as unknown as ComponentDescriptorV2;
   checkMeanings(descriptor, new Map());
   const component = Object.freeze({ id: spec.id, version: spec.version, title: spec.title,
-    description: spec.description, in: input, out: output, create: spec.create, ...decisions }) as Component<I, O>;
+    description: spec.description, in: input, out: output, create: spec.create, ...decisions,
+    ...(configuration ? { configuration } : {}) }) as RegistryComponent;
   definitions.set(component, descriptor);
   return component;
 }
 
 export function describeRegistry(registry: Registry): Catalog {
   const seen = new Map<string, string>();
-  const components: ComponentDescriptor[] = [];
+  const components: ComponentDescriptorV2[] = [];
   for (const [key, item] of Object.entries(readRecord(registry, 'INVALID_ARGUMENT'))) {
-    const component = item as ComponentBase;
+    const component = item as RegistryComponent;
     const descriptor = definitions.get(component);
     if (!descriptor || key !== `${descriptor.id}@${descriptor.version}`) throw new FlowError('INVALID_ARGUMENT');
     checkMeanings(descriptor, seen);
     components.push(descriptor);
   }
-  return Object.freeze({ version: 1, components: Object.freeze(components) });
+  const version = components.some(item => item.configuration) ? 2 : 1;
+  return Object.freeze({ version, components: Object.freeze(components) });
 }

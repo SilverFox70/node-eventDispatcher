@@ -1,10 +1,10 @@
-import type { ComponentBase } from '../component.js';
+import type { RegistryComponent } from '../component.js';
 import type { Packet } from '../packet.js';
 import { admitPacket } from '../packet.js';
 import { FlowError } from '../errors.js';
 import { validateValue } from './validation.js';
 import type { RunState, Channel } from './state.js';
-export type Port = { channel: Channel; nodeId: string; port: string; component: ComponentBase };
+export type Port = { channel: Channel; nodeId: string; port: string; component: RegistryComponent };
 
 /** Synchronous reservation protects queued and parked deliveries across all inputs of one node. */
 export function createAdmission(runId: string, limit: number, ledger: Set<string>) {

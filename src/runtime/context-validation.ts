@@ -1,7 +1,7 @@
-import type { ComponentBase } from '../component.js';
+import type { RegistryComponent } from '../component.js';
 import { FlowError } from '../errors.js';
 import { validateValue } from './validation.js';
-type Attribution = Readonly<{ runId: string; nodeId: string; component: ComponentBase }>;
+type Attribution = Readonly<{ runId: string; nodeId: string; component: RegistryComponent }>;
 type Owner = Attribution & Readonly<{ onEnd: (cleanup: () => void) => unknown }>;
 const contexts = new WeakMap<object, Owner>();
 

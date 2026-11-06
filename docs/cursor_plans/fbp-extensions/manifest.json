@@ -364,10 +364,22 @@
         "X25.2",
         "X25.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
-      "gate": "D1 model compatibility; D2 package/canvas compatibility; D5 and application-proof checkpoint recorded"
+      "gate": "D1 model compatibility; D2 package/canvas compatibility; D5 and application-proof checkpoint recorded",
+      "journal": "S25-execution.md",
+      "execution_approval": {
+        "authority": "user requested S25 after PR #42 merged",
+        "tasks": [
+          "S25.A",
+          "S25.B",
+          "S25.C"
+        ],
+        "contract": "CG2-r1"
+      },
+      "publication_status": "pr-open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/43"
     },
     {
       "id": "S26",

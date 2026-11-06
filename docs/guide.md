@@ -27,6 +27,35 @@ runNode(double, { inputs: { in: [packet(2)] } }).then(result => {
 
 For application-specific payloads, use contract(id, ZodSchema) rather than broad jsonContract. Runtime checks remain authoritative for JavaScript callers. [The runtime overview](architecture/fbp-runtime.md) describes identity, flow and limits.
 
+## Configure each node instance
+
+Use `defineConfiguredComponent` when a reusable node needs settings such as a multiplier or threshold. Declare a JSON configuration contract alongside the node's fixed input and output contracts. The factory gets that instance's frozen settings each time a run starts.
+
+```ts
+import { contract, createGraph, defineConfiguredComponent, derivePacket } from 'event-driven-design';
+import { z } from 'zod';
+
+const numeric = contract('number@1', z.number());
+const multiply = defineConfiguredComponent({
+  id: 'multiply', version: 1, title: 'Multiply', description: 'Scale each input',
+  configuration: contract('factor@1', z.strictObject({ factor: z.number() })),
+  in: { value: numeric }, out: { value: numeric },
+  create: ({ factor }) => async context => {
+    for await (const input of context.inputs.value) {
+      await context.send('value', derivePacket(input.value * factor, [input]));
+    }
+  },
+});
+const graph = createGraph();
+const node = graph.add('double', multiply, { config: { factor: 2 } });
+graph.exposeInput('value', node, 'value');
+graph.exposeOutput('result', node, 'value');
+```
+
+This builder emits a v2 graph spec. Compile it with the trusted registry before running it. To test the node on its own, pass the same `config` in the `runNode` options alongside `inputs`. The compiler checks settings before invoking any factory and returns `CONFIG_INVALID` with the node's configuration path if the binding fails. Browser metadata can check the graph shape and whether a binding is required. The backend checks the actual value.
+
+Configuration can appear in graph specs and inspection data. Store only settings that are safe to share with graph consumers. Inject credentials and service clients through trusted application code.
+
 ## Run installed examples
 
 From the consuming project, run `node node_modules/event-driven-design/examples/01-map-filter.cjs` through07-external-feed.cjs. [The example index](../examples/README.md) lists exact outcomes. They use package exports, native capabilities and local fakes; no checkout test helper, compiler, credentials or provider is needed. Examples are runnable files to copy/adapt, not additional exported library APIs.
