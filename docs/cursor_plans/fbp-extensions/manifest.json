@@ -488,10 +488,22 @@
         "X29.2",
         "X29.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
-      "gate": "D1 model compatibility; D2 package/canvas compatibility"
+      "gate": "D1 model compatibility; D2 package/canvas compatibility",
+      "journal": "S29-execution.md",
+      "execution_approval": {
+        "authority": "user requested S29 after PR #46 merged",
+        "tasks": [
+          "S29.A",
+          "S29.B",
+          "S29.C"
+        ],
+        "contract": "EXT1-r2 fixture test-run admission"
+      },
+      "publication_status": "pr-open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/47"
     },
     {
       "id": "S30",

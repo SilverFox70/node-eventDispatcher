@@ -25,7 +25,7 @@ async function until(check) {
 function assertAssets() {
   for (const file of walk(join(app, '.next/static')).filter(file => /\.(js|map)$/.test(file))) {
     const text = readFileSync(file, 'utf8');
-    for (const forbidden of [canary, 'FBP_EDITOR_FACTORY_CALLED', 'node:crypto', 'node:async_hooks', 'event-driven-design/dist/esm/runtime', 'event-driven-design/dist/esm/testing']) assert(!text.includes(forbidden), `${file} leaks ${forbidden}`);
+    for (const forbidden of [canary, 'FBP_EDITOR_FACTORY_CALLED', 'FBP_EDITOR_TEST_LOOKUP', 'node:crypto', 'node:async_hooks', 'event-driven-design/dist/esm/runtime', 'event-driven-design/dist/esm/testing']) assert(!text.includes(forbidden), `${file} leaks ${forbidden}`);
   }
 }
 function walk(directory) {

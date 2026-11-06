@@ -38,3 +38,5 @@
 .nodeflow-setting { display: grid; gap: .25rem; margin-block: .5rem; }
 .nodeflow-setting input, .nodeflow-setting select { min-width: 0; width: 100%; box-sizing: border-box; }
 .nodeflow-setting [aria-invalid="true"] { outline: 2px solid #a82121; }
+
+.nodeflow-run-result pre { max-height: 20rem; overflow: auto; }

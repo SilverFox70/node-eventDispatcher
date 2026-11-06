@@ -6,6 +6,7 @@ const { writeFileSync } = require('node:fs');
 const { pathToFileURL } = require('node:url');
 const { join } = require('node:path');
 const { verifyConfigurationMarkup, verifyConfigurationModel, verifyRoute, verifySettings, verifySpecimens } = require('./editor-configuration.cjs');
+const { verifyRunProtocol, verifyRunAdmission, verifyEditorRun } = require('./editor-run.cjs');
 const proveDocument = require('./editor-document.cjs');
 
 async function captureEditorCoverage(page, app, evidence, scenario) {
@@ -127,6 +128,7 @@ test('two Alert cards move independently and undo restores removed wiring withou
   assert.equal(nodeRun.status, 0, nodeRun.stderr);
   assert.match(nodeRun.stdout, /FBP_EDITOR_FACTORY_CALLED/);
   proveDocument(app);
+  verifyRunProtocol(app);
   verifyConfigurationModel(app);
   verifyConfigurationMarkup(app);
   const { startServer } = await import('../../scripts/next/server.mjs');
@@ -184,6 +186,10 @@ test('two Alert cards move independently and undo restores removed wiring withou
     await page.coverage.startJSCoverage();
     await verifySpecimens(page, server.url);
     await captureEditorCoverage(page, app, evidence, 'configuration-specimens');
+    await verifyRunAdmission(page, server, app);
+    await page.coverage.startJSCoverage();
+    await verifyEditorRun(page, server);
+    await captureEditorCoverage(page, app, evidence, 'test-run');
     assert(!server.logs().includes('FBP_EDITOR_FACTORY_CALLED'));
   } finally {
     await browser?.close();

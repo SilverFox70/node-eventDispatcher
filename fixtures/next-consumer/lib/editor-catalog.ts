@@ -1,6 +1,7 @@
 import 'server-only';
 import { contract, defineComponent, defineConfiguredComponent, derivePacket, describeRegistry, jsonContract } from 'event-driven-design';
 import { z } from 'zod';
+import { fixtureRegistry } from './editor-run-fixture.ts';
 
 const stock = contract('inventory-stock@1', z.strictObject({ quantity: z.number(), low: z.boolean() }));
 const threshold = contract('inventory-threshold@1', z.strictObject({ threshold: z.number().min(0) }));
@@ -38,5 +39,7 @@ const unsupported = defineConfiguredComponent({
   id: 'list-settings', version: 1, title: 'List settings', description: 'Settings with a list.',
   configuration: contract('editor-list@1', z.array(z.number())), in: {}, out: {}, create: () => async () => {},
 });
-export const editorRegistry = { ...registry, 'escaped@1': escaped, 'settings-example@1': settings, 'list-settings@1': unsupported };
+export const editorRegistry = { ...registry, ...fixtureRegistry, 'escaped@1': escaped, 'settings-example@1': settings, 'list-settings@1': unsupported };
 export const specimenCatalog = describeRegistry(editorRegistry);
+
+export const fixtureCatalog = describeRegistry({ ...registry, ...fixtureRegistry });
