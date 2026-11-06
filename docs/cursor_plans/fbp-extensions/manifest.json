@@ -347,7 +347,8 @@
         ],
         "contract": "Fixed content-review parity and measurement"
       },
-      "publication_status": "ready"
+      "publication_status": "pr-open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/42"
     },
     {
       "id": "S25",
