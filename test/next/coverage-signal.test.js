@@ -74,3 +74,33 @@ test('coverage keeps cross-file locations and unexecuted authored functions exac
       { startOffset: second + 2, endOffset: second + 3, count: 0 }]);
   }
 });
+
+test('statement gate excludes delimiter-only lines while preserving real uncovered code and branches', async () => {
+  const { withoutDelimiterStatements } = await import('../../scripts/next/coverage-statements.mjs');
+  const ts = require('typescript');
+  const source = ts.createSourceFile('fixture.ts', [
+    'function example() {',
+    '  call(',
+    '    value',
+    '  );',
+    '  const literal = `',
+    '}',
+    '`;',
+    '  return 42; }',
+    'function untouched() {',
+    '  return 0;',
+    '}',
+  ].join('\n'), ts.ScriptTarget.Latest, true);
+  const statementMap = Object.fromEntries(Array.from({ length: 11 }, (_, id) => [id, {
+    start: { line: id + 1, column: 0 }, end: { line: id + 1, column: 1 },
+  }]));
+  const raw = { statementMap, s: { 0: 1, 1: 1, 2: 1, 3: 0, 4: 1, 5: 0, 6: 1, 7: 1, 8: 0, 9: 0, 10: 0 },
+    b: { 0: [0] }, branchMap: { 0: { line: 11 } } };
+  const gated = withoutDelimiterStatements(raw, source);
+  assert.deepEqual(Object.keys(gated.s), ['0', '1', '2', '4', '5', '6', '7', '8', '9']);
+  assert.equal(gated.s[5], 0, 'A delimiter in a multiline literal still belongs to an expression');
+  assert.equal(gated.s[9], 0, 'An unexecuted return remains in the denominator');
+  assert.deepEqual(gated.b, raw.b);
+  assert.deepEqual(gated.branchMap, raw.branchMap);
+  assert.equal(raw.s[10], 0, 'Raw coverage stays available for diagnosis');
+});

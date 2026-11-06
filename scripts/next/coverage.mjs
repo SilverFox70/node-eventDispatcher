@@ -2,12 +2,13 @@ import { readFileSync, readdirSync, existsSync, realpathSync, writeFileSync } fr
 import { dirname, join, resolve, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
+import { withoutDelimiterStatements } from './coverage-statements.mjs';
 import { mappedFunctions, prepareCoverage } from './coverage-ranges.mjs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const convert = require('v8-to-istanbul');
 const ts = require('typescript');
-const { createCoverageMap } = require('istanbul-lib-coverage');
+const { createCoverageMap, createFileCoverage } = require('istanbul-lib-coverage');
 const { mergeScriptCovs } = require('@bcoe/v8-coverage');
 const walk = dir => readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)]);
 
@@ -16,9 +17,11 @@ export async function measureFixture(app, evidence) {
   app = realpathSync(app);
   const editorSource = join(app, 'node_modules/event-driven-design-editor/src');
   const editorDist = join(app, 'node_modules/event-driven-design-editor/dist') + sep;
+  const sourceFiles = new Map();
   const expected = [...walk(join(app, 'app')), ...walk(join(app, 'lib')), ...walk(editorSource)].filter(file => {
     if (!/\.(ts|tsx)$/.test(file) || file.endsWith('.d.ts')) return false;
     const source = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest);
+    sourceFiles.set(file, source);
     return !source.statements.every(node => ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node) ||
       (ts.isImportDeclaration(node) && node.importClause?.isTypeOnly) || (ts.isExportDeclaration(node) && node.isTypeOnly));
   });
@@ -95,7 +98,8 @@ export async function measureFixture(app, evidence) {
   const failures = [];
   for (const path of expected) {
     if (!report[path]) { failures.push(relative(app, path) + ': missing source coverage'); continue; }
-    const summary = coverage.fileCoverageFor(path).toSummary();
+    const gated = withoutDelimiterStatements(report[path], sourceFiles.get(path));
+    const summary = createFileCoverage(gated).toSummary();
     console.log(relative(app, path), JSON.stringify(summary.data));
     for (const metric of ['statements', 'lines', 'branches']) if (summary[metric].pct < 95) failures.push(`${relative(app, path)} ${metric} ${summary[metric].pct}%`);
   }

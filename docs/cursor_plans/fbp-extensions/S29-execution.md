@@ -19,3 +19,5 @@ Candidate `562376611417db65ed26f0c9774178a332b6705a` passed build, typecheck, li
 S29 is complete for review. The sample is available at `/editor?sample=1` in the Next demo. S30 follows the actual merge and adds live transfers and intermediate stage inspection.
 
 Publication: [PR #47](https://github.com/SilverFox70/node-eventDispatcher/pull/47) opened against master with verified candidate `8e56eccc609e8e61136be9793645ac78522a7b72`.
+
+CI follow-up: the core matrix and all packaged Next.js tests passed on the initial S29 CI run. The Next job failed the fixture coverage gate because the raw V8 report assigned an uncovered statement to the inspection route's closing brace. The gate now uses the TypeScript syntax tree to omit delimiter-only lines from statement and line totals. Branches and executable lines retain the 95% thresholds, and the original raw reports remain available. Replaying the failed Linux artifact brought that route's statement and line coverage from 94.11% to 100% without changing branch coverage or test results.
