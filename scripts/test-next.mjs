@@ -55,7 +55,14 @@ try {
     console.log('Demo ready:', serving.url, '(Ctrl+C to stop)');
     await new Promise(resolve => { process.once('SIGINT', resolve); process.once('SIGTERM', resolve); });
   } else {
-    await checked(process.execPath, [join(app, 'node_modules/playwright/cli.js'), 'install', ...(process.platform === 'linux' && process.env.CI ? ['--with-deps'] : []), 'chromium'], {
+    const playwright = join(app, 'node_modules/playwright/cli.js');
+    if (process.platform === 'linux' && process.env.CI) {
+      await checked('sudo', ['--non-interactive', 'env', 'DEBIAN_FRONTEND=noninteractive', 'NEEDRESTART_MODE=l',
+        process.execPath, playwright, 'install-deps', 'chromium'], {
+        cwd: app, log: join(evidence, 'browser-dependencies.log'),
+      });
+    }
+    await checked(process.execPath, [playwright, 'install', 'chromium'], {
       cwd: app, env: { PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') }, log: join(evidence, 'browser-install.log'),
     });
     cpSync(join(root, 'examples/content-review'), join(app, 'lib/s24f'), { recursive: true });
