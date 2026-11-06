@@ -19,6 +19,7 @@
   cursor: grab;
 }
 .nodeflow-card[data-selected="true"] { border: 2px solid #2148ca; }
+.nodeflow-node-active .nodeflow-card { box-shadow: 0 0 0 3px #00856c; }
 .nodeflow-viewport { height: 24rem; border: 1px solid #9aa9bd; }
 .nodeflow-editor button[aria-pressed="true"] { outline: 2px solid currentColor; }
 @media (max-width: 50rem) {
@@ -40,3 +41,6 @@
 .nodeflow-setting [aria-invalid="true"] { outline: 2px solid #a82121; }
 
 .nodeflow-run-result pre { max-height: 20rem; overflow: auto; }
+
+.nodeflow-live ol { max-height: 22rem; overflow: auto; }
+.nodeflow-live pre { max-height: 12rem; overflow: auto; }

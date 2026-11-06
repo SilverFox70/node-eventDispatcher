@@ -198,3 +198,22 @@ test('zero-input sources and output-contract failures use the same runtime', asy
   const drop = await runNode(filter(jsonContract, () => false), { inputs: { in: [packet(1)] } });
   assert.deepEqual(drop.outputs, { out: [] });
 });
+
+test('graph harness observes the same traced run and cleans up an observer failure', async () => {
+  const { graph } = forkJoin();
+  const input = packet(2, { key: 'one' });
+  let observed;
+  const result = await runGraph(graph, { inputs: { in: [input] }, trace: { payloads: true },
+    observe(run) { observed = run; assert.equal(run.trace().total, 0); },
+  });
+  assert.equal(observed.runId, result.snapshot.runId);
+  const final = observed.trace().events.find(event => event.kind === 'sent' && event.to === null);
+  assert.equal(final.jobId, input.jobId);
+  assert.deepEqual(final.payload, result.outputs.out[0].value);
+  await assert.rejects(runGraph(graph, { inputs: {}, observe: true }), { code: 'INVALID_ARGUMENT' });
+  await assert.rejects(runGraph(graph, { inputs: {}, observe(run) {
+    observed = run;
+    throw Error('observer stopped');
+  } }), /observer stopped/);
+  assert.equal((await observed.done).status, 'cancelled');
+});

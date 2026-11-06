@@ -6,7 +6,7 @@ import { hostBindingIssues } from './editor-host-bindings.ts';
 import { editorRegistry } from './editor-catalog.ts';
 
 type Refusal = { code: string; status: number };
-type Admission = { id: string; revision: number; graphHash: string; graph: CompiledGraph; inputs: Record<string, Packet[]> };
+type Admission = { id: string; capture: boolean; revision: number; graphHash: string; graph: CompiledGraph; inputs: Record<string, Packet[]> };
 export const runKey = (value: unknown): value is string => typeof value === 'string' &&
   /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(value);
 
@@ -39,7 +39,8 @@ function prepareInputs(raw: unknown, graph: GraphSpecV2): Record<string, Packet[
 /** Resolve capabilities, snapshot identity and all ingress data before the runtime starts. */
 export function admitRun(raw: unknown): Admission | Refusal {
   const body = record(raw);
-  if (!body || Object.keys(body).length !== 6 || !runKey(body.id) ||
+  if (!body || Object.keys(body).length !== (Object.hasOwn(body, 'capture') ? 7 : 6) ||
+    (Object.hasOwn(body, 'capture') && typeof body.capture !== 'boolean') || !runKey(body.id) ||
     typeof body.revision !== 'number' || !Number.isSafeInteger(body.revision) || body.revision < 0 ||
     typeof body.graphHash !== 'string' || !('graph' in body) || !('inputs' in body)) {
     return { code: 'INVALID_ARGUMENT', status: 400 };
@@ -52,5 +53,5 @@ export function admitRun(raw: unknown): Admission | Refusal {
   if (!compiled.ok) return { code: 'INVALID_GRAPH', status: 422 };
   const inputs = prepareInputs(body.inputs, body.graph as GraphSpecV2);
   if (!inputs) return { code: 'INVALID_INPUT', status: 422 };
-  return { id: body.id, revision: body.revision, graphHash, graph: compiled.graph, inputs };
+  return { id: body.id, capture: body.capture === true, revision: body.revision, graphHash, graph: compiled.graph, inputs };
 }

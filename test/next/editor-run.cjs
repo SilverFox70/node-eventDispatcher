@@ -68,7 +68,7 @@ async function verifyRunAdmission(page, server, app) {
     assert.deepEqual(await response.json(), { code });
   }
   const before = countLookups(server);
-  for (const body of [null, {}, [], { ...valid, revision: 1.5 }, { ...valid, revision: '1' }, { ...valid, revision: -1 }, { ...valid, id: 'bad' }, { ...valid, graphHash: 7 }]) {
+  for (const body of [null, {}, [], { ...valid, revision: 1.5 }, { ...valid, revision: '1' }, { ...valid, capture: 'yes' }, { ...valid, revision: -1 }, { ...valid, id: 'bad' }, { ...valid, graphHash: 7 }]) {
     await refuse(body, 400, 'INVALID_ARGUMENT');
   }
   await refuse({ ...valid, profile: 'network' }, 403, 'PROFILE_FORBIDDEN');

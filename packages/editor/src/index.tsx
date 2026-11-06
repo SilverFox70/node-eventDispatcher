@@ -12,6 +12,9 @@ import { EditorCanvas } from './canvas/editor-canvas.js';
 import { PortCommands } from './canvas/port-commands.js';
 import { ConfigurationPanel } from './configuration/panel.js';
 import { useValidation } from './validation/use-validation.js';
+import { LiveRunPanel } from './debug/live-panel.js';
+import { useLiveRun } from './debug/use-live-run.js';
+import type { DebugSession } from './debug/live-model.js';
 import { TestRunPanel } from './runs/panel.js';
 import type { TestRunOptions } from './runs/panel.js';
 import { SelectionCommands } from './canvas/selection-commands.js';
@@ -47,6 +50,15 @@ export function GraphEditor({ catalog, initialNodes = [], initialGraph, validati
   const [clipboard, setClipboard] = useState<Clipboard>();
   const { state, issue } = session;
   const { graph, layout } = state.document;
+  const [debugSession, setDebugSession] = useState<DebugSession>();
+  const [watchedJob, setWatchedJob] = useState('');
+  const [watchedStage, setWatchedStage] = useState('');
+  const [paused, setPaused] = useState(false);
+  const live = useLiveRun(testRun?.endpoint, debugSession);
+  const activeJob = watchedJob || live?.snapshot?.trace.events[0]?.jobId;
+  const activity = !paused && debugSession?.revision === state.revision
+    ? live?.transfers.filter(event => event.jobId === activeJob)
+    : undefined;
   const validation = useValidation(graph, state.revision);
   const entries = useMemo(() => paletteEntries(catalog), [catalog]);
   const byIdentity = useMemo(() => new Map(entries.map(item => [item.identity, item.descriptor])), [entries]);
@@ -64,7 +76,16 @@ export function GraphEditor({ catalog, initialNodes = [], initialGraph, validati
     };
   });
 
-  function select(node: string) { update({ type: 'select', node }); }
+  function select(node: string) {
+    update({ type: 'select', node });
+    if (debugSession?.graph.nodes.some(item => item.id === node)) setWatchedStage(node);
+  }
+  function observe(next: DebugSession | undefined) {
+    setWatchedJob('');
+    setWatchedStage(session.selected ?? '');
+    setPaused(false);
+    setDebugSession(next);
+  }
   function dispatch(operation: Operation) {
     update({ type: 'command', command: { ...operation, id: `edit-${++commandId.current}`, expectedRevision: state.revision } });
   }
@@ -95,12 +116,15 @@ export function GraphEditor({ catalog, initialNodes = [], initialGraph, validati
         <output aria-label="Draft changes">{state.document === state.baseline ? 'No edits' : 'Edited draft'}</output>
       </div>
       {issue && <p role="alert">{issue.code} · {issue.path}</p>}
-      <EditorCanvas nodes={canvas} wires={graph.edges} select={select} dispatch={dispatch} />
+      <EditorCanvas nodes={canvas} wires={graph.edges} activity={activity} select={select} dispatch={dispatch} />
       <SelectionCommands nodes={canvas} groups={layout.groups} marked={marked} clipboard={clipboard} select={select}
         mark={id => setMarks(current => current.includes(id) ? current.filter(value => value !== id) : [...current, id])}
         copy={() => setClipboard(copySelection(state.document, marked))} dispatch={dispatch} />
       <PortCommands nodes={canvas} graph={graph} dispatch={dispatch} />
-      {testRun && <TestRunPanel options={testRun} graph={graph} revision={state.revision} ready={validation.ready} />}
+      {testRun && <TestRunPanel options={testRun} graph={graph} revision={state.revision} ready={validation.ready} observe={observe} />}
+      {debugSession && <LiveRunPanel key={debugSession.id} session={debugSession} live={live} revision={state.revision}
+        chosenJob={watchedJob} setJob={setWatchedJob} stage={watchedStage} setStage={setWatchedStage}
+        paused={paused} setPaused={setPaused} />}
       <details><summary>Draft validation ({issues.length})</summary>
         <ul>{issues.map(issue => <li key={`${issue.path}:${issue.code}`}>{issue.code} · {issue.path}</li>)}</ul>
       </details>

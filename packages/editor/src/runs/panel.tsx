@@ -2,13 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import type { GraphSpecV2 } from 'event-driven-design/model';
 import { hashDraft, readRunResult, requestRun } from './protocol.js';
 import type { RunResult } from './protocol.js';
+import type { DebugSession } from '../debug/live-model.js';
 import { RunReport } from './report.js';
 
 export type TestRunOptions = Readonly<{ endpoint: string; sampleHref?: string }>;
 
-export function TestRunPanel({ options, graph, revision, ready }: {
-  options: TestRunOptions; graph: GraphSpecV2; revision: number; ready: boolean;
+export function TestRunPanel({ options, graph, revision, ready, observe }: {
+  options: TestRunOptions; graph: GraphSpecV2; revision: number; ready: boolean; observe: (session: DebugSession | undefined) => void;
 }) {
+  const [capture, setCapture] = useState(false);
   const [input, setInput] = useState('{}');
   const [result, setResult] = useState<RunResult>();
   const [pending, setPending] = useState(false);
@@ -30,9 +32,11 @@ export function TestRunPanel({ options, graph, revision, ready }: {
     setPending(true);
     try {
       const graphHash = await hashDraft(graph);
-      const raw = await requestRun(options.endpoint, { id, revision, graphHash, graph, inputs, profile: 'fixtures@1' }, 'POST', request.signal);
+      observe({ id, graph, revision, graphHash });
+      const raw = await requestRun(options.endpoint, { id, revision, graphHash, graph, inputs, capture, profile: 'fixtures@1' }, 'POST', request.signal);
       setResult(readRunResult(raw, revision, graphHash));
     } catch (error) {
+      observe(undefined);
       if (!request.signal.aborted) setIssue(error instanceof Error ? error.message : 'RUN_REQUEST_FAILED');
     } finally {
       active.current = undefined;
@@ -62,9 +66,11 @@ export function TestRunPanel({ options, graph, revision, ready }: {
       {options.sampleHref && <p><a href={options.sampleHref} target="_blank" rel="noreferrer">Open a separate sample draft</a></p>}
       <p>Validate draft, load the fixture inputs, then choose Run test. The sample splits each item into two lookups and joins their results.</p>
       <p>For chair, expect label CHAIR and units 5. Results appear below. Cancel stops the active test. Edits apply to your next run.</p>
-      <button type="button" onClick={() => setInput(JSON.stringify({ item: ['chair', 'desk', 'lamp'] }, null, 2))}>Load fixture inputs</button>
+      <button type="button" onClick={() => setInput(JSON.stringify({ item: ['chair', 'desk', 'lamp'] }, null, 2))}>Load fixture inputs</button>{' '}
+      <button type="button" onClick={() => setInput(JSON.stringify({ item: ['slow'] }, null, 2))}>Load slow-branch input</button>
     </details>
     <label>Test inputs as JSON <textarea value={input} onChange={event => setInput(event.currentTarget.value)} rows={5} /></label>
+    <label><input type="checkbox" checked={capture} onChange={event => setCapture(event.currentTarget.checked)} /> Capture test payloads</label>
     <p>Use an array of values for each exposed input. Validate the current draft before running.</p>
     <button type="button" disabled={!ready || pending} onClick={() => void run()}>Run test</button>{' '}
     <button type="button" disabled={!pending || cancelling} onClick={() => void cancel()}>Cancel test</button>

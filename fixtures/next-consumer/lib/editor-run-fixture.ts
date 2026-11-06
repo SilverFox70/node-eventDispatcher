@@ -13,7 +13,7 @@ const labelNode = defineFunction({
   input: item, output: label,
   handler: async (value, { signal }) => {
     console.log('FBP_EDITOR_TEST_LOOKUP');
-    await setTimeout(value === 'slow' ? 1300 : 20, undefined, { signal });
+    await setTimeout(value === 'slow' ? 2600 : 20, undefined, { signal });
     return value.toUpperCase();
   },
 });
@@ -22,7 +22,7 @@ const unitsNode = defineFunction({
   input: item, output: units,
   handler: async (value, { signal }) => {
     console.log('FBP_EDITOR_TEST_LOOKUP');
-    await setTimeout(value === 'slow' ? 1300 : 10, undefined, { signal });
+    await setTimeout(10, undefined, { signal });
     return value.length;
   },
 });
