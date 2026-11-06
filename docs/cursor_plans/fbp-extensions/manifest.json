@@ -470,7 +470,9 @@
           "S28.C"
         ],
         "contract": "CG2-r1 and editor EXT1-r2"
-      }
+      },
+      "publication_status": "pr-open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/46"
     },
     {
       "id": "S29",
