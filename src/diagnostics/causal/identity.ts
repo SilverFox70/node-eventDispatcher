@@ -23,7 +23,7 @@ function canonical(value: Json): string {
   if (value === null || typeof value !== 'object') return JSON.stringify(value);
   return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + canonical(value[key]!)).join(',') + '}';
 }
-const hash = (value: Json) => createHash('sha256').update(canonical(value)).digest('hex');
+export const hashEvidence = (value: Json) => createHash('sha256').update(canonical(value)).digest('hex');
 const isDigest = (value: unknown) => typeof value === 'string' && digestPattern.test(value);
 const isPath = (value: unknown): value is string => typeof value === 'string' && value.length <= 1024 &&
   !/[:\\\x00-\x1f]/.test(value) && value.split('/').every(part => part && part !== '.' && part !== '..');
@@ -55,7 +55,7 @@ export function implementationIdentity(manifest: BuildManifest, requiredFiles: r
         isDigest(row.implementationDigest) && isDigest(row.fixtureProfileDigest));
       seen.add(row.role);
     }
-    return Object.freeze({ status: 'verified', digest: hash({ format: 'nodeflow.implementation', version: 1, manifest: copied }) });
+    return Object.freeze({ status: 'verified', digest: hashEvidence({ format: 'nodeflow.implementation', version: 1, manifest: copied }) });
   } catch { return unverified; }
 }
 
@@ -75,6 +75,6 @@ export function executionIdentity(value: ExecutionIdentityInput): ExecutionIdent
     }
     bindings.sort((a, b) => a.component === b.component ? 0 : String(a.component) < String(b.component) ? -1 : 1);
     const preimage = snapshotJsonMetadata({ ...fields, bindings, format: 'nodeflow.execution', version: 1 });
-    return Object.freeze({ status: 'verified', digest: hash(preimage) });
+    return Object.freeze({ status: 'verified', digest: hashEvidence(preimage) });
   } catch { return unverified; }
 }

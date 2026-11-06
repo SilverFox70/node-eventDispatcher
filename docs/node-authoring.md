@@ -128,3 +128,13 @@ node --permission --allow-fs-read='*' --test --test-isolation=none sample-case.t
 The review callback must enforce your own allowlist. The framework also refuses common credential shapes and unresolved placeholders. Generated filenames derive from the validated case ID and are created exclusively, so rerunning the generator against a handwritten file returns an error. The passive fixture can be serialized separately with `JSON.stringify`.
 
 See the [S24C execution receipt](cursor_plans/fbp-extensions/S24C-execution.md) for exact bounds and proof.
+
+## Compare two revisions on one reviewed fixture
+
+Use `compareFixture({ baseline, candidate })` from `event-driven-design/testing`. Give each side the same reviewed fixture and exact dependency roles, its own execution identity preimage and trusted `build(services)` callback. Set `deterministic: true` when the fixture supplies all needed external facts. The baseline must match the fixture's recorded execution identity and reproduce its reviewed outputs and decisions before the candidate runs. A baseline mismatch returns `not-comparable` with reason `BASELINE_MISMATCH`. Each side gets its own cursor into the same ordered service scripts.
+
+The report shows output, decision, route and failure observations that changed or stayed equal for the case. For example, a revised tax node may yield 20 instead of 10 and record rule v2 while the sibling base amount stays at 100. Output ports and node origins align by occurrence. If you rename a node, give its new ID the old logical origin with `origins: { 'new-tax': 'tax' }`. Graph, code and contract digests are reported separately. Runtime IDs and timing are excluded from semantic comparison.
+
+The result is `not-comparable` if review, fixture facts, revision bindings, contracts or runtime evidence do not support a comparison. An `equal-on-fixtures` result covers the supplied case and its observed paths. Use trusted application bindings and run your comparison with Node network permission disabled when enforcing offline execution.
+
+See the [S24D execution receipt](cursor_plans/fbp-extensions/S24D-execution.md).
