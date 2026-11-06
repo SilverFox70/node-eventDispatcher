@@ -5,7 +5,7 @@ import { FlowError } from '../../errors.js';
 import type { RegressionFixture } from '../../model/diagnostics/fixtures/fixture.js';
 
 /** Preflight both reviewed inputs and expectations before invoking graph factories. */
-export function checkFixtureContracts(graph: CompiledGraph, fixture: RegressionFixture): void {
+export function checkFixtureContracts(graph: CompiledGraph, fixture: RegressionFixture, checkDecisions = true): void {
   const { spec, registry } = getGraphDefinition(graph);
   for (const [ports, endpoints, direction] of [
     [fixture.input, spec.inputs, 'in'], [fixture.expected.outputs, spec.outputs, 'out'],
@@ -20,6 +20,7 @@ export function checkFixtureContracts(graph: CompiledGraph, fixture: RegressionF
       if (ports[name]!.some(packet => getContractIssues(contract, packet.value).length)) throw new FlowError('FIXTURE_CONTRACT');
     }
   }
+  if (!checkDecisions) return;
   for (const decision of fixture.expected.decisions) {
     const node = spec.nodes.find(node => node.id === decision.nodeId);
     if (!node || !registry[node.component]!.decisions?.some(row => row.code === decision.code &&

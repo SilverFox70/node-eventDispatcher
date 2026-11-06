@@ -9,3 +9,6 @@ export type { FixtureBindings, FixtureServices } from './fixtures/run.js';
 export type { FixtureApproval, FixtureReview } from './fixtures/review.js';
 export { validateRegressionFixture } from '../model/diagnostics/fixtures/fixture.js';
 export type { RegressionFixture, FixturePacket, FixtureStep, FixtureDecision } from '../model/diagnostics/fixtures/fixture.js';
+
+export { compareFixture } from './comparison/compare.js';
+export type { ComparisonSide, ComparisonResult, ComparisonChange, RevisionDigests } from './comparison/compare.js';

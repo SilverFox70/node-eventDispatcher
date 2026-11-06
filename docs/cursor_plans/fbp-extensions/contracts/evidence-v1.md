@@ -1,6 +1,6 @@
 # S20 evidence, decisions and fixtures EV1-r1
 
-Status: S24A subset adopted by explicit execution after S24 merge; [EV1-r2 declaration freeze](../S24A-execution.md) refines its exact API/validators. The [S24B query and identity freeze](../S24B-execution.md) selects its implementation subset. The [S24C fixture freeze](../S24C-execution.md) selects the fixture interface. S24D–S24F/artifact sections remain future proposals. Refines [explainability](../explainability.md). No code/payload reconstruction or live-service replay. Exact schema fixtures below must be accepted before these slices’ implementation; S21 does not implement them.
+Status: S24A subset adopted by explicit execution after S24 merge; [EV1-r2 declaration freeze](../S24A-execution.md) refines its exact API/validators. The [S24B query and identity freeze](../S24B-execution.md) selects its implementation subset. The [S24C fixture freeze](../S24C-execution.md) selects the fixture interface. The [S24D comparison freeze](../S24D-execution.md) selects the revision comparison interface. S24E–S24F/artifact sections remain future proposals. Refines [explainability](../explainability.md). No code/payload reconstruction or live-service replay. Exact schema fixtures below must be accepted before these slices’ implementation; S21 does not implement them.
 
 ## Identity before artifacts
 

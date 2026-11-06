@@ -1,6 +1,6 @@
 # S24D — Compare two graph/code revisions against the same fixed test case.
 
-Plan EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan EXT1-r2. Status **approved for execution**. The user requested S24D after the S24C merge. See [execution receipt](S24D-execution.md).
 Branch `codex/fbp-24d-revision-comparison`. Order is authoritative in [manifest](manifest.json) and [index](INDEX.md).
 Prerequisites: predecessor merged/receipt verified, accepted D1/D5 interfaces and existing diagnostic bounds. No editor, GraphSpec v2 or artifact/SQL storage prerequisite.
 Contract: [explainability](explainability.md), [shared rules](shared-contract.md), [verification/handoff](execution.md).
@@ -27,7 +27,7 @@ Success scenario: Change one tax node from rate0.10 to0.20 for input amount100: 
 
 ### S24D.B — Implement the story
 
-- Allowed: src/testing/comparison/**; src/model/diagnostics/**; src/diagnostics/fixture-export/**; fixtures/next-consumer/**; focused packed/browser/type tests.
+- Allowed: src/testing/comparison/**; src/model/diagnostics/**; src/diagnostics/fixture-export/**; fixtures/next-consumer/**; focused packed/browser/type tests; testing barrel, runGraph observation, existing fixture helpers and causal hash reuse as recorded in the execution receipt.
 - Prerequisite: S24D.A fixtures and meaningful red where practical.
 - Obligation: Run reviewed fixtures against two explicit registry/graph snapshots using production test helpers; correlate by fixture case and logical origin, report changed outputs/decisions/paths and absent evidence, never by random packet IDs.
 - Condition: [X24D.2](conditions.md). The success scenario above is part of this production-boundary proof.

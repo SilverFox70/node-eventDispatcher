@@ -1,4 +1,5 @@
 import { decisionSnapshot } from '../runtime/diagnostics/decision-api.js';
+import type { DiagnosticSnapshot } from '../model/diagnostics/index.js';
 import type { DecisionSnapshot } from '../model/diagnostics/decisions.js';
 import type { Packet } from '../packet.js';
 import { getGraphDefinition } from '../graph.js';
@@ -14,7 +15,7 @@ export type TestOptions = Readonly<{
   timeoutMs?: number; maxOutputPackets?: number; signal?: AbortSignal; decisionEvidence?: true;
 }>;
 export type TestResult<O = Readonly<Record<string, readonly Packet[]>>> = Readonly<{
-  terminal: Terminal; outputs: O; snapshot: Snapshot; decisions?: DecisionSnapshot;
+  terminal: Terminal; outputs: O; snapshot: Snapshot; decisions?: DecisionSnapshot; diagnostics?: DiagnosticSnapshot;
 }>;
 
 /** Exercise the production runtime; ordering between different ingress streams is unspecified. */
@@ -79,7 +80,7 @@ export async function runGraph(graph: CompiledGraph, options: TestOptions): Prom
     if (refusal) throw refusal.error;
     return Object.freeze({ terminal,
       outputs: Object.freeze(Object.fromEntries(Object.entries(outputs).map(([name, packets]) => [name, Object.freeze(packets)]))),
-      snapshot: run.snapshot(), ...(fields.decisionEvidence ? { decisions: decisionSnapshot(run) } : {}) });
+      snapshot: run.snapshot(), ...(fields.decisionEvidence ? { decisions: decisionSnapshot(run), diagnostics: run.diagnostics() } : {}) });
   } finally {
     run.cancel();
     await Promise.allSettled(work);

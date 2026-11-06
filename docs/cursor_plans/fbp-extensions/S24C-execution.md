@@ -34,3 +34,5 @@ The existing runGraph helper owns execution. A narrow opt-in decision snapshot o
 - Implementation complete and verified for X24C.1–3. Publication open for review. S24D requires the actual S24C merge.
 
 Publication receipt: implementation commit `0021737d80c5d7860933b1f395059de45bbbb81d` pushed. GitHub confirmed [PR39](https://github.com/SilverFox70/node-eventDispatcher/pull/39) open against master. The follow-up records documentation only. User-local .DS_Store and .feedback-log remain uncommitted.
+
+Merge receipt: GitHub confirmed PR39 merged. Fetched origin/master contains `c46582a0059ca1f4ff2d5b6ae190d79761e3b332`, the S24D branch base.

@@ -15,7 +15,7 @@ export type FixtureBindings = FixtureApproval & Readonly<{
   build: (services: FixtureServices) => CompiledGraph;
 }>;
 
-function scriptServices(fixture: RegressionFixture) {
+export function scriptServices(fixture: RegressionFixture) {
   const cursors = new Map<string, number>();
   const services = Object.freeze(Object.assign(Object.create(null) as Record<string, () => Json>,
     Object.fromEntries(Object.entries(fixture.dependencyScripts).map(([role, steps]) => [role, () => {
@@ -33,6 +33,11 @@ function scriptServices(fixture: RegressionFixture) {
   } };
 }
 
+export function fixtureInputs(fixture: RegressionFixture) {
+  return Object.fromEntries(Object.entries(fixture.input).map(([port, packets]) => [port,
+    packets.map(item => packet(item.value, { jobId: fixture.caseId, ...(item.key === undefined ? {} : { key: item.key }) }))]));
+}
+
 /** Run a reviewed fixture through the existing harness and caller-owned offline bindings. */
 export async function runRegressionFixture(value: unknown, bindings: FixtureBindings): Promise<void> {
   const fixture = reviewedFixture(value, bindings.approve);
@@ -41,8 +46,7 @@ export async function runRegressionFixture(value: unknown, bindings: FixtureBind
   const { services, checkConsumed } = scriptServices(fixture);
   const graph = bindings.build(services);
   checkFixtureContracts(graph, fixture);
-  const inputs = Object.fromEntries(Object.entries(fixture.input).map(([port, packets]) => [port,
-    packets.map(item => packet(item.value, { jobId: fixture.caseId, ...(item.key === undefined ? {} : { key: item.key }) }))]));
+  const inputs = fixtureInputs(fixture);
   const result = await runGraph(graph, { inputs, decisionEvidence: true, maxOutputPackets: 64 });
   if (result.terminal.status !== 'completed') throw new FlowError('FIXTURE_RUN_FAILED');
   checkConsumed();
