@@ -1,6 +1,6 @@
 # S26 — Install a usable palette and canvas alongside a Next application.
 
-Plan revision EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan revision EXT1-r2. Status **approved-for-execution**. See the [execution receipt](S26-execution.md) for verification and publication.
 Phase: editor. Proposed branch: `codex/fbp-26-editor-canvas`.
 Order: S25 → S26 → S27.
 
@@ -53,4 +53,4 @@ Consumption contract: [local workspace](local-workspace.md). Also prove the loca
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. G1–G7 implementation readiness is blocked by the named decisions and predecessor evidence; revalidate at handoff rather than treating future commands as delivered.
+The user authorized S26.A–C after the S25 merge. The execution receipt records the pinned canvas dependency, workspace and packed acceptance.

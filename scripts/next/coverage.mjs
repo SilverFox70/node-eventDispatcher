@@ -14,7 +14,8 @@ const walk = dir => readdirSync(dir, { withFileTypes: true }).flatMap(e => e.isD
 /** Remap actual server/browser V8 ranges to fixture source; no runtime branch exclusions. */
 export async function measureFixture(app, evidence) {
   app = realpathSync(app);
-  const expected = [...walk(join(app, 'app')), ...walk(join(app, 'lib'))].filter(file => {
+  const editorSource = join(app, 'node_modules/event-driven-design-editor/src');
+  const expected = [...walk(join(app, 'app')), ...walk(join(app, 'lib')), ...walk(editorSource)].filter(file => {
     if (!/\.(ts|tsx)$/.test(file) || file.endsWith('.d.ts')) return false;
     const source = ts.createSourceFile(file, readFileSync(file, 'utf8'), ts.ScriptTarget.Latest);
     return !source.statements.every(node => ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node) ||
@@ -43,7 +44,12 @@ export async function measureFixture(app, evidence) {
     if (existsSync(path + '.map')) {
       if (!normalizedMaps.has(canonical)) {
         const map = JSON.parse(readFileSync(path + '.map', 'utf8'));
-        map.sources = map.sources.map(source => {
+        map.sources = map.sources.map((source, index) => {
+          const editor = source.match(/^webpack:\/\/[^/]+\/\.\.\/src\/(.+)$/);
+          if (editor) {
+            const target = resolve(editorSource, editor[1]);
+            if (owned.has(target) && map.sourcesContent?.[index] === readFileSync(target, 'utf8')) return target;
+          }
           const local = source.match(/^webpack:\/\/[^/]+\/\.\/(.+)$/);
           if (!local) return source;
           const target = resolve(app, local[1]);

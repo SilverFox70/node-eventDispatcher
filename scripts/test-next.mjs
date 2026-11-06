@@ -22,16 +22,25 @@ const checked = async (file, args, options) => {
 let serving;
 try {
   await checked(process.execPath, [join(root, 'scripts/build.mjs')], { cwd: root, log: join(evidence, 'core-build.log') });
+  const editorBuild = await npmCommand(['run', 'build:editor'], { cwd: root, log: join(evidence, 'editor-build.log') });
+  assert.equal(editorBuild.code, 0, editorBuild.output);
   cpSync(join(root, 'fixtures/next-consumer'), app, { recursive: true,
     filter: path => !['node_modules', '.next', 'vendor'].includes(basename(path)) });
   mkdirSync(join(app, 'vendor'));
   const packed = await npmCommand(['pack', '--offline', '--ignore-scripts', '--json', '--pack-destination', join(app, 'vendor')], { cwd: root });
   assert.equal(packed.code, 0, packed.output);
   const artifact = JSON.parse(packed.output)[0];
-  writeFileSync(join(evidence, 'artifact.json'), JSON.stringify(artifact, null, 2));
+  const editorPack = await npmCommand(['pack', '--offline', '--ignore-scripts', '--json',
+    '--workspace', 'event-driven-design-editor', '--pack-destination', join(app, 'vendor')], { cwd: root });
+  assert.equal(editorPack.code, 0, editorPack.output);
+  const editorArtifact = JSON.parse(editorPack.output)[0];
+  assert(editorArtifact.files.some(file => file.path === 'dist/styles.css'));
+  assert(!artifact.files.some(file => file.path.startsWith('packages/editor')));
+  writeFileSync(join(evidence, 'artifact.json'), JSON.stringify({ core: artifact, editor: editorArtifact }, null, 2));
   const lockPath = join(app, 'package-lock.json'), lock = JSON.parse(readFileSync(lockPath, 'utf8'));
   assert.equal(lock.packages['node_modules/event-driven-design'].version, artifact.version);
   lock.packages['node_modules/event-driven-design'].integrity = artifact.integrity;
+  lock.packages['node_modules/event-driven-design-editor'].integrity = editorArtifact.integrity;
   writeFileSync(lockPath, JSON.stringify(lock, null, 2) + '\n');
   const install = await npmCommand(['ci', '--no-audit', '--no-fund'], { cwd: app, log: join(evidence, 'install.log') });
   assert.equal(install.code, 0, install.output);
@@ -66,7 +75,7 @@ try {
       cwd: app, env: { PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') }, log: join(evidence, 'browser-install.log'),
     });
     cpSync(join(root, 'examples/content-review'), join(app, 'lib/s24f'), { recursive: true });
-    const tests = ['consumer', 'inspector', 'inspector-state', 'coverage-signal', 'execution', 'demo-address', 'http', 'diagnostics', 'diagnostic-state', 'diagnostic-api', 'content-review', 'content-comparison'].map(name => join(root, `test/next/${name}.test.js`));
+    const tests = ['consumer', 'inspector', 'inspector-state', 'coverage-signal', 'execution', 'demo-address', 'http', 'diagnostics', 'diagnostic-state', 'diagnostic-api', 'editor', 'content-review', 'content-comparison'].map(name => join(root, `test/next/${name}.test.js`));
     const tested = await command(process.execPath, ['--test', '--test-reporter=tap', ...tests], {
       cwd: root, env: { FBP_NEXT_APP: app, FBP_NEXT_EVIDENCE: evidence, NODE_V8_COVERAGE: join(evidence, 'v8-test'), PLAYWRIGHT_BROWSERS_PATH: join(tmpdir(), 'fbp-next-browsers') },
       log: join(evidence, 'consumer-tests.log'),
