@@ -30,3 +30,5 @@ Initial acceptance isolated channel abort handling, strict capture selectors, th
 - Documentation link and whitespace checks passed. No CI workflow changes. Implementation and X24E.1–3 proof complete; S24F follows the actual S24E merge.
 
 Publication receipt: implementation commit `a5d2a022cbb366163c45baf127fac9fab67e8ef2` pushed to [PR #41](https://github.com/SilverFox70/node-eventDispatcher/pull/41) against master. Follow-up records documentation only. Local PR #40 working journal and feedback remain uncommitted.
+
+Merge receipt: GitHub confirmed PR #41 merged at `9f05cdf2f30e6a76001621343ab4d6e0d0287642`. Verified this commit is in fetched origin/master before starting S24F.

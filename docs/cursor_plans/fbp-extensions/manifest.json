@@ -300,8 +300,8 @@
         "X24E.3"
       ],
       "status": "approved-for-execution",
-      "execution_status": "complete-for-review",
-      "merge_sha": null,
+      "execution_status": "merged",
+      "merge_sha": "9f05cdf2f30e6a76001621343ab4d6e0d0287642",
       "gate": "D1 diagnostic/task context amendment; D5 evidence/fixture/comparison contract; predecessor proof",
       "order": 9,
       "previous": "S24D",
@@ -316,7 +316,7 @@
         ],
         "contract": "S24E product review"
       },
-      "publication_status": "pr-open",
+      "publication_status": "merged",
       "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/41"
     },
     {
@@ -330,13 +330,24 @@
         "X24F.2",
         "X24F.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
       "gate": "D1 diagnostic/task context amendment; D5 evidence/fixture/comparison contract; predecessor proof",
       "order": 10,
       "previous": "S24E",
-      "next": "S25"
+      "next": "S25",
+      "journal": "S24F-execution.md",
+      "execution_approval": {
+        "authority": "user requested S24F after PR #41 merged",
+        "tasks": [
+          "S24F.A",
+          "S24F.B",
+          "S24F.C"
+        ],
+        "contract": "Fixed content-review parity and measurement"
+      },
+      "publication_status": "ready"
     },
     {
       "id": "S25",
