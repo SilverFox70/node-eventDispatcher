@@ -35,3 +35,5 @@ The shared harness exposes its existing opt-in diagnostic snapshot alongside dec
 - Implementation and X24D.1–3 proof complete. S24E requires the actual S24D merge and its own request.
 
 Publication receipt: implementation commit `c873990077e77b073a842e9a8e0c9f54950347b1` pushed. GitHub confirmed [PR40](https://github.com/SilverFox70/node-eventDispatcher/pull/40) open against master. This follow-up is documentation only. User-local .DS_Store and .feedback-log remain uncommitted.
+
+Merge receipt: PR #40 merged at `bd0302b5de986dfd2ffcc3903a9c666ff3264770` after all four checks passed on `ff762cc` in run 42163723442. The failed Next dependency installation was retried before merge. The baseline review fix and dialog test synchronization are included.
