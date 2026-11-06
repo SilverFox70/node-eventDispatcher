@@ -408,7 +408,9 @@
           "S26.C"
         ],
         "contract": "PK1-r1 and CG2-r1"
-      }
+      },
+      "publication_status": "pr-open",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/44"
     },
     {
       "id": "S27",
