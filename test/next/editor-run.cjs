@@ -42,6 +42,10 @@ function verifyRunProtocol(app) {
     import { renderToStaticMarkup } from 'react-dom/server';
     const path = new URL('./runs/report.js', import.meta.resolve('event-driven-design-editor/model'));
     const { RunReport } = await import(path);
+    const { canCancelTest } = await import(new URL('./panel.js', path));
+    for (const [pending, cancelling, expected] of [
+      [false, false, false], [false, true, false], [true, false, true], [true, true, false],
+    ]) assert.equal(canCancelTest(pending, cancelling), expected);
     const render = props => renderToStaticMarkup(createElement(RunReport, { revision: 2, ...props }));
     assert.equal(render({}), '');
     assert.match(render({ issue: 'Invalid input' }), /role="alert">Invalid input/);
