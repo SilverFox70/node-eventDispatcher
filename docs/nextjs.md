@@ -127,3 +127,9 @@ See the [S24E execution receipt](cursor_plans/fbp-extensions/S24E-execution.md).
 Open **Graph editor** and expand **First-run walkthrough**. The practice draft opens in a separate tab. Add and configure two Inventory Alert nodes, wire them together, expose graph ports, and validate the draft. Run the supplied test input to inspect the intermediate and final payloads. The first node uses a threshold of 5 and emits `low: true` for quantity 4. The second uses a threshold of 2 and emits `low: false`. Closing the practice tab discards its session-only edits.
 
 The demo imports `GraphEditor` and `event-driven-design-editor/styles.css` through their public entry points. Build the application registry and inject any services in server-only code. Send the browser only the catalog from `describeRegistry`. For a working service-injection example, see [the content review node definitions](../fixtures/next-consumer/lib/content-review/nodes.ts) and [their graph](../fixtures/next-consumer/lib/content-review/graph.ts). Authors and agents can change a registered node in source and exercise it independently with `runNode` before adding it to a graph. Keep credentials and service instances in the host, and use owned fixture services when testing.
+
+### Reopen a local saved draft
+
+Choose **Open saved draft** in the loopback demo. Changes autosave after a short pause, and **Save draft now** flushes pending edits. The status shows the last committed revision. If a save fails or another tab wins a revision conflict, your current edits stay in the tab. Reopen the saved draft in another tab to compare. Practice and test samples remain session-only.
+
+`npm run demo:next` uses `.nodeflow-drafts.sqlite` in the checkout. Set `FBP_DRAFT_DATABASE` to use a different absolute path. The loopback fixture uses one fixed workspace and one named draft. An application exposing draft storage to users must provide its own workspace authorization.

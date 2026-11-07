@@ -9,6 +9,7 @@ const { verifyConfigurationMarkup, verifyConfigurationModel, verifyRoute, verify
 const { verifyRunProtocol, verifyRunAdmission, verifyEditorRun } = require('./editor-run.cjs');
 const { verifyLiveEditor, verifyLiveMarkupAndHost, verifyLiveModel } = require('./editor-live.cjs');
 const { verifyWalkthrough } = require('./editor-walkthrough.cjs');
+const { verifySavedDraft } = require('./editor-drafts.cjs');
 const proveDocument = require('./editor-document.cjs');
 
 async function captureEditorCoverage(page, app, evidence, scenario) {
@@ -136,6 +137,7 @@ test('two Alert cards move independently and undo restores removed wiring withou
   verifyConfigurationModel(app);
   verifyConfigurationMarkup(app);
   const { startServer } = await import('../../scripts/next/server.mjs');
+  const draftDatabase = join(app, '.nodeflow-drafts.sqlite');
   const server = await startServer(app, {
     nextPath: process.env.FBP_NEXT_PATH,
     coverage: join(evidence, 'v8-server'),
@@ -199,6 +201,28 @@ test('two Alert cards move independently and undo restores removed wiring withou
     await captureEditorCoverage(page, app, evidence, 'live-run');
     assert(!server.logs().includes('FBP_EDITOR_FACTORY_CALLED'));
     await verifyWalkthrough(page, server);
+    await page.coverage.startJSCoverage({ resetOnNavigation: false });
+    await verifySavedDraft(page, server, async (scenario, target = page) => {
+      await captureEditorCoverage(target, app, evidence, scenario);
+      if (target === page) await page.coverage.startJSCoverage();
+    });
+    await captureEditorCoverage(page, app, evidence, 'saved-draft');
+    const reopened = await startServer(app, { nextPath: process.env.FBP_NEXT_PATH,
+      draftDatabase, coverage: join(evidence, 'v8-server'), log: join(evidence, 'server-draft-reopen.log') });
+    try {
+      const savedPage = await page.request.get(reopened.url + '/editor?saved=1');
+      assert.equal(savedPage.status(), 200);
+      assert.match(await savedPage.text(), /Saved revision 4/);
+    } finally { await reopened.stop(); }
+    const unavailable = await startServer(app, { nextPath: process.env.FBP_NEXT_PATH,
+      draftDatabase: evidence, coverage: join(evidence, 'v8-server'), log: join(evidence, 'server-draft-unavailable.log') });
+    try {
+      const response = await page.request.put(unavailable.url + '/api/editor/draft', {
+        headers: { origin: unavailable.url }, data: { expectedRevision: null,
+          graph: { version: 2, nodes: [], edges: [], inputs: {}, outputs: {} }, layout: { positions: {}, groups: {} } },
+      });
+      assert.equal(response.status(), 503);
+    } finally { await unavailable.stop(); }
   } finally {
     await browser?.close();
     await server.stop();

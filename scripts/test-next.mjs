@@ -24,6 +24,8 @@ try {
   await checked(process.execPath, [join(root, 'scripts/build.mjs')], { cwd: root, log: join(evidence, 'core-build.log') });
   const editorBuild = await npmCommand(['run', 'build:editor'], { cwd: root, log: join(evidence, 'editor-build.log') });
   assert.equal(editorBuild.code, 0, editorBuild.output);
+  const artifactBuild = await npmCommand(['run', 'build:artifacts'], { cwd: root, log: join(evidence, 'artifact-build.log') });
+  assert.equal(artifactBuild.code, 0, artifactBuild.output);
   cpSync(join(root, 'fixtures/next-consumer'), app, { recursive: true,
     filter: path => !['node_modules', '.next', 'vendor'].includes(basename(path)) });
   mkdirSync(join(app, 'vendor'));
@@ -34,13 +36,18 @@ try {
     '--workspace', 'event-driven-design-editor', '--pack-destination', join(app, 'vendor')], { cwd: root });
   assert.equal(editorPack.code, 0, editorPack.output);
   const editorArtifact = JSON.parse(editorPack.output)[0];
+  const draftPack = await npmCommand(['pack', '--offline', '--ignore-scripts', '--json',
+    '--workspace', 'event-driven-design-artifacts', '--pack-destination', join(app, 'vendor')], { cwd: root });
+  assert.equal(draftPack.code, 0, draftPack.output);
+  const draftArtifact = JSON.parse(draftPack.output)[0];
   assert(editorArtifact.files.some(file => file.path === 'dist/styles.css'));
   assert(!artifact.files.some(file => file.path.startsWith('packages/editor')));
-  writeFileSync(join(evidence, 'artifact.json'), JSON.stringify({ core: artifact, editor: editorArtifact }, null, 2));
+  writeFileSync(join(evidence, 'artifact.json'), JSON.stringify({ core: artifact, editor: editorArtifact, artifacts: draftArtifact }, null, 2));
   const lockPath = join(app, 'package-lock.json'), lock = JSON.parse(readFileSync(lockPath, 'utf8'));
   assert.equal(lock.packages['node_modules/event-driven-design'].version, artifact.version);
   lock.packages['node_modules/event-driven-design'].integrity = artifact.integrity;
   lock.packages['node_modules/event-driven-design-editor'].integrity = editorArtifact.integrity;
+  lock.packages['node_modules/event-driven-design-artifacts'].integrity = draftArtifact.integrity;
   writeFileSync(lockPath, JSON.stringify(lock, null, 2) + '\n');
   const install = await npmCommand(['ci', '--no-audit', '--no-fund'], { cwd: app, log: join(evidence, 'install.log') });
   assert.equal(install.code, 0, install.output);
@@ -60,7 +67,7 @@ try {
     log: join(evidence, 'next-build.log'),
   });
   if (demo.serve) {
-    serving = await startServer(app, { host: demo.host, port: demo.port });
+    serving = await startServer(app, { host: demo.host, port: demo.port, draftDatabase: process.env.FBP_DRAFT_DATABASE ?? join(root, '.nodeflow-drafts.sqlite') });
     console.log('Demo ready:', serving.url, '(Ctrl+C to stop)');
     await new Promise(resolve => { process.once('SIGINT', resolve); process.once('SIGTERM', resolve); });
   } else {

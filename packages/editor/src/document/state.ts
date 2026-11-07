@@ -15,12 +15,19 @@ export type EditorState = Readonly<{
 }>;
 export type CommandResult = { ok: true; state: EditorState } | { ok: false; issue: EditorIssue; state: EditorState };
 
-export function createEditorState(nodes: readonly EditorNode[] = [], initialGraph?: EditorDocument['graph']): EditorState {
+export function createEditorState(nodes: readonly EditorNode[] = [], initialGraph?: EditorDocument['graph'], initialLayout?: EditorDocument['layout']): EditorState {
   const graph = initialGraph ? structuredClone(initialGraph)
     : { version: 2 as const, nodes: structuredClone(nodes), edges: [], inputs: {}, outputs: {} };
+  const initialPositions = initialLayout?.positions ?? {};
+  const positions = Object.fromEntries(graph.nodes.map((node, index) => [
+    node.id, Object.hasOwn(initialPositions, node.id) ? structuredClone(initialPositions[node.id]!) : gridPosition(index),
+  ]));
   const document: EditorDocument = {
     graph,
-    layout: { positions: Object.fromEntries(graph.nodes.map((node, index) => [node.id, gridPosition(index)])), groups: {} },
+    layout: {
+      positions,
+      groups: structuredClone(initialLayout?.groups ?? {}),
+    },
   };
   return { document, baseline: document, revision: 0, past: [], future: [], used: new Set(graph.nodes.map(node => node.id)) };
 }

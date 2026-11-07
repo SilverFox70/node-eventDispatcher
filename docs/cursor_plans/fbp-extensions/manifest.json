@@ -577,14 +577,16 @@
         "X32.3"
       ],
       "status": "approved-for-execution",
-      "execution_status": "complete-for-review",
-      "merge_sha": null,
+      "execution_status": "merged",
+      "merge_sha": "ca5dab30522f0a2501f849ad56f1e35303926a15",
       "gate": "D1 artifact schema; D2 packaging; D3 storage",
       "journal": "S32-execution.md",
       "execution_approval": {
         "authority": "user requested S32 after PR #49 merged",
         "tasks": ["S32.A", "S32.B", "S32.C"]
-      }
+      },
+      "publication_status": "merged",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/50"
     },
     {
       "id": "S33",
@@ -600,10 +602,15 @@
         "X33.2",
         "X33.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
-      "gate": "D1 artifact schema; D2 packaging; D3 storage"
+      "gate": "D1 artifact schema; D2 packaging; D3 storage",
+      "journal": "S33-execution.md",
+      "execution_approval": {
+        "authority": "user requested S33 after PR #50 merged",
+        "tasks": ["S33.A", "S33.B", "S33.C"]
+      }
     },
     {
       "id": "S34",

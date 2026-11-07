@@ -75,8 +75,8 @@ test('coverage keeps cross-file locations and unexecuted authored functions exac
   }
 });
 
-test('statement gate excludes delimiter-only lines while preserving real uncovered code and branches', async () => {
-  const { withoutDelimiterStatements } = await import('../../scripts/next/coverage-statements.mjs');
+test('coverage gate excludes delimiter-only mappings while preserving real uncovered code and branches', async () => {
+  const { withoutDelimiterCoverage } = await import('../../scripts/next/coverage-statements.mjs');
   const ts = require('typescript');
   const source = ts.createSourceFile('fixture.ts', [
     'function example() {',
@@ -95,12 +95,18 @@ test('statement gate excludes delimiter-only lines while preserving real uncover
     start: { line: id + 1, column: 0 }, end: { line: id + 1, column: 1 },
   }]));
   const raw = { statementMap, s: { 0: 1, 1: 1, 2: 1, 3: 0, 4: 1, 5: 0, 6: 1, 7: 1, 8: 0, 9: 0, 10: 0 },
-    b: { 0: [0] }, branchMap: { 0: { line: 11 } } };
-  const gated = withoutDelimiterStatements(raw, source);
+    b: { 0: [0], 1: [0], 2: [0] }, branchMap: {
+      0: { type: 'branch', loc: statementMap[10], locations: [statementMap[10]] },
+      1: { type: 'branch', loc: statementMap[5], locations: [statementMap[5]] },
+      2: { type: 'branch', loc: { start: statementMap[9].start, end: statementMap[10].end },
+        locations: [{ start: statementMap[9].start, end: statementMap[10].end }] },
+    } };
+  const gated = withoutDelimiterCoverage(raw, source);
   assert.deepEqual(Object.keys(gated.s), ['0', '1', '2', '4', '5', '6', '7', '8', '9']);
   assert.equal(gated.s[5], 0, 'A delimiter in a multiline literal still belongs to an expression');
   assert.equal(gated.s[9], 0, 'An unexecuted return remains in the denominator');
-  assert.deepEqual(gated.b, raw.b);
-  assert.deepEqual(gated.branchMap, raw.branchMap);
+  assert.deepEqual(gated.b, { 1: [0], 2: [0] });
+  assert.deepEqual(gated.branchMap, { 1: raw.branchMap[1], 2: raw.branchMap[2] });
+  assert.equal(raw.b[0][0], 0, 'Raw synthetic branch evidence remains available');
   assert.equal(raw.s[10], 0, 'Raw coverage stays available for diagnosis');
 });

@@ -38,7 +38,13 @@ try {
     assert(compileGraph(document.graph, { 'idle@1': defineComponent({
       id: 'idle', version: 1, title: 'Idle', description: '', in: {}, out: {}, create: () => async () => {},
     }) }).ok);
-    await assert.rejects(import('event-driven-design-artifacts/sqlite'), { code: 'ERR_PACKAGE_PATH_NOT_EXPORTED' });
+    const { openDraftRepository } = await import('event-driven-design-artifacts/sqlite');
+    const repository = openDraftRepository(':memory:');
+    try {
+      const scope = { workspaceId: document.workspaceId, documentId: document.documentId };
+      assert((await repository.createDraft(scope, document)).ok);
+      assert((await repository.loadDraft(scope)).ok);
+    } finally { await repository.close(); }
   `]);
   writeFileSync(join(fixture, 'artifact-types.mts'), `
     import { parseGraphDocument, type GraphDocument } from 'event-driven-design-artifacts/model';

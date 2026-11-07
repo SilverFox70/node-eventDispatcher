@@ -2,7 +2,7 @@ import { readFileSync, readdirSync, existsSync, realpathSync, writeFileSync } fr
 import { dirname, join, resolve, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
-import { withoutDelimiterStatements } from './coverage-statements.mjs';
+import { withoutDelimiterCoverage } from './coverage-statements.mjs';
 import { mappedFunctions, prepareCoverage } from './coverage-ranges.mjs';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -98,7 +98,7 @@ export async function measureFixture(app, evidence) {
   const failures = [];
   for (const path of expected) {
     if (!report[path]) { failures.push(relative(app, path) + ': missing source coverage'); continue; }
-    const gated = withoutDelimiterStatements(coverage.fileCoverageFor(path).toJSON(), sourceFiles.get(path));
+    const gated = withoutDelimiterCoverage(coverage.fileCoverageFor(path).toJSON(), sourceFiles.get(path));
     const summary = createFileCoverage(gated).toSummary();
     console.log(relative(app, path), JSON.stringify(summary.data));
     for (const metric of ['statements', 'lines', 'branches']) if (summary[metric].pct < 95) failures.push(`${relative(app, path)} ${metric} ${summary[metric].pct}%`);

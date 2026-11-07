@@ -8,8 +8,8 @@ const delimiters = new Set([
   ts.SyntaxKind.CommaToken,
 ]);
 
-/** V8's Istanbul adapter reports one statement per source line, including closing punctuation. */
-export function withoutDelimiterStatements(coverage, source) {
+/** Drop source-map entries whose entire authored extent is closing punctuation. */
+export function withoutDelimiterCoverage(coverage, source) {
   const closing = new Set(), executable = new Set();
   function visit(node) {
     const children = node.getChildren(source);
@@ -25,12 +25,23 @@ export function withoutDelimiterStatements(coverage, source) {
     for (let line = first; line <= last; line++) lines.add(line + 1);
   }
   visit(source);
+  const delimiterOnly = location => {
+    if (!location?.start || !location.end) return false;
+    const line = location.start.line;
+    return location.end.line === line && closing.has(line) && !executable.has(line);
+  };
   const statementMap = {}, s = {};
   for (const [id, location] of Object.entries(coverage.statementMap)) {
-    const line = location.start.line;
-    if (location.end.line === line && closing.has(line) && !executable.has(line)) continue;
+    if (delimiterOnly(location)) continue;
     statementMap[id] = location;
     s[id] = coverage.s[id];
   }
-  return { ...coverage, statementMap, s };
+  const branchMap = {}, b = {};
+  for (const [id, branch] of Object.entries(coverage.branchMap)) {
+    if (branch.type === 'branch' && branch.locations?.length === 1 &&
+        delimiterOnly(branch.loc) && delimiterOnly(branch.locations[0])) continue;
+    branchMap[id] = branch;
+    b[id] = coverage.b[id];
+  }
+  return { ...coverage, statementMap, s, branchMap, b };
 }
