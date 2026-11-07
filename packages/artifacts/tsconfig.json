@@ -10,7 +10,9 @@
     "inlineSources": true,
     "rootDir": "src",
     "outDir": "dist",
-    "paths": { "event-driven-design/model": ["../../dist/esm/model/index.d.ts"] }
+    "paths": { "event-driven-design/model": ["../../dist/esm/model/index.d.ts"],
+      "event-driven-design": ["../../dist/esm/index.d.ts"],
+      "event-driven-design/testing": ["../../dist/esm/testing/index.d.ts"] }
   },
   "include": ["src"]
 }
