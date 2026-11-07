@@ -2,7 +2,8 @@
 
 .nodeflow-editor {
   display: grid;
-  grid-template-columns: minmax(10rem, 1fr) minmax(0, 3fr) minmax(10rem, 1fr);
+  grid-template-columns: min(var(--nodeflow-palette), 22%) minmax(0, 1fr) min(var(--nodeflow-inspector), 38%);
+  align-items: start;
   gap: 1rem;
 }
 .nodeflow-editor section { min-width: 0; overflow-wrap: anywhere; }
@@ -20,13 +21,8 @@
 }
 .nodeflow-card[data-selected="true"] { border: 2px solid #2148ca; }
 .nodeflow-node-active .nodeflow-card { box-shadow: 0 0 0 3px #00856c; }
-.nodeflow-viewport { height: 24rem; border: 1px solid #9aa9bd; }
+.nodeflow-viewport { height: var(--nodeflow-height); margin-block: .5rem 1rem; border: 1px solid #9aa9bd; background: #f8fafc; }
 .nodeflow-editor button[aria-pressed="true"] { outline: 2px solid currentColor; }
-@media (max-width: 50rem) {
-  .nodeflow-editor { grid-template-columns: 1fr; }
-}
-
-
 .nodeflow-port { position: relative; }
 .nodeflow-port .react-flow__handle-left { left: -.45rem; }
 .nodeflow-port .react-flow__handle-right { right: -.45rem; }
@@ -44,3 +40,34 @@
 
 .nodeflow-live ol { max-height: 22rem; overflow: auto; }
 .nodeflow-live pre { max-height: 12rem; overflow: auto; }
+
+.nodeflow-editor > section, .nodeflow-inspector > section { padding: .8rem; }
+.nodeflow-editor h2, .nodeflow-inspector h3 { margin-block: .4rem .7rem; }
+.nodeflow-palette ul { display: grid; gap: .65rem; list-style: none; padding: 0; }
+.nodeflow-palette button { width: 100%; text-align: start; }
+.nodeflow-pane-size { display: grid; gap: .2rem; font-size: .85rem; }
+.nodeflow-pane-size input { width: 100%; min-width: 0; box-sizing: border-box; accent-color: #224dc2; }
+.nodeflow-inspector {
+  min-width: 0;
+  display: grid;
+  gap: .65rem;
+  max-height: calc(var(--nodeflow-height) + 10rem);
+  overflow: auto;
+  scrollbar-gutter: stable;
+}
+.nodeflow-inspector textarea { width: 100%; min-width: 0; box-sizing: border-box; }
+.nodeflow-wire-observed .react-flow__edge-path { stroke: #00856c; stroke-width: 4; }
+.nodeflow-node-observed .nodeflow-card { outline: 2px solid #00856c; outline-offset: 2px; }
+.nodeflow-transfer-route { background: #eef8f5; padding: .5rem; border-inline-start: 3px solid #00856c; }
+.nodeflow-live li { padding-block: .45rem; }
+.nodeflow-live select { width: 100%; }
+@media (max-width: 62rem) {
+  .nodeflow-editor { grid-template-columns: minmax(0, 1fr); }
+  .nodeflow-editor > .nodeflow-palette > .nodeflow-pane-size,
+  .nodeflow-inspector > .nodeflow-pane-size { display: none; }
+  .nodeflow-palette ul { display: flex; flex-wrap: wrap; }
+  .nodeflow-inspector { max-height: none; overflow: visible; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nodeflow-editor .react-flow__edge.animated .react-flow__edge-path { animation: none; }
+}

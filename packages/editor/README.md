@@ -22,3 +22,5 @@ Supply a host-owned `validationEndpoint` to enable backend validation. It accept
 Supply `testRun={{ endpoint, sampleHref }}` to connect the fixture-run panel. The host validates the graph and inputs before execution. The optional sample link opens a separate draft. The returned run is tied to the submitted graph digest and revision.
 
 The live view reads bounded, revision-tagged snapshots from the host test endpoint using the per-run key. The fixture supports opt-in packet capture, job and stage selection, pause display, and reconnect without losing the draft. The live view belongs to the run's original graph revision.
+
+On wide screens, the palette and inspector have width sliders and the canvas has a height slider. Drag a slider or use its arrow keys. On narrow screens, the side panels stack under or above the canvas. During a test, the live inspector names the latest transfer for the selected job. Use **All transfers for this job** to inspect its path across stages. **Show on canvas** pins a recorded transfer, and **Follow latest** returns to live activity.

@@ -102,6 +102,7 @@ async function verifyRoute(page, url) {
 
 async function verifySettings(page, url) {
   await page.goto(url + '/editor');
+  await page.getByText('Canvas controls', { exact: true }).press('Enter');
   await page.getByText('Use Select in the node list', { exact: false }).waitFor();
   await page.getByRole('button', { name: 'Validate draft' }).press('Enter');
   await page.getByText('Backend validated this draft.', { exact: true }).waitFor();

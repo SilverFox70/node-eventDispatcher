@@ -603,14 +603,16 @@
         "X33.3"
       ],
       "status": "approved-for-execution",
-      "execution_status": "complete-for-review",
-      "merge_sha": null,
+      "execution_status": "merged",
+      "merge_sha": "984641dc1604bf9e16867757e99614b8faefcc4e",
       "gate": "D1 artifact schema; D2 packaging; D3 storage",
       "journal": "S33-execution.md",
       "execution_approval": {
         "authority": "user requested S33 after PR #50 merged",
         "tasks": ["S33.A", "S33.B", "S33.C"]
-      }
+      },
+      "publication_status": "merged",
+      "pull_request": "https://github.com/SilverFox70/node-eventDispatcher/pull/51"
     },
     {
       "id": "S34",
