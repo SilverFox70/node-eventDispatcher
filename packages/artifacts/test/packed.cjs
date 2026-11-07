@@ -1,4 +1,5 @@
-const { writeFileSync } = require('node:fs');
+const assert = require('node:assert/strict');
+const { readFileSync, writeFileSync } = require('node:fs');
 const { join } = require('node:path');
 const { installedPackage } = require('../../../test/package-fixture.cjs');
 
@@ -49,6 +50,13 @@ try {
   writeFileSync(join(fixture, 'artifact-types.mts'), `
     import { parseGraphDocument, type GraphDocument } from 'event-driven-design-artifacts/model';
     import { fingerprintGraphDocument } from 'event-driven-design-artifacts';
+    import { openDraftRepository, type DraftVerification, type TestReceipt } from 'event-driven-design-artifacts/sqlite';
+    declare const verification: DraftVerification;
+    const repository = openDraftRepository(':memory:');
+    const scope = { workspaceId: 'w', documentId: 'd' };
+    const receipt: TestReceipt = await repository.testDraft(scope, 0, verification);
+    const locked = await repository.lockRevision(scope, 0, receipt.receiptId, 'actor', verification);
+    await repository.forkDraft(scope, locked.revision.revisionId, 'fork');
     const document: GraphDocument = parseGraphDocument({});
     const { semanticHash, layoutHash }: { semanticHash: string; layoutHash: string } = fingerprintGraphDocument(document);
     // @ts-expect-error Unknown document versions cannot be constructed as v1.
@@ -57,7 +65,14 @@ try {
   `);
   run(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '--ignoreConfig', '--module', 'nodenext',
     '--strict', '--noEmit', 'artifact-types.mts']);
-  console.log('Installed artifact package, passive model, declarations and ordinary core compiler passed.');
+  const revisions = readFileSync(join(root, 'packages/artifacts/test/revisions.test.js'), 'utf8')
+    .replace('../dist/index.js', 'event-driven-design-artifacts')
+    .replace('../dist/store/index.js', 'event-driven-design-artifacts/sqlite');
+  writeFileSync(join(fixture, 'revisions.test.mjs'), revisions);
+  const tested = run(process.execPath, ['--test', '--test-reporter=tap',
+    '--test-name-pattern=trusted test evidence|the SQLite v1 migration', 'revisions.test.mjs']);
+  assert.match(tested, /^# pass 2$/m);
+  console.log('Installed artifact package, passive model, declarations and SQLite revision lifecycle passed.');
 } finally {
   consumer.dispose();
 }

@@ -628,10 +628,15 @@
         "X34.2",
         "X34.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
-      "gate": "D1 artifact schema; D2 packaging; D3 storage"
+      "gate": "D1 artifact schema; D2 packaging; D3 storage",
+      "journal": "S34-execution.md",
+      "execution_approval": {
+        "authority": "user requested S34 after PR #52 merged",
+        "tasks": ["S34.A", "S34.B", "S34.C"]
+      }
     },
     {
       "id": "S35",
