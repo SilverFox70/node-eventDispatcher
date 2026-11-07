@@ -10,6 +10,7 @@ const { verifyRunProtocol, verifyRunAdmission, verifyEditorRun } = require('./ed
 const { verifyLiveEditor, verifyLiveMarkupAndHost, verifyLiveModel } = require('./editor-live.cjs');
 const { verifyWalkthrough } = require('./editor-walkthrough.cjs');
 const { verifySavedDraft } = require('./editor-drafts.cjs');
+const { verifyWorkspaceLayout } = require('./editor-layout.cjs');
 const proveDocument = require('./editor-document.cjs');
 
 async function captureEditorCoverage(page, app, evidence, scenario) {
@@ -201,6 +202,9 @@ test('two Alert cards move independently and undo restores removed wiring withou
     await captureEditorCoverage(page, app, evidence, 'live-run');
     assert(!server.logs().includes('FBP_EDITOR_FACTORY_CALLED'));
     await verifyWalkthrough(page, server);
+    await page.coverage.startJSCoverage();
+    await verifyWorkspaceLayout(page, server, evidence);
+    await captureEditorCoverage(page, app, evidence, 'workspace-layout');
     await page.coverage.startJSCoverage({ resetOnNavigation: false });
     await verifySavedDraft(page, server, async (scenario, target = page) => {
       await captureEditorCoverage(target, app, evidence, scenario);

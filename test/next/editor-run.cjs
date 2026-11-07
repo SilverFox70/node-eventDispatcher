@@ -190,8 +190,23 @@ async function verifyEditorRun(page, server) {
     await new Promise(resolve => globalThis.setTimeout(resolve, 10));
   }
   assert.equal(countLookups(server), starting + 2);
-  await panel.getByRole('button', { name: 'Cancel test' }).click();
-  await result.getByText('Test cancelled · CANCELLED', { exact: false }).waitFor();
+  let releaseCancel;
+  const cancelResponse = new Promise(resolve => { releaseCancel = resolve; });
+  const cancel = panel.getByRole('button', { name: 'Cancel test' });
+  await page.route('**/api/editor/test-run', async route => {
+    if (route.request().method() === 'DELETE') await cancelResponse;
+    await route.continue();
+  });
+  try {
+    await cancel.click();
+    await panel.getByText('Cancelling test…', { exact: true }).waitFor();
+    assert(await cancel.isDisabled());
+    releaseCancel();
+    await result.getByText('Test cancelled · CANCELLED', { exact: false }).waitFor();
+  } finally {
+    releaseCancel();
+    await page.unroute('**/api/editor/test-run');
+  }
 
   const nextStart = countLookups(server);
   await run.click();

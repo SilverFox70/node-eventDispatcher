@@ -120,6 +120,12 @@ async function verifyLiveEditor(page, server) {
   await transfers.locator('pre').filter({ hasText: /^4$/ }).waitFor();
   assert((await page.evaluate(() => globalThis.s30AnimatedEdges)).some(id => id?.includes('["units","out","join","units"]')));
   assert.equal(await transfers.getByText(/^sent/).count(), 0);
+  const unitsWire = page.locator('.nodeflow-wire-observed[data-testid*="units"]');
+  const focus = live.getByRole('button', { name: 'Show on canvas' });
+  await focus.click();
+  await unitsWire.waitFor({ state: 'attached' });
+  await live.getByLabel('Transfer shown on canvas').getByText('units.out → join.units').waitFor();
+  assert.equal(await focus.getAttribute('aria-pressed'), 'true');
 
   // Fail the observation transport while the POST and its runtime continue independently.
   await page.route('**/api/editor/test-run', route => route.request().method() === 'GET'
@@ -135,6 +141,18 @@ async function verifyLiveEditor(page, server) {
   await live.getByRole('button', { name: 'Resume display' }).click();
   await live.getByText(/^Run completed · /).waitFor();
   assert.equal(await transfers.getByText(/^sent/).count(), 1);
+  await unitsWire.waitFor({ state: 'attached' });
+  assert.equal(await unitsWire.and(page.locator('.animated')).count(), 0);
+  await live.getByRole('button', { name: 'Follow latest' }).click();
+  await live.getByLabel('Transfer shown on canvas').getByText('join.out → Graph output').waitFor();
+  await unitsWire.waitFor({ state: 'detached' });
+  const all = live.getByRole('button', { name: 'All transfers for this job' });
+  await all.click();
+  assert.equal(await all.getAttribute('aria-pressed'), 'true');
+  assert((await transfers.getByRole('listitem').count()) > 4);
+  await transfers.getByRole('button', { name: 'Show on canvas' }).first().click();
+  await live.getByLabel('Transfer shown on canvas').getByText('Graph input → split.in').waitFor();
+  await live.getByRole('button', { name: 'Follow latest' }).click();
   await live.getByLabel('Stage', { exact: true }).selectOption({ label: 'Final outputs' });
   await transfers.locator('pre').filter({ hasText: /"label": "SLOW"/ }).waitFor();
 
