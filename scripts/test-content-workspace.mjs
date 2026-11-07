@@ -9,7 +9,7 @@ import { startServer } from './next/server.mjs';
 
 const root = fileURLToPath(new globalThis.URL('..', import.meta.url));
 const target = realpathSync(mkdtempSync(join(tmpdir(), 'fbp-content-workspace-')));
-const framework = join(target, 'packages/nodeflow'), editor = join(target, 'packages/editor'), web = join(target, 'apps/web');
+const framework = join(target, 'packages/nodeflow'), editor = join(target, 'packages/editor'), artifacts = join(target, 'packages/artifacts'), web = join(target, 'apps/web');
 const read = file => JSON.parse(readFileSync(file, 'utf8'));
 const write = (file, data) => writeFileSync(file, JSON.stringify(data, null, 2) + '\n');
 mkdirSync(framework, { recursive: true });
@@ -18,24 +18,32 @@ for (const path of ['src', 'scripts/build.mjs', 'package.json', 'tsconfig.base.j
 }
 cpSync(join(root, 'packages/editor'), editor, { recursive: true,
   filter: path => !['node_modules', 'dist'].includes(basename(path)) });
+cpSync(join(root, 'packages/artifacts'), artifacts, { recursive: true,
+  filter: path => !['node_modules', 'dist'].includes(basename(path)) });
 const fixture = join(root, 'fixtures/next-consumer');
 cpSync(fixture, web, { recursive: true, filter: path => !['node_modules', '.next', 'vendor', 'package-lock.json'].includes(basename(path)) });
 const frameworkManifest = read(join(framework, 'package.json')), webManifest = read(join(web, 'package.json'));
 delete frameworkManifest.workspaces;
 write(join(framework, 'package.json'), frameworkManifest);
 const editorManifest = read(join(editor, 'package.json'));
+const artifactManifest = read(join(artifacts, 'package.json'));
+const artifactConfig = read(join(artifacts, 'tsconfig.json'));
+delete artifactConfig.compilerOptions.paths;
+write(join(artifacts, 'tsconfig.json'), artifactConfig);
 webManifest.dependencies[frameworkManifest.name] = frameworkManifest.version;
 webManifest.dependencies[editorManifest.name] = editorManifest.version;
+webManifest.dependencies[artifactManifest.name] = artifactManifest.version;
 write(join(web, 'package.json'), webManifest);
-const manifest = { name: 'fbp-content-workspace', version: '1.0.0', private: true, workspaces: ['packages/nodeflow', 'packages/editor', 'apps/web'],
-  scripts: { build: 'npm run build --workspace event-driven-design && npm run build --workspace event-driven-design-editor && npm run build --workspace fbp-next-consumer',
+const manifest = { name: 'fbp-content-workspace', version: '1.0.0', private: true, workspaces: ['packages/nodeflow', 'packages/editor', 'packages/artifacts', 'apps/web'],
+  scripts: { build: 'npm run build --workspace event-driven-design && npm run build --workspace event-driven-design-editor && npm run build --workspace event-driven-design-artifacts && npm run build --workspace fbp-next-consumer',
     start: 'npm run start --workspace fbp-next-consumer' } };
 write(join(target, 'package.json'), manifest);
 const frameworkLock = read(join(root, 'package-lock.json')), webLock = read(join(fixture, 'package-lock.json'));
 const packages = { ...frameworkLock.packages, ...webLock.packages, '': manifest,
-  'packages/nodeflow': frameworkManifest, 'packages/editor': editorManifest, 'apps/web': webManifest,
+  'packages/nodeflow': frameworkManifest, 'packages/editor': editorManifest, 'packages/artifacts': artifactManifest, 'apps/web': webManifest,
   'node_modules/event-driven-design': { resolved: 'packages/nodeflow', link: true },
   'node_modules/event-driven-design-editor': { resolved: 'packages/editor', link: true },
+  'node_modules/event-driven-design-artifacts': { resolved: 'packages/artifacts', link: true },
   'node_modules/fbp-next-consumer': { resolved: 'apps/web', link: true } };
 write(join(target, 'package-lock.json'), { name: manifest.name, version: manifest.version, lockfileVersion: 3, requires: true, packages });
 

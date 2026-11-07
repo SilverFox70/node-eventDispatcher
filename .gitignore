@@ -13,3 +13,6 @@ coverage/
 # Generated isolated Next fixture output
 fixtures/next-consumer/.next/
 fixtures/next-consumer/vendor/
+
+# Local demo draft database
+.nodeflow-drafts.sqlite*

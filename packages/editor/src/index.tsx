@@ -4,7 +4,7 @@ import { useId, useMemo, useReducer, useRef, useState } from 'react';
 import type { Catalog, GraphSpecV2 } from 'event-driven-design/model';
 import { applyEditorCommand, copySelection, createEditorState, draftIssues, paletteEntries } from './model.js';
 import type { EditorNode, EditorState } from './model.js';
-import type { Clipboard, Edit, EditorCommand, EditorIssue } from './document/types.js';
+import type { Clipboard, Edit, EditorCommand, EditorIssue, Layout } from './document/types.js';
 import { nextNodeId } from './document/clipboard.js';
 import { NodeDetails } from './node-details.js';
 import type { CanvasNode } from './canvas-node.js';
@@ -17,12 +17,16 @@ import { useLiveRun } from './debug/use-live-run.js';
 import type { DebugSession } from './debug/live-model.js';
 import { TestRunPanel } from './runs/panel.js';
 import type { TestRunOptions } from './runs/panel.js';
+import { DraftControls } from './documents/draft-controls.js';
+import type { DraftStorage } from './documents/draft-controls.js';
 import { SelectionCommands } from './canvas/selection-commands.js';
 
 export type GraphEditorProps = Readonly<{
   catalog: Catalog;
   validationEndpoint?: string;
   initialGraph?: GraphSpecV2;
+  initialLayout?: Layout;
+  draftStorage?: DraftStorage;
   testRun?: TestRunOptions;
   initialNodes?: readonly EditorNode[];
 }>;
@@ -31,19 +35,21 @@ type Operation = Edit | { type: 'undo' } | { type: 'redo' };
 type Session = { state: EditorState; selected?: string; issue?: EditorIssue };
 type Action = { type: 'select'; node: string } | { type: 'command'; command: EditorCommand };
 
-function initialize({ nodes, graph }: { nodes: readonly EditorNode[]; graph: GraphSpecV2 | undefined }): Session {
-  return { state: createEditorState(nodes, graph) };
+function initialize({ nodes, graph, layout }: {
+  nodes: readonly EditorNode[]; graph: GraphSpecV2 | undefined; layout: Layout | undefined;
+}): Session {
+  return { state: createEditorState(nodes, graph, layout) };
 }
 
 /** An ephemeral graph editor over application-provided catalog metadata. */
-export function GraphEditor({ catalog, initialNodes = [], initialGraph, validationEndpoint, testRun }: GraphEditorProps) {
+export function GraphEditor({ catalog, initialNodes = [], initialGraph, initialLayout, draftStorage, validationEndpoint, testRun }: GraphEditorProps) {
   const [session, update] = useReducer((current: Session, action: Action): Session => {
     if (action.type === 'select') return { ...current, selected: action.node };
     const result = applyEditorCommand(current.state, action.command, catalog);
     if (!result.ok) return { ...current, issue: result.issue };
     const selected = action.command.type === 'addNode' ? action.command.node.id : current.selected;
     return { state: result.state, selected };
-  }, { nodes: initialNodes, graph: initialGraph }, initialize);
+  }, { nodes: initialNodes, graph: initialGraph, layout: initialLayout }, initialize);
   const helpId = useId();
   const commandId = useRef(0);
   const [marks, setMarks] = useState<readonly string[]>([]);
@@ -116,6 +122,7 @@ export function GraphEditor({ catalog, initialNodes = [], initialGraph, validati
         <output aria-label="Draft changes">{state.document === state.baseline ? 'No edits' : 'Edited draft'}</output>
       </div>
       {issue && <p role="alert">{issue.code} · {issue.path}</p>}
+      {draftStorage && <DraftControls storage={draftStorage} document={state.document} />}
       <EditorCanvas nodes={canvas} wires={graph.edges} activity={activity} select={select} dispatch={dispatch} />
       <SelectionCommands nodes={canvas} groups={layout.groups} marked={marked} clipboard={clipboard} select={select}
         mark={id => setMarks(current => current.includes(id) ? current.filter(value => value !== id) : [...current, id])}

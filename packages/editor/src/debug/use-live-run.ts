@@ -52,6 +52,5 @@ export function useLiveRun(endpoint: string | undefined, session: DebugSession |
       globalThis.clearTimeout(timer);
     };
   }, [endpoint, session]);
-  if (state?.id !== session?.id) return;
-  return state;
+  return state && state.id === session?.id ? state : undefined;
 }
