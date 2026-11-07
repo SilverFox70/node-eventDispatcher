@@ -7,6 +7,10 @@ import { RunReport } from './report.js';
 
 export type TestRunOptions = Readonly<{ endpoint: string; sampleHref?: string }>;
 
+export function canCancelTest(pending: boolean, cancelling: boolean): boolean {
+  return pending && !cancelling;
+}
+
 export function TestRunPanel({ options, graph, revision, ready, observe }: {
   options: TestRunOptions; graph: GraphSpecV2; revision: number; ready: boolean; observe: (session: DebugSession | undefined) => void;
 }) {
@@ -73,7 +77,7 @@ export function TestRunPanel({ options, graph, revision, ready, observe }: {
     <label><input type="checkbox" checked={capture} onChange={event => setCapture(event.currentTarget.checked)} /> Capture test payloads</label>
     <p>Use an array of values for each exposed input. Validate the current draft before running.</p>
     <button type="button" disabled={!ready || pending} onClick={() => void run()}>Run test</button>{' '}
-    <button type="button" disabled={!pending || cancelling} onClick={() => void cancel()}>Cancel test</button>
+    <button type="button" disabled={!canCancelTest(pending, cancelling)} onClick={() => void cancel()}>Cancel test</button>
     {pending && <p role="status">{cancelling ? 'Cancelling test…' : 'Test running…'}</p>}
     <RunReport issue={issue} result={result} revision={revision} />
   </section>;
