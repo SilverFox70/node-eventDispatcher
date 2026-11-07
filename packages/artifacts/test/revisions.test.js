@@ -8,7 +8,7 @@ import { contract, defineConfiguredComponent, derivePacket, executionIdentity, p
 import { canonicalJson } from 'event-driven-design/model';
 import { runGraph } from 'event-driven-design/testing';
 import { z } from 'zod';
-import { compileLockedRevision } from '../dist/index.js';
+import { compileLockedRevision, importGraphBundle, writeGraphBundle } from '../dist/index.js';
 import { openDraftRepository } from '../dist/store/index.js';
 
 const scope = { workspaceId: 'workspace', documentId: 'draft' };
@@ -123,6 +123,20 @@ test('trusted test evidence locks one immutable revision across real SQLite work
     assert(compiled.ok);
     const run = await runGraph(compiled.graph, { inputs: { value: [packet(3)] } });
     assert.equal(run.outputs.value[0].value, 4);
+    const bindingManifest = { version: 1, bindings: [
+      { moduleBindingId: 'increase', specifier: '@fixture/nodes', exportName: 'increase' },
+    ] };
+    const imported = await importGraphBundle(writeGraphBundle(revision, bindingManifest, layout),
+      { workspaceId: 'destination', documentId: 'imported' }, { registryLock, bindingManifest }, b);
+    assert(imported.ok);
+    assert.equal(imported.source.revision.revisionId, revision.revisionId);
+    assert.equal(imported.draft.semanticHash, revision.semanticHash);
+    assert.deepEqual(imported.draft.document.layout, layout);
+    const importedGraph = compileLockedRevision({ ...imported.source.revision, graph: imported.draft.document.graph },
+      registryLock, approved.registry);
+    assert(importedGraph.ok);
+    const importedRun = await runGraph(importedGraph.graph, { inputs: { value: [packet(3)] } });
+    assert.equal(importedRun.outputs.value[0].value, run.outputs.value[0].value);
     const fork = await b.forkDraft(scope, revision.revisionId, 'fork');
     assert.equal(fork.draft.document.draftRevision, 0);
     assert.deepEqual(fork.draft.document.graph, graph);

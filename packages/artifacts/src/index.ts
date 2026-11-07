@@ -2,3 +2,5 @@ export * from './model/index.js';
 export { fingerprintGraphDocument } from './fingerprint.js';
 export { compileLockedRevision } from './revisions/compile.js';
 export type { LockedGraph, LockedRevision, TestProfile, TestReceipt } from './revisions/profile.js';
+export { importGraphBundle, inspectGraphBundle, writeGraphBundle } from './bundle/index.js';
+export type { BindingManifest, BundleTrust, GraphBundle } from './bundle/index.js';
