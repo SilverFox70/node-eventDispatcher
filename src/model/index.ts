@@ -10,6 +10,7 @@ export type { ContractIssue } from './contracts.js';
 export { validateGraph } from './graph.js';
 export type { GraphSpec, GraphSpecV1, GraphSpecV2, Endpoint } from './graph.js';
 
+export { readTaskPolicy } from './graph/task-policy.js';
 export type { TaskPolicy, RetryPolicy } from './graph/task-policy.js';
 export type { InspectionSnapshot, InspectionSource, Snapshot, Diagnostic, ValidationReport } from './inspection.js';
 export { toMermaid } from './mermaid.js';
@@ -30,3 +31,8 @@ export { validateCausalEvidence } from './diagnostics/causal/evidence.js';
 export type { CausalEvidence, ExecutionIdentity } from './diagnostics/causal/evidence.js';
 export { explainCausal } from './diagnostics/causal/explain.js';
 export type { CausalSubject, CausalGap, Explanation, ExplainResult } from './diagnostics/causal/explain.js';
+
+export { canonicalJson } from './canonical-json.js';
+export { assertGraphShape } from './graph/structure.js';
+export { validateRegressionFixture } from './diagnostics/fixtures/fixture.js';
+export type { RegressionFixture } from './diagnostics/fixtures/fixture.js';

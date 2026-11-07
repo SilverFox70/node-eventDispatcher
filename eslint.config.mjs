@@ -5,6 +5,7 @@ const typeScriptFiles = [
   'src/**/*.ts',
   'packages/editor/src/**/*.ts',
   'packages/editor/src/**/*.tsx',
+  'packages/artifacts/src/**/*.ts',
   'test/types/**/*.ts',
   'test/types/**/*.mts',
   'test/types/**/*.cts',
@@ -15,10 +16,10 @@ const typeScriptFiles = [
 ];
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'packages/editor/dist/**', 'coverage/**', 'fixtures/next-consumer/.next/**', 'fixtures/next-consumer/node_modules/**'] },
+  { ignores: ['dist/**', 'packages/editor/dist/**', 'packages/artifacts/dist/**', 'coverage/**', 'fixtures/next-consumer/.next/**', 'fixtures/next-consumer/node_modules/**'] },
   {
     ...js.configs.recommended,
-    files: ['scripts/**/*.mjs', 'test/**/*.js', 'examples/**/*.cjs', 'benchmark/**/*.cjs', 'test/node-template-fixture.cjs', 'test/package-fixture.cjs', 'test/next/**/*.cjs'],
+    files: ['packages/artifacts/test/**/*.js', 'packages/artifacts/test/**/*.cjs', 'scripts/**/*.mjs', 'test/**/*.js', 'examples/**/*.cjs', 'benchmark/**/*.cjs', 'test/node-template-fixture.cjs', 'test/package-fixture.cjs', 'test/next/**/*.cjs'],
     languageOptions: {
       globals: {
         console: 'readonly',

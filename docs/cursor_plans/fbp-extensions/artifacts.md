@@ -1,6 +1,6 @@
 # Saved graphs and export — proposed EXT1-r2
 
-Owners S32–S38. SQLite local graph storage is **user selected**. This does not persist running JavaScript. [Shared rules](shared-contract.md), [durable execution](durable-contract.md).
+Owners S32–S38. See [S32’s document format and package confirmation](S32-execution.md). SQLite local graph storage is **user selected**. This does not persist running JavaScript. [Shared rules](shared-contract.md), [durable execution](durable-contract.md).
 
 S20 [PK1](contracts/packages-and-storage.md) selects package/storage boundaries and [EV1](contracts/evidence-v1.md) the shared build-identity primitive; those refinements supersede earlier illustrative digest/driver alternatives. Exact SQL migration/codegen fixtures remain the owning preflight gates.
 

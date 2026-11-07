@@ -117,6 +117,8 @@ To inspect sustained-load behavior after building, run `node benchmark/throughpu
 | Visual authoring extension | Select/connect nodes, run test loads, durably save drafts and locked graph revisions, and export readable TypeScript plus portable graph artifacts for other projects |
 | Optional durable execution extension | Persist eligible running workflows, retain outcomes and recover safely after failures using a separate durable host |
 
+The optional [graph artifacts package](packages/artifacts/README.md) gives a document two fingerprints. Moving a node changes the layout fingerprint. Changing its configuration, wiring, or pinned implementation changes the semantic fingerprint. The editor’s draft saving and reopening follow in S33.
+
 The initial graphical inspector is **read-only**. The interactive editor and code export are separate planned features built on the same graph model/compiler/runtime, rather than a second execution engine. Durable saved graph definitions are also distinct from checkpointing a running job.
 
 Rich/custom payload types, controlled cyclic graphs and more capable agent-authored applications are extension goals. Initial public payloads are JSON-compatible and initial graph topology is acyclic. Most graphs should remain useful without a database.

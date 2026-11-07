@@ -1,6 +1,6 @@
 # S32 — Represent editable documents and immutable content identities consistently.
 
-Plan revision EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan revision EXT1-r2. Status **approved-for-execution**. See the [contract confirmation and execution receipt](S32-execution.md).
 Phase: artifacts. Proposed branch: `codex/fbp-32-graph-document-identities`.
 Order: S31 → S32 → S33.
 
@@ -28,7 +28,7 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 ### S32.B — Implement the bounded feature
 
-- Allowed: packages/artifacts/src/model/**; packages/artifacts/src/canonical/**; src/model/** only approved shared JSON primitives; public artifact exports.
+- Allowed: packages/artifacts/src/model/**; packages/artifacts/src/canonical/**; src/model/** shared canonical JSON and passive graph/fixture validation exports; public artifact exports.
 - Prerequisite: S32.A evidence; meaningful red where feasible, and accepted interfaces.
 - Obligation: Implement versioned document/layout/registry-lock/fixture schemas and canonical semantic SHA256 rules, with deterministic serialization and strict size limits.
 - Condition: [X32.2](conditions.md). Hash equivalent object-key orders equally; moving a node changes layout hash only; changing config, edge or implementation digest changes semantic release content. Existing GraphSpec remains independently compilable.
@@ -51,4 +51,4 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. G1–G7 implementation readiness is blocked by the named decisions and predecessor evidence; revalidate at handoff rather than treating future commands as delivered.
+The user authorized S32.A–C and requested publication for review. The confirmation records decisions used for this slice and the SQLite handoff to S33.

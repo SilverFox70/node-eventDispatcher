@@ -8,15 +8,17 @@
     "test": "npm run build && node --test test/*.test.js",
     "build": "node scripts/build.mjs",
     "typecheck": "tsc -p tsconfig.check.json && tsc -p test/types/tsconfig.json",
-    "lint": "eslint src scripts test examples templates/node benchmark fixtures/next-consumer/app fixtures/next-consumer/lib packages/editor/src",
-    "check": "npm run build && npm run typecheck && npm run lint && npm run build:editor",
+    "lint": "eslint src scripts test examples templates/node benchmark fixtures/next-consumer/app fixtures/next-consumer/lib packages/editor/src packages/artifacts/src packages/artifacts/test",
+    "check": "npm run build && npm run typecheck && npm run lint && npm run build:editor && npm run build:artifacts",
     "coverage": "npm run build && c8 node --test test/*.test.js && node scripts/coverage-thresholds.mjs",
     "test:package": "npm run build && node --test test/package.test.js test/package-contracts.test.js test/author-recipe.test.js test/examples.test.js",
     "test:next": "node scripts/test-next.mjs",
     "test:content-workspace": "node scripts/test-content-workspace.mjs",
     "demo:next": "node scripts/test-next.mjs --serve",
     "stress:http": "npm run test:next",
-    "build:editor": "npm run build --workspace event-driven-design-editor -- tsconfig.repository.json"
+    "build:editor": "npm run build --workspace event-driven-design-editor -- tsconfig.repository.json",
+    "build:artifacts": "npm run build --workspace event-driven-design-artifacts",
+    "test:artifacts": "npm run build:artifacts && c8 --config packages/artifacts/.c8rc.json node --import ./packages/artifacts/test/resolve-core.js --test packages/artifacts/test/*.test.js && node scripts/coverage-thresholds.mjs coverage/artifacts/coverage-final.json && node packages/artifacts/test/packed.cjs"
   },
   "keywords": [
     "EDD",
@@ -87,6 +89,7 @@
     "typescript-eslint": "8.72.1"
   },
   "workspaces": [
-    "packages/editor"
+    "packages/editor",
+    "packages/artifacts"
   ]
 }
