@@ -23,7 +23,7 @@ export function coverageFailures(report, minimum = 95) {
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const failures = coverageFailures(JSON.parse(readFileSync('coverage/coverage-final.json', 'utf8')));
+  const failures = coverageFailures(JSON.parse(readFileSync(process.argv[2] ?? 'coverage/coverage-final.json', 'utf8')));
   for (const failure of failures) console.error(failure);
   process.exitCode = failures.length ? 1 : 0;
 }

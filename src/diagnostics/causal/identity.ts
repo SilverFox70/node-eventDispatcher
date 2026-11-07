@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { canonicalJson } from '../../model/canonical-json.js';
 import { snapshotJsonMetadata, metadataRecord, metadataArray } from '../../model/contracts.js';
 import type { Json } from '../../packet.js';
 import { ensure, keys, name } from '../../model/diagnostics/packet.js';
@@ -18,12 +19,7 @@ export type ExecutionIdentityInput = Readonly<{
   runtimeVersion: string; policyVersion: string; serviceProfileDigest: string;
 }>;
 
-function canonical(value: Json): string {
-  if (Array.isArray(value)) return '[' + value.map(canonical).join(',') + ']';
-  if (value === null || typeof value !== 'object') return JSON.stringify(value);
-  return '{' + Object.keys(value).sort().map(key => JSON.stringify(key) + ':' + canonical(value[key]!)).join(',') + '}';
-}
-export const hashEvidence = (value: Json) => createHash('sha256').update(canonical(value)).digest('hex');
+export const hashEvidence = (value: Json) => createHash('sha256').update(canonicalJson(value)).digest('hex');
 const isDigest = (value: unknown) => typeof value === 'string' && digestPattern.test(value);
 const isPath = (value: unknown): value is string => typeof value === 'string' && value.length <= 1024 &&
   !/[:\\\x00-\x1f]/.test(value) && value.split('/').every(part => part && part !== '.' && part !== '..');
@@ -73,8 +69,9 @@ export function executionIdentity(value: ExecutionIdentityInput): ExecutionIdent
       ensure(typeof row.component === 'string' && expected.delete(row.component) &&
         isDigest(row.implementationDigest) && isDigest(row.contractsDigest));
     }
-    bindings.sort((a, b) => a.component === b.component ? 0 : String(a.component) < String(b.component) ? -1 : 1);
-    const preimage = snapshotJsonMetadata({ ...fields, bindings, format: 'nodeflow.execution', version: 1 });
+    const byComponent = new Map(bindings.map(row => [String(row.component), row]));
+    const sortedBindings = [...byComponent.keys()].sort().map(component => byComponent.get(component)!);
+    const preimage = snapshotJsonMetadata({ ...fields, bindings: sortedBindings, format: 'nodeflow.execution', version: 1 });
     return Object.freeze({ status: 'verified', digest: hashEvidence(preimage) });
   } catch { return unverified; }
 }

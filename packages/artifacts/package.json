@@ -1,0 +1,15 @@
+{
+  "name": "event-driven-design-artifacts",
+  "version": "1.0.0",
+  "description": "Optional graph document validation and fingerprints for NodeDispatcher",
+  "license": "ISC",
+  "type": "module",
+  "files": ["dist", "README.md"],
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./model": { "types": "./dist/model/index.d.ts", "import": "./dist/model/index.js" }
+  },
+  "scripts": { "build": "tsc -p tsconfig.json" },
+  "peerDependencies": { "event-driven-design": "1.0.0" },
+  "peerDependenciesMeta": { "event-driven-design": { "optional": true } }
+}

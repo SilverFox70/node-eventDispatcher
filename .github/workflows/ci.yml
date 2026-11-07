@@ -25,6 +25,7 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run coverage
+      - run: npm run test:artifacts
       - run: npm run test:package
       - run: npm pack --dry-run
 

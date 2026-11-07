@@ -12,7 +12,7 @@ test('consumer uses packed package: built distributions usable', () => {
     run(process.execPath, ['--input-type=commonjs', '-e', `
       const assert = require('node:assert/strict');
       require('event-driven-design');
-      for (const name of ['event-driven-design-editor', '@xyflow/react', 'better-sqlite3', 'pg']) {
+      for (const name of ['event-driven-design-editor', 'event-driven-design-artifacts', '@xyflow/react', 'better-sqlite3', 'pg']) {
         assert.throws(() => require.resolve(name), { code: 'MODULE_NOT_FOUND' });
       }
     `]);

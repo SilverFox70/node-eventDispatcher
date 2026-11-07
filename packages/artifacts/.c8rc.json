@@ -1,0 +1,9 @@
+{
+  "all": true,
+  "src": ["packages/artifacts/dist"],
+  "include": ["packages/artifacts/dist/**/*.js", "packages/artifacts/src/**/*.ts"],
+  "exclude": ["**/*.d.ts"],
+  "exclude-after-remap": true,
+  "reports-dir": "coverage/artifacts",
+  "reporter": ["text", "json"]
+}
