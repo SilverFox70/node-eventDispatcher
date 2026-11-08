@@ -6,3 +6,5 @@ export { importGraphBundle, inspectGraphBundle, writeGraphBundle } from './bundl
 export type { BindingManifest, BundleTrust, GraphBundle } from './bundle/index.js';
 export { previewTypeScriptExport, writeTypeScriptExport } from './typescript/index.js';
 export type { TypeScriptExportTrust } from './typescript/index.js';
+export { compileSubflowGraph } from './subflows/index.js';
+export type { SubflowDocument, SubflowOrigin, SubflowReference, SubflowSource, SubflowTrust } from './subflows/index.js';

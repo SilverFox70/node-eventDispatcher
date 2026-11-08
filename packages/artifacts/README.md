@@ -35,3 +35,35 @@ Use `writeGraphBundle(revision, bindingManifest, layout)` to export canonical JS
 To import, pass the inspected file's bytes to `importGraphBundle(bytes, destination, trust, repository)`. The server supplies an authorized workspace/document destination and an independently trusted registry lock and manifest. Import creates an editable draft and refuses an existing ID. It returns the source revision and receipt for reference. Keep the original bundle to retain that provenance. A destination host must run its own trusted fixture before it can lock the imported draft.
 
 The checksum detects content changes. It does not authenticate the sender. Inspection and import never load modules or fetch dependencies.
+
+## Reuse a version-pinned subflow
+
+Use `compileSubflowGraph(document, trust)` on the server. The document has a `graph` with local nodes and wiring, and a separate `subflows` list. Each instance names a locked revision ID. Wire to the instance ID and its local port names as you would wire to a node. Each local port maps to a child's exposed port and carries its expected contract descriptor.
+
+```ts
+const result = compileSubflowGraph({
+  graph: {
+    version: 2, nodes: [], edges: [],
+    inputs: { request: { node: 'lookup', port: 'in' } },
+    outputs: { result: { node: 'lookup', port: 'out' } },
+  },
+  subflows: [{
+    instanceId: 'lookup',
+    revisionId: lockedLookupId,
+    bindings: {
+      inputs: { in: { port: 'request', contract: requestDescriptor } },
+      outputs: { out: { port: 'result', contract: resultDescriptor } },
+    },
+  }],
+}, {
+  registry,
+  registryLock,
+  resolve: id => trustedRevisionIndex.get(id),
+});
+```
+
+The resolver supplies the original bundle for each exact revision ID. For a child that was itself composed, it also supplies the original `composition` data. Save that data alongside the locked flat revision in your host's revision index. The compiler expands it again and checks that it matches the locked graph. Local node IDs and instance IDs share a namespace. The `subflow:` prefix is reserved for generated IDs.
+
+Check `result.compiled.ok` before running. Use `result.origins` to look up the physical node IDs on runtime events. Each row gives the instance path, source revision, and source node ID. To test and lock the new parent, save `result.spec` through the ordinary authoring APIs. A host can override a configured child node with `bindings.configuration[childNodeId]`. The child's receipt covers its original settings, so test the parent with its selected settings before locking it.
+
+Expansion rejects empty, missing, or substituted revisions, mismatched registry pins, incompatible exposed ports, recursion, and graphs beyond the size limits. The limit is 16 nested levels, 1,000 expanded nodes, 4,096 channels, and 10 MiB of resolved source data per compilation. The ordinary compiler checks final wiring and configuration. Applications can adopt this server API directly. The visual editor and SQLite schema keep their existing document formats.

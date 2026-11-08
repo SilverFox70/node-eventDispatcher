@@ -49,9 +49,14 @@ try {
   `]);
   writeFileSync(join(fixture, 'artifact-types.mts'), `
     import { parseGraphDocument, type GraphDocument } from 'event-driven-design-artifacts/model';
-    import { fingerprintGraphDocument } from 'event-driven-design-artifacts';
+    import { compileSubflowGraph, fingerprintGraphDocument, type SubflowDocument, type SubflowTrust } from 'event-driven-design-artifacts';
     import { openDraftRepository, type DraftVerification, type TestReceipt } from 'event-driven-design-artifacts/sqlite';
     declare const verification: DraftVerification;
+    declare const composition: SubflowDocument;
+    declare const trust: SubflowTrust;
+    const { origins, compiled } = compileSubflowGraph(composition, trust);
+    const instancePath: readonly string[] | undefined = origins[0]?.parentInstancePath;
+    export { compiled, instancePath };
     const repository = openDraftRepository(':memory:');
     const scope = { workspaceId: 'w', documentId: 'd' };
     const receipt: TestReceipt = await repository.testDraft(scope, 0, verification);
@@ -72,6 +77,12 @@ try {
   const tested = run(process.execPath, ['--test', '--test-reporter=tap',
     '--test-name-pattern=trusted test evidence|the SQLite v1 migration', 'revisions.test.mjs']);
   assert.match(tested, /^# pass 2$/m);
+  const subflows = readFileSync(join(root, 'packages/artifacts/test/subflows.test.js'), 'utf8')
+    .replace('../dist/index.js', 'event-driven-design-artifacts')
+    .replace('../dist/store/index.js', 'event-driven-design-artifacts/sqlite');
+  writeFileSync(join(fixture, 'subflows.test.mjs'), subflows);
+  const composed = run(process.execPath, ['--test', '--test-reporter=tap', 'subflows.test.mjs']);
+  assert.match(composed, /^# pass 6$/m);
   require('./export-packed.cjs')(consumer);
   require('./adoption-packed.cjs')(consumer);
 
