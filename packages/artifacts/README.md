@@ -27,3 +27,11 @@ The trusted server host supplies a reviewed offline regression fixture, the veri
 4. Use `forkDraft(scope, revisionId, newDocumentId)` to start a new editable draft at revision zero.
 
 These methods belong in a trusted host. A successful browser run or an imported receipt is insufficient to lock a local revision. The SQLite store upgrades v1 draft databases transactionally on first open.
+
+## Move a locked graph between workspaces
+
+Use `writeGraphBundle(revision, bindingManifest, layout)` to export canonical JSON. The binding manifest lists the static package specifier and named export for each pinned module binding ID. Layout is optional. `inspectGraphBundle(textOrBytes)` validates the bundle and returns its source revision, binding manifest, and layout without touching storage.
+
+To import, pass the inspected file's bytes to `importGraphBundle(bytes, destination, trust, repository)`. The server supplies an authorized workspace/document destination and an independently trusted registry lock and manifest. Import creates an editable draft and refuses an existing ID. It returns the source revision and receipt for reference. Keep the original bundle to retain that provenance. A destination host must run its own trusted fixture before it can lock the imported draft.
+
+The checksum detects content changes. It does not authenticate the sender. Inspection and import never load modules or fetch dependencies.
