@@ -57,7 +57,7 @@ test('existing dialog links to keyboard-accessible prospective controls on the s
     }
     await node.click(); await modal.getByText(/older records were evicted/).waitFor();
     await closeDialog(page); await page.getByRole('button', { name: 'Send three test jobs', exact: true }).click();
-    await page.getByRole('alert').waitFor();
+    await page.getByRole('alert').filter({ hasText: 'Control unavailable.' }).waitFor();
     await page.getByLabel('Include retained captures in download').check();
     await page.getByRole('button', { name: 'Download diagnostic JSONL', exact: true }).click();
     await page.screenshot({ path: join(process.env.FBP_NEXT_EVIDENCE, 'diagnostic-controls.png'), fullPage: true });
