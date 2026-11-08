@@ -679,8 +679,8 @@
         "X36.3"
       ],
       "status": "approved-for-execution",
-      "execution_status": "complete-for-review",
-      "merge_sha": null,
+      "execution_status": "merged",
+      "merge_sha": "e3d7115629ff7555b3f2c337ee7069c0174a5bfb",
       "gate": "D1 artifact schema; D2 packaging; D3 storage",
       "journal": "S36-execution.md",
       "execution_approval": {
@@ -702,10 +702,15 @@
         "X37.2",
         "X37.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
-      "gate": "D1 artifact schema; D2 packaging; D3 storage"
+      "gate": "D1 artifact schema; D2 packaging; D3 storage",
+      "journal": "S37-execution.md",
+      "execution_approval": {
+        "authority": "user requested S37 after merging PR #55 when green",
+        "tasks": ["S37.A", "S37.B", "S37.C"]
+      }
     },
     {
       "id": "S38",

@@ -3,7 +3,7 @@ const { readFileSync, writeFileSync } = require('node:fs');
 const { join } = require('node:path');
 const { installedPackage } = require('../../../test/package-fixture.cjs');
 
-const consumer = installedPackage();
+const consumer = installedPackage({ tools: true });
 const { fixture, root, run } = consumer;
 try {
   const [packed] = JSON.parse(run('npm', [
@@ -73,6 +73,7 @@ try {
     '--test-name-pattern=trusted test evidence|the SQLite v1 migration', 'revisions.test.mjs']);
   assert.match(tested, /^# pass 2$/m);
   require('./export-packed.cjs')(consumer);
+  require('./adoption-packed.cjs')(consumer);
 
   console.log('Installed artifact package, passive model, declarations and SQLite revision lifecycle passed.');
 } finally {

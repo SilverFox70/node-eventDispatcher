@@ -1,6 +1,6 @@
 # S37 — Take a visually authored graph into a separate project and maintain it there.
 
-Plan revision EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan revision EXT1-r2. Status **approved-for-execution**. See the [execution receipt](S37-execution.md).
 Phase: artifacts. Proposed branch: `codex/fbp-37-artifact-adoption-acceptance`.
 Order: S36 → S37 → S38.
 
@@ -53,4 +53,4 @@ Consumption contract: [local workspace](local-workspace.md). Repeat exported TS/
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. G1–G7 implementation readiness is blocked by the named decisions and predecessor evidence; revalidate at handoff rather than treating future commands as delivered.
+The user approved S37.A–C after PR #55 merged with green CI. The acceptance uses the existing editor model, SQLite authoring store, portable bundle, and TypeScript export contracts.
