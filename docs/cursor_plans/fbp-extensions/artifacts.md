@@ -42,6 +42,8 @@ Generated ownership manifest lists file paths and prior hashes. Export refuses a
 
 S38 adds a document-level reference `{instanceId,revisionId,bindings}` to an immutable child revision. Resolve before compiler, check exposed port/config contracts, namespace physical IDs deterministically and retain logical origin map `{physicalNodeId,parentInstancePath,sourceRevisionId,sourceNodeId}`. Core GraphSpec remains a flattened DAG. No recursive references; maxdepth16 plus global existing node/channel bounds after expansion. Missing child, incompatible interface, expansion overflow or cycle refuses before factories. Child updates never rewrite pinned parents.
 
+The server artifact API accepts a composition wrapper with ordinary graph wiring and separate instance references. The host resolves the exact child bundle and retains the original composition for children that are themselves composed. Re-expansion must match the locked flat spec. Generated IDs commit to the instance ID, exact revision ID and child node ID. Configuration overrides apply to the parent and require a new parent test receipt. See the [package guide](../../../packages/artifacts/README.md#reuse-a-version-pinned-subflow).
+
 ## Proof and lifecycle
 
 X32.1–X38.3 own canonical byte fixtures, actual SQLite crash/CAS tests, lock/receipt races, integrity tamper refusal, clean installed generated-code builds and subflow attribution. S37 demonstrates editor→save→test→lock→export→independent project. Revision/registry storage schema migrations require explicit version maps and backup compatibility, not in-place rewriting of historical content. Execution state retention belongs to the durable host, not graph-document cleanup.
