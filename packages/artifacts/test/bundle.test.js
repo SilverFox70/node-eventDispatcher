@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { Buffer } from 'node:buffer';
 import { test } from 'node:test';
 import { canonicalJson } from 'event-driven-design/model';
-import { fingerprintGraphDocument, importGraphBundle, inspectGraphBundle, writeGraphBundle } from '../dist/index.js';
+import { fingerprintGraphDocument, importGraphBundle, inspectGraphBundle, previewTypeScriptExport, writeGraphBundle, writeTypeScriptExport } from '../dist/index.js';
 import { openDraftRepository } from '../dist/store/index.js';
 
 const hash = value => createHash('sha256').update(value).digest('hex');
@@ -105,4 +108,57 @@ test('strict bundle admission rejects malformed, tampered and oversized data bef
   await assert.rejects(importGraphBundle(text.replace('source-revision', 'changed'), scope, trust, {
     createDraft: () => assert.fail('Rejected input reached storage'),
   }), /BUNDLE_INTEGRITY_MISMATCH/);
+});
+
+
+test('TypeScript export checks trusted bindings before writing and preserves edited files', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'nodeflow-export-'));
+  const approved = { ...trust, approveConfiguration: () => true };
+  try {
+    for (const name of ['../outside', '/absolute', 'nested/path', '..']) {
+      await assert.rejects(writeTypeScriptExport(directory, name, text, approved), /EXPORT_PATH_REFUSED/);
+    }
+    const alternate = signedChange(bundle => { bundle.bindingManifest.bindings[0].specifier = 'other-package'; });
+    await assert.rejects(writeTypeScriptExport(directory, 'result', alternate, approved), /BUNDLE_BINDING_MISMATCH/);
+    await assert.rejects(writeTypeScriptExport(directory, 'result', text, { ...approved, approveConfiguration: () => false }),
+      /EXPORT_CONFIGURATION_REFUSED/);
+    await assert.rejects(writeTypeScriptExport(join(directory, 'missing'), 'result', text, approved), { code: 'ENOENT' });
+    const files = await writeTypeScriptExport(directory, 'result', text, approved);
+    const reordered = JSON.stringify(Object.fromEntries(Object.entries(JSON.parse(text)).reverse()));
+    assert.deepEqual(previewTypeScriptExport(reordered, approved), files);
+    assert.equal(inspectGraphBundle(files['graph.bundle.json']).integrity, inspectGraphBundle(text).integrity);
+    assert.deepEqual(JSON.parse(files['export-manifest.json']).dependencies, ['@example/nodes', '@example/nodes/alpha', 'event-driven-design']);
+    const generated = join(directory, 'result', 'graph.ts');
+    await writeFile(generated, 'handwritten change');
+    await assert.rejects(writeTypeScriptExport(directory, 'result', text, approved), /EXPORT_CONFLICT/);
+    assert.equal(await readFile(generated, 'utf8'), 'handwritten change');
+  } finally { await rm(directory, { recursive: true, force: true }); }
+});
+
+
+test('emits literal configuration and wiring without turning data into source', () => {
+  const configured = {
+    ...graph, version: 2, nodes: [
+      { ...graph.nodes[0], config: JSON.parse('{"__proto__":{"flag":true},"title":"placeholder","extras":[null,2]}') },
+      graph.nodes[1],
+    ],
+    edges: [
+      { from: { node: 'a', port: 'out' }, to: { node: 'b', port: 'in' }, capacity: 1 },
+      { from: { node: 'a', port: 'aux' }, to: { node: 'b', port: 'other' } },
+    ],
+    inputs: { input: { node: 'a', port: 'in' } },
+    outputs: { output: { node: 'b', port: 'out' } },
+  };
+  configured.nodes[0].config.title = '"; globalThis.injected = true; //';
+  const { semanticHash: hash } = fingerprintGraphDocument({
+    format: 'nodeflow.document', version: 1, workspaceId: 'source', documentId: 'doc', draftRevision: 0,
+    graph: configured, registryLock, layout,
+  });
+  const bundle = writeGraphBundle({ ...revision, graph: configured, semanticHash: hash,
+    testReceipt: { ...revision.testReceipt, semanticHash: hash } }, bindingManifest);
+  const source = previewTypeScriptExport(bundle, { ...trust, approveConfiguration: () => true })['graph.ts'];
+  assert(source.includes('["__proto__"]: { "flag": true }'));
+  assert(source.includes(JSON.stringify(configured.nodes[0].config.title)));
+  assert(source.includes('builder.connect(node_a_1, "out", node_b_2, "in", 1);'));
+  assert(source.includes('builder.exposeOutput("output", node_b_2, "out");'));
 });

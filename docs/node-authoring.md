@@ -138,3 +138,11 @@ The report shows output, decision, route and failure observations that changed o
 The result is `not-comparable` if review, fixture facts, revision bindings, contracts or runtime evidence do not support a comparison. An `equal-on-fixtures` result covers the supplied case and its observed paths. Use trusted application bindings and run your comparison with Node network permission disabled when enforcing offline execution.
 
 See the [S24D execution receipt](cursor_plans/fbp-extensions/S24D-execution.md).
+
+## Export a locked graph as TypeScript
+
+On the server, pass a portable graph bundle to `previewTypeScriptExport(bundle, trust)` from `event-driven-design-artifacts`. Supply the host's trusted binding manifest and registry lock, plus an `approveConfiguration(graph)` callback that allows only configuration safe to disclose. The callback sees a copy of the validated graph. Keep credentials in the host's service configuration.
+
+The preview includes `graph.ts` with ordinary builder calls and static imports, `graph.bundle.json` for re-import, and a README and ownership manifest. Install the trusted node modules in the receiving project and match the registry lock in the bundle. Build with TypeScript's Node module resolution, check the exported `compiled` result, then pass its successful graph to the ordinary runtime. Builder arguments retain the original node and port IDs, so compiler paths can be matched against the exported graph.
+
+Use `writeTypeScriptExport(root, name, bundle, trust)` to save the same files under a new directory within a host-controlled root. An existing directory returns `EXPORT_CONFLICT`. Use a new name to export another revision or compare it with your edits.
