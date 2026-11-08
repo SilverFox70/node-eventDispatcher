@@ -72,6 +72,8 @@ try {
   const tested = run(process.execPath, ['--test', '--test-reporter=tap',
     '--test-name-pattern=trusted test evidence|the SQLite v1 migration', 'revisions.test.mjs']);
   assert.match(tested, /^# pass 2$/m);
+  require('./export-packed.cjs')(consumer);
+
   console.log('Installed artifact package, passive model, declarations and SQLite revision lifecycle passed.');
 } finally {
   consumer.dispose();

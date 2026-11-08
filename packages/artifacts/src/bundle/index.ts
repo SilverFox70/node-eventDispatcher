@@ -48,15 +48,20 @@ export function inspectGraphBundle(input: string | Uint8Array): GraphBundle {
   });
 }
 
+export function assertTrustedBundle(source: GraphBundle, trust: BundleTrust): void {
+  const { registryLock } = source.revision;
+  if (canonicalJson(registryLock, maxArtifactBytes) !== canonicalJson(trust.registryLock, maxArtifactBytes) ||
+    canonicalJson(source.bindingManifest, maxArtifactBytes) !== canonicalJson(trust.bindingManifest, maxArtifactBytes)) {
+    throw Error('BUNDLE_BINDING_MISMATCH');
+  }
+}
+
 /** Use a host-authorized destination. One atomic create refuses existing draft IDs. */
 export async function importGraphBundle(input: string | Uint8Array, destination: DraftScope, trust: BundleTrust,
   repository: Pick<ReturnType<typeof openDraftRepository>, 'createDraft'>) {
   const source = inspectGraphBundle(input);
   const { graph, registryLock } = source.revision;
-  if (canonicalJson(registryLock, maxArtifactBytes) !== canonicalJson(trust.registryLock, maxArtifactBytes) ||
-    canonicalJson(source.bindingManifest, maxArtifactBytes) !== canonicalJson(trust.bindingManifest, maxArtifactBytes)) {
-    throw Error('BUNDLE_BINDING_MISMATCH');
-  }
+  assertTrustedBundle(source, trust);
   const result = await repository.createDraft(destination, {
     graph, registryLock, layout: source.layout ?? { positions: {}, groups: {} },
   });
