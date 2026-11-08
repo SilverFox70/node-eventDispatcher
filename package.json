@@ -18,7 +18,7 @@
     "stress:http": "npm run test:next",
     "build:editor": "npm run build --workspace event-driven-design-editor -- tsconfig.repository.json",
     "build:artifacts": "npm run build --workspace event-driven-design-artifacts",
-    "test:artifacts": "npm run build:artifacts && c8 --config packages/artifacts/.c8rc.json node --import ./packages/artifacts/test/resolve-core.js --test packages/artifacts/test/*.test.js && node scripts/coverage-thresholds.mjs coverage/artifacts/coverage-final.json && node packages/artifacts/test/packed.cjs"
+    "test:artifacts": "npm run build:editor && npm run build:artifacts && c8 --config packages/artifacts/.c8rc.json node --import ./packages/artifacts/test/resolve-core.js --test packages/artifacts/test/*.test.js && node scripts/coverage-thresholds.mjs coverage/artifacts/coverage-final.json && node packages/artifacts/test/packed.cjs"
   },
   "keywords": [
     "EDD",
