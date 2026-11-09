@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
 const { z } = require('zod');
-const { compileGraph, contract, defineComponent, defineConfiguredFunction, packet } = require('../dist/cjs');
+const { compileGraph, contract, defineComponent, defineConfiguredFunction, FlowError, packet } = require('../dist/cjs');
 const { prepareBoundedTasks } = require('../dist/cjs/runtime/task-profile');
 
 const numeric = contract('profile-number@1', z.number());
@@ -50,4 +50,24 @@ test('arbitrary streaming factories are never entered by the task profile', () =
   });
   assert.throws(() => prepareBoundedTasks(compiled(streaming)), { code: 'PROFILE_INELIGIBLE' });
   assert.equal(entered, 0);
+});
+
+
+test('leased invocation consumes one attempt even when the graph permits retries', async () => {
+  const component = defineConfiguredFunction({ ...fields, input: numeric, output: numeric, configuration,
+    handler: (value, _config, context) => {
+      if (context.attempt === 1) throw new FlowError('TEMPORARY');
+      return value;
+    },
+  });
+  const { invoke, invokeOnce } = prepareBoundedTasks(compiled(component, {
+    config: { delta: 0 }, retry: { maxRetries: 1, codes: ['TEMPORARY'], delayMs: 0, idempotent: true },
+  }));
+  const input = packet(1);
+  const one = await invokeOnce('node', input, { timeoutMs: 1000 });
+  assert.equal(one.status, 'stopped');
+  assert.equal(one.attemptIds.length, 1);
+  const retried = await invoke('node', input, { timeoutMs: 1000 });
+  assert.equal(retried.status, 'computed');
+  assert.equal(retried.attemptIds.length, 2);
 });

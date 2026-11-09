@@ -1,6 +1,6 @@
 # S42 — Recover abandoned work without accepting stale worker results.
 
-Plan revision EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan revision EXT1-r2. Status **approved-for-execution**. See the [execution receipt](S42-execution.md).
 Phase: durable. Proposed branch: `codex/fbp-42-worker-recovery-fencing`.
 Order: S41 → S42 → S43.
 
@@ -51,4 +51,4 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. G1–G7 implementation readiness is blocked by the named decisions and predecessor evidence; revalidate at handoff rather than treating future commands as delivered.
+The user approved proceeding with S42 after S41. The worker handles reviewed pure work scoped to an authorized run. Provider calls and durable timing policy remain in their assigned later slices.
