@@ -8,7 +8,7 @@ Order: S50 → S51 → future application-specific pilots.
 
 Install and operate an optional durable host with honest recovery guarantees.
 
-Ship packed durable consumer, migrations/backups/retention/upgrade runbooks and small obligation demo; record support matrix and artifact/handler version policy. No Realberry production changes.
+Ship packed durable consumer, migrations/backups/retention/upgrade runbooks and small obligation demo; record support matrix and artifact/handler version policy. Application production changes require separate approval.
 
 Contract: [durable-contract.md](durable-contract.md), [shared rules](shared-contract.md), [verification/handoff](execution.md).
 Prerequisites: S50 merged and its proof handoff verified; D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety accepted for this slice. No unreviewed public signatures.
@@ -32,7 +32,7 @@ Consumption contract: [local workspace](local-workspace.md). Also prove local np
 
 - Allowed: packages/durable/** packaging/docs/retention only; examples/durable/**; templates/**; scripts/** installed acceptance; docs/**; README.md.
 - Prerequisite: S51.A evidence; meaningful red where feasible, and accepted interfaces.
-- Obligation: Ship packed durable consumer, migrations/backups/retention/upgrade runbooks and small obligation demo; record support matrix and artifact/handler version policy. No Realberry production changes.
+- Obligation: Ship packed durable consumer, migrations/backups/retention/upgrade runbooks and small obligation demo; record support matrix and artifact/handler version policy. Application production changes require separate approval.
 - Condition: [X51.2](conditions.md). Clean-install core/artifacts/durable packages, migrate a fresh DB, submit and recover a fixture obligation, back up/restore and resume a compatible pinned revision; core-only consumers need no database packages.
 - Verification: focused production-path assertions red→green, current check/coverage gates and owning package suite as defined in execution.md.
 - Preserve: packet/job/run identities, no implicit duplicate execution, explicit retry policy, JSON/DAG limits, browser/server isolation and existing in-memory consumers.

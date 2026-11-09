@@ -10,7 +10,7 @@ Original EXT1-r1 documents are preserved byte-for-byte inside [the prior revisio
 
 Insert S24A–S24F after diagnostics S24 and before editor S25. Stable S20–S51 IDs/branch names are retained; sequence now has38 stories/114 bounded tasks and canonical condition owners. S24.next becomes S24A; S25.previous becomes S24F. Four original extension groups remain, with this cross-cutting evidence/application milestone added before visual authoring.
 
-[Explainability contract](explainability.md) adds bounded declared/observed decisions, honest retained ancestry and missing-result disposition, reviewed offline fixtures and explicit same-fixture revision comparison. Useful content-validation/preview application and competent plain-TypeScript comparison test the proposition before editor work. No new paid API, external account, Realberry production change or full editor is needed for this milestone.
+[Explainability contract](explainability.md) adds bounded declared/observed decisions, honest retained ancestry and missing-result disposition, reviewed offline fixtures and explicit same-fixture revision comparison. Useful content-validation/preview application and competent plain-TypeScript comparison test the proposition before editor work. No new paid API, external account, application-specific production change or full editor is needed for this milestone.
 
 Third-party feedback is evaluative input based on an older README, not an independent implementation audit, accepted product decision or verified competitive survey. No numerical review ratings or incumbent capability claims are adopted as fact. User visibility/testability/change-trace goals govern the amendment.
 

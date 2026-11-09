@@ -82,6 +82,6 @@ Six insertion slices **S24A–S24F** prove explainability and application value 
 - After S31: assemble and test useful graphs visually, with live intermediate data; drafts are still session-only.
 - After S37: author, test, save, lock and export to a separate project. S38 adds reusable pinned subflows.
 - After S44: demonstrate uncertain provider outcomes and evidence-backed reconciliation in a controlled fixture; broad durable routing is still incomplete.
-- After S51: qualify an installed durable profile for the selected supported operators. A Realberry adoption spike is then a separate measured application change, not a delivered replacement claim.
+- After S51: qualify an installed durable profile for the selected supported operators. An application-specific adoption spike is then a separate measured application change, not a delivered replacement claim.
 
 The Node-RED reference is its [editor interaction model](https://nodered.org/docs/user-guide/editor/), not runtime/JSON compatibility. App discovery and arbitrary application rewriting remain the separate F03 future investigation.

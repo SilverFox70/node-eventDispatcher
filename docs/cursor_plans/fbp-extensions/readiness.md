@@ -20,7 +20,7 @@ Current merge/base differences still require preflight before implementation. Re
 
 Research is primary-source only: [Node-RED editor](https://nodered.org/docs/user-guide/editor/), [React Flow docs](https://reactflow.dev/learn), [PostgreSQL SELECT/row locks](https://www.postgresql.org/docs/current/sql-select.html). These establish relevant interfaces, not our compatibility or correctness. Exact supported dependency versions/license, native SQLite API status, package-name ownership and ORM/domain integration remain unverified.
 
-Realberry source/tickets were **not re-audited in this planning pass**. IAW-2919 workload details are prior conversation context and a future acceptance hypothesis, not a current source-backed replacement assessment. No access to all other chats is assumed. A later adoption investigation must read the actual current repository, contracts and tests first.
+An adoption pilot must validate the consuming application’s current source, contracts and tests before proposing replacement. This planning pass evaluated framework boundaries.
 
 ## Decisions and explicit release gates
 

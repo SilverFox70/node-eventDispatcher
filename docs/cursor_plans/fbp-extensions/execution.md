@@ -60,7 +60,7 @@ Create `SNN-execution.md` in this directory at actual execution start. Record co
 
 Distinguish implementation complete, behavioral proof, quality/coverage, publication and actual merge. A future journal/merge receipt establishes completion; plan status never does. Update only the selected manifest entry with verified facts when authorized; never mark all future slices ready from one green suite.
 
-Commit/push/PR/merge/deployment remain governed by the current user’s scope, repository hooks and protections. This planning pass saves local documents only. No release/npm publication or Realberry change is implied.
+Commit/push/PR/merge/deployment remain governed by the current user’s scope, repository hooks and protections. This planning pass saves local documents only. No release/npm publication or application-specific change is implied.
 
 ## Explainability insertion proof ownership
 

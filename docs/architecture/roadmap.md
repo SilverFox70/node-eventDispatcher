@@ -8,9 +8,9 @@ S39–S51 delivered a PostgreSQL host for eligible pinned graphs. It stages obli
 
 Provider operations use the linear durable profile. Recovery of an uncertain provider operation depends on authoritative evidence or a supported idempotency guarantee. Retained artifacts and bindings must be available to resume a pinned run.
 
-## Candidate next step — Realberry IAW-2919
+## Candidate next step — one durable obligation
 
-A bounded pilot would compare one durable obligation with its current Realberry implementation. Start by verifying the actual transaction and provider boundaries. Use an isolated branch and controlled effects to demonstrate atomic staging, safe recovery after provider acceptance, one mutation and progress for unrelated work. Compare the time and effort to diagnose a stalled operation, test a step and change a workflow rule. IAW-3093 account-status projection is a separate consistency and maintainability study. These candidates require their own scope and acceptance evidence.
+A bounded pilot would compare one durable obligation with its current application implementation. Start by verifying the actual transaction and provider boundaries. Use an isolated branch and controlled effects to demonstrate atomic staging, safe recovery after provider acceptance, one mutation and progress for unrelated work. Compare the time and effort to diagnose a stalled operation, test a step and change a workflow rule. Account-status projection is a separate consistency and maintainability study. These candidates require their own scope and acceptance evidence.
 
 ## Other recorded extension directions
 

@@ -12,13 +12,13 @@ First application evidence now belongs to S24E content validation/preview and S2
 | S31 | Build a new enrichment flow visually, inject slow/failing branch, inspect waiting join and node data | Useful authoring/debugging, not persistent drafts yet |
 | S37–S38 | Save/test/lock/export; run in an independent project; reuse one pinned subflow twice | Portable readable application wiring and revision traceability, not workflow checkpointing |
 | S44 | Controlled provider accepts then connection/process dies; recovery holds and reconciles | Honest ambiguous-effect handling, not arbitrary provider exactly-once |
-| S51 | Full obligation fixture with two workers/crashes, joins/waits and live recovered progress | Qualification of the supported durable profile, not already a Realberry migration |
+| S51 | Full obligation fixture with two workers/crashes, joins/waits and live recovered progress | Qualification of the supported durable profile, not already an application-specific migration |
 
-## Realberry IAW-2919 or similar obligations
+## Application pilot for one durable obligation
 
 Yes, this architecture is aimed at this class of work, subject to evidence. The opportunity is replacing scattered orchestration with explicit, inspectable owed work—not merely drawing the old worker in a box. The graph should show business revision, required steps, safe progress, blocked provider uncertainty and why the UI has reached its current state.
 
-Candidate flow, to validate against **current** Realberry code later:
+Candidate flow, to validate against **current** application code later:
 
 1. Commit person/relationship revision and durable obligation intent in the same application transaction.
 2. Claim the exact obligation generation; reconcile obsolete/current revision before effects.
@@ -29,7 +29,7 @@ Candidate flow, to validate against **current** Realberry code later:
 
 The existing rule functions/DB/provider adapters can remain reused. The selected path counts as replaced only when the graph host owns sequencing, obligation/attempt/lease/recovery state, conditional steps, failure disposition and progress. Calling the entire old obligation worker from one node does not meet that criterion. No duplicate account-status business rules in graph metadata; reuse canonical projection logic for any 3093-related path.
 
-Future adoption investigation must first inventory current IAW-2919/3093 contracts, domain transaction boundary, DB/ORM semantics, unique generation keys, authorization and provider guarantees. Prior chat descriptions are not current source verification. If domain and host cannot share a transaction, plan a separately proved outbox bridge before claiming atomicity. No access to other chats/repositories is assumed by this artifact.
+Future adoption investigation must first inventory current application contracts, domain transaction boundary, DB/ORM semantics, unique generation keys, authorization and provider guarantees. Prior chat descriptions are not current source verification. If domain and host cannot share a transaction, plan a separately proved outbox bridge before claiming atomicity. No access to other chats/repositories is assumed by this artifact.
 
 **Qualification conditions:** selected old orchestration path disabled in the spike; domain mutation/obligation rollback together; missed notifications swept; stale revision/lease cannot overwrite current; provider accepted/result lost does not repeat; competing same-party revisions serialize; independent parties progress; joins do not reopen; ambiguous provider outcomes visibly held; UI reconnect produces no command; all existing selected domain/side-effect tests pass plus crash cases.
 

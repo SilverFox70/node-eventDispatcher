@@ -89,7 +89,7 @@ No future implementation task is released on this planning pass. S20 can be revi
 
 ## Explicit exclusions
 
-Arbitrary existing-application import/rewrite (F03), arbitrary browser code evaluation, dynamic npm installation, rich/custom packet codecs, cyclic execution, deterministic per-frame game scheduling, production Realberry migration, auto-compensation of external effects and exactly-once provider execution are not delivered by these plans. Extension seams are preserved; no boolean flag enables them without a separate contract and proofs.
+Arbitrary existing-application import/rewrite (F03), arbitrary browser code evaluation, dynamic npm installation, rich/custom packet codecs, cyclic execution, deterministic per-frame game scheduling, production application-specific migration, auto-compensation of external effects and exactly-once provider execution are not delivered by these plans. Extension seams are preserved; no boolean flag enables them without a separate contract and proofs.
 
 ## Proof navigation
 

@@ -113,7 +113,7 @@ To inspect sustained-load behavior after building, run `node benchmark/throughpu
 | S32–S38 | SQLite drafts, immutable revisions, graph bundles, readable TypeScript and pinned subflows |
 | S39–S51 | Optional PostgreSQL host, recovery and reconciliation, persisted progress, crash qualification and installed adoption |
 
-The next candidate is a bounded Realberry IAW-2919 pilot. Compare one obligation with the existing workflow for safety, diagnosis and cost of change before deciding on adoption. IAW-3093 projection is a separate question. Longer-term directions include approved handler-source inspection, existing-application discovery and source transformation, richer payloads, controlled feedback graphs and agent-assisted authoring. See the [roadmap](docs/architecture/roadmap.md).
+The next candidate is a bounded application pilot. Compare one obligation with the existing workflow for safety, diagnosis and cost of change before deciding on adoption. Account-status projection is a separate question. Longer-term directions include approved handler-source inspection, existing-application discovery and source transformation, richer payloads, controlled feedback graphs and agent-assisted authoring. See the [roadmap](docs/architecture/roadmap.md).
 
 The [graph artifacts package](packages/artifacts/README.md) keeps graph semantics and layout fingerprints separate. The [graph adoption demo](examples/adoption/README.md) shows a tested export handoff. [Durable host operations](docs/runbooks/operate-durable-host.md) covers the separate task of recovering running jobs. External effects need an application or provider idempotency guarantee or authoritative reconciliation.
 

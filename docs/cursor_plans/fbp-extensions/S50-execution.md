@@ -32,7 +32,7 @@ Standalone command: `node --import ./packages/durable/test/resolve-core.js --tes
 
 The manifest names each case, pinned profile digest, fault, expected ordered barriers and invariant assertions. Every observed barrier carries a case ID, worker PID or provider receipt, and operation or run identity. Assert the exact ordered trace, a separately observed effect ledger, persisted row counts and terminal state. Reject unknown/missing barriers, a missing provider-accepted receipt, a worker outside the supervisor registry, or any incomplete invariant. Include regression tests that fail those invalid evidence sets.
 
-The supervisor tracks and closes every worker, pool, HTTP listener, timer and temporary database even on failure. Save bounded redacted receipts with seed, versions, case outcomes and cleanup results. A timeout or a lost barrier fails qualification. Reconciliation proves recovery of a confirmed result without a repeated provider mutation in these scenarios. It cannot guarantee exactly-once behavior for an arbitrary remote service or qualify a Realberry migration.
+The supervisor tracks and closes every worker, pool, HTTP listener, timer and temporary database even on failure. Save bounded redacted receipts with seed, versions, case outcomes and cleanup results. A timeout or a lost barrier fails qualification. Reconciliation proves recovery of a confirmed result without a repeated provider mutation in these scenarios. It cannot guarantee exactly-once behavior for an arbitrary remote service or qualify an application-specific migration.
 
 ## Verification receipt
 

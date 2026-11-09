@@ -26,7 +26,7 @@ Scope limits remain explicit:
 - GraphSpec/catalog JSON and Mermaid export exist; visual selection/configuration/wiring, saved drafts/locked revisions and generated TypeScript are future work. Browser checks metadata/wiring, not application payload schemas; runtime admission stays authoritative.
 - Default inspection snapshots have no payload history. Optional EX1 trace has finite event/payload bounds; dialogs/stage browsing show retained observations, not durable results or proof of business success. Per-node logging policy/adapters remain future work.
 - The Next fixture demonstrates explicit owned integrations, not arbitrary application discovery or production authorization/routing. Benchmark/load figures are machine observations, not service SLAs.
-- No npm publish, deployment, durable Realberry replacement or extension execution is part of S19. The current package name/version and legacy shim remain unchanged.
+- No npm publish, deployment, durable application-specific replacement or extension execution is part of S19. The current package name/version and legacy shim remain unchanged.
 
 Readability review: no executable modules changed; the99-row evidence index is intentionally one navigable table separate from the short receipt and canonical condition definitions. Historical slice receipts remain append-only evidence rather than being rewritten into current-state claims.
 

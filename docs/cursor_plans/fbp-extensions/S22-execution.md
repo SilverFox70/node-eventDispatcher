@@ -41,7 +41,7 @@ Three focused new modules: model capture validation22 lines, host policy58 lines
 
 Capture remains optional host-authorized in-memory evidence. Existing caller-held snapshots are not revoked by expiry/disable. EX1's separate existing opt-in payload setting is unchanged. No sink/remote endpoint/UI toggle, graph editing, global dedup/payload lookup, database, durable recovery, rich codec or cycles. S23 owns bounded sinks/export and S24 owns demo controls. S22 not merged; next implementation waits for actual merge and explicit execution.
 
-Implementation/proof/gates/coverage complete for review. Publication pending at this receipt revision. User .DS_Store/.feedback-log stay excluded. No merge/npm publication/deployment or Realberry modification.
+Implementation/proof/gates/coverage complete for review. Publication pending at this receipt revision. User .DS_Store/.feedback-log stay excluded. No merge/npm publication/deployment or application-specific modification.
 
 ## Publication receipt
 
