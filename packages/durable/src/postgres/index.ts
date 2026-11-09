@@ -1,3 +1,7 @@
+import { prepareExternalOperation } from './external-prepare.js';
+import { invokeExternalOperation, recoverExternalOperation } from './external-invoke.js';
+import type { ExternalOperationRequest } from '../operations/model.js';
+import type { Json } from 'event-driven-design';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { FlowError } from 'event-driven-design';
 import pg from 'pg';
@@ -12,6 +16,7 @@ import type { ClaimIdentity, ClaimOptions, DurableProfile, StepCommit, StepScope
 import { inTransaction } from './transaction.js';
 
 export type { Submission, StagedRun };
+export type { ExternalOperation, ExternalOperationRequest } from '../operations/model.js';
 export type { ClaimIdentity, ClaimOptions, StepClaim } from '../steps/model.js';
 export type { CommittedStep, ReadyStep, StepCommit, StepResult, StepScope } from '../steps/model.js';
 export type DurableTransaction = Readonly<{
@@ -77,6 +82,11 @@ export function openPostgresStore(connectionString: string) {
     sweepReady: (scope: StepScope) => sweepReady(pool, scope),
     commitStep: (scope: StepScope, profile: DurableProfile, command: StepCommit) => commitStep(pool, scope, profile, command),
     publishStepWake: (scope: StepScope, outcomeId: string) => publishStepWake(pool, scope, outcomeId),
+    prepareExternalOperation: (scope: StepScope, claim: ClaimIdentity, input: ExternalOperationRequest) =>
+      prepareExternalOperation(pool, scope, claim, input),
+    invokeExternalOperation: (scope: StepScope, claim: ClaimIdentity, id: string, input: ExternalOperationRequest,
+      send: (payload: Json) => Promise<Json>) => invokeExternalOperation(pool, scope, claim, id, input, send),
+    recoverExternalOperation: (scope: StepScope, id: string) => recoverExternalOperation(pool, scope, id),
     close: () => pool.end(),
   });
 }

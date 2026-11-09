@@ -19,7 +19,7 @@
     "build:editor": "npm run build --workspace event-driven-design-editor -- tsconfig.repository.json",
     "build:artifacts": "npm run build --workspace event-driven-design-artifacts",
     "build:durable": "npm run build --workspace event-driven-design-durable",
-    "test:postgres": "npm run build:durable && c8 --config packages/durable/.c8rc-postgres.json node --import ./packages/durable/test/resolve-core.js --test packages/durable/test/postgres.test.js packages/durable/test/steps.test.js packages/durable/test/leases.test.js && node scripts/coverage-thresholds.mjs coverage/postgres/coverage-final.json && node packages/durable/test/packed.cjs",
+    "test:postgres": "npm run build:durable && c8 --config packages/durable/.c8rc-postgres.json node --import ./packages/durable/test/resolve-core.js --test packages/durable/test/postgres.test.js packages/durable/test/steps.test.js packages/durable/test/leases.test.js packages/durable/test/operations.test.js && node scripts/coverage-thresholds.mjs coverage/postgres/coverage-final.json && node packages/durable/test/packed.cjs",
     "test:durable": "npm run build:durable && c8 --config packages/durable/.c8rc.json node --import ./packages/durable/test/resolve-core.js --test packages/durable/test/profile.test.js && node scripts/coverage-thresholds.mjs coverage/durable/coverage-final.json && node packages/durable/test/packed.cjs",
     "test:artifacts": "npm run build:editor && npm run build:artifacts && c8 --config packages/artifacts/.c8rc.json node --import ./packages/artifacts/test/resolve-core.js --test packages/artifacts/test/*.test.js && node scripts/coverage-thresholds.mjs coverage/artifacts/coverage-final.json && node packages/artifacts/test/packed.cjs"
   },

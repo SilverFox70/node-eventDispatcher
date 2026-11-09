@@ -52,6 +52,9 @@ export async function sweepReady(pool: Pool, scope: StepScope): Promise<readonly
     JOIN nodeflow_durable.step_packets p ON (p.run_id, p.packet_id) = (s.run_id, s.input_packet_id)
     WHERE r.workspace_id = $1 AND s.run_id = $2 AND s.status = 'ready'
       AND s.not_before <= clock_timestamp() AND s.epoch < s.max_claims
+      AND NOT EXISTS (
+        SELECT 1 FROM nodeflow_durable.external_step_operations link
+        WHERE link.step_id = s.step_id)
       AND (s.lease_expires_at IS NULL OR s.lease_expires_at <= clock_timestamp())
     ORDER BY s.created_at, s.step_id LIMIT 100
   `, [scope.workspaceId, scope.runId]);

@@ -72,3 +72,11 @@ Hosts that manage their own worker can call `store.claimSteps(scope, profile, { 
 Each lease consumes one invocation allowance. The worker uses `profile.invokeOnce` so in-process retries cannot multiply the recovery budget. By default an expired claim is held. A node's explicit retry allowance permits a bounded number of takeovers of its reviewed pure computation. Returned task failures are terminal in this slice. Persisted retry delays and deadline policy belong to S45. Existing S41 rows upgrade with one claim allowance.
 
 S42 workers sweep one authorized run. A notification can prompt a sweep, and periodic polling still works if the listener disappears. The worker can recompute eligible work, while the outcome store accepts at most one committed result.
+
+## Record an external provider call
+
+Use a dedicated host for runs containing external operations. The host claims the step, then calls `prepareExternalOperation(scope, claim, request)` with the provider, business key, resource key, revision, policy version, and JSON payload. The business key and fingerprint identify one operation across jobs. Revisions are registered in ascending order per resource, and earlier unresolved revisions block later calls.
+
+S43 supports the conservative `reconcile-required` policy. Call `invokeExternalOperation(scope, claim, operationId, request, send)` with the same request. The store commits a single invocation permit before it calls `send`. The callback owns one provider request and validates the response before returning JSON. A lost or invalid response holds the operation as uncertain. An expired worker cannot obtain a permit or save a late result.
+
+Use `recoverExternalOperation(scope, operationId)` to inspect the linked operation and mark expired intent uncertain. Recovery does not dispatch a request. A dedicated host can claim a still-prepared operation with `external: true` within the original claim budget. Linked steps stay out of the ordinary worker pool. S44 owns evidence-backed reconciliation and continuation from the ledger.

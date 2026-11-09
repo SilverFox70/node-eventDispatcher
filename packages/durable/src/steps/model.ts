@@ -10,7 +10,7 @@ export type StepScope = Readonly<{ workspaceId: string; runId: string }>;
 export type DurableProfile = ReturnType<typeof prepareDurableProfile>;
 export type ReadyStep = Readonly<{ stepId: string; nodeId: string; epoch: number; input: Packet }>;
 export type StepClaim = Readonly<ReadyStep & { workerId: string; leaseExpiresAt: string }>;
-export type ClaimOptions = Readonly<{ workerId: string; leaseMs: number; limit: number }>;
+export type ClaimOptions = Readonly<{ workerId: string; leaseMs: number; limit: number; external?: true }>;
 export type ClaimIdentity = Pick<StepClaim, 'stepId' | 'workerId' | 'epoch'>;
 
 export type StepResult = Readonly<{ kind: 'computed'; packet: Packet } |

@@ -39,6 +39,8 @@ export function commitStep(pool: Pool, scope: StepScope, profile: DurableProfile
       return receipt(existing);
     }
 
+    const linked = await client.query('SELECT 1 FROM nodeflow_durable.external_step_operations WHERE step_id=$1', [stepId]);
+    if (linked.rowCount) throw new FlowError('EXTERNAL_OPERATION_HELD');
     const successor = definition.spec.edges.find(edge => edge.from.node === step.node_id)?.to;
     let successorId = null;
     if (outcome.packet) {
