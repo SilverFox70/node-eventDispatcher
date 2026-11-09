@@ -991,8 +991,8 @@
         "X49.3"
       ],
       "status": "approved-for-execution",
-      "execution_status": "complete-for-review",
-      "merge_sha": null,
+      "execution_status": "merged",
+      "merge_sha": "e54358d2a5c8c10ee040b537efb2611befbdf83d",
       "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety",
       "journal": "S49-execution.md",
       "execution_approval": {
@@ -1014,10 +1014,15 @@
         "X50.2",
         "X50.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
-      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety",
+      "journal": "S50-execution.md",
+      "execution_approval": {
+        "authority": "user approved S50 crash qualification matrix",
+        "tasks": ["S50.A", "S50.B", "S50.C"]
+      }
     },
     {
       "id": "S51",

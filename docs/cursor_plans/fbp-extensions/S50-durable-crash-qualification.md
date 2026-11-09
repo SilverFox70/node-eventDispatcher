@@ -1,6 +1,6 @@
 # S50 — Prove the composed host survives adversarial failures instead of relying on unit claims.
 
-Plan revision EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan revision EXT1-r3. Status **approved-for-execution**. See the [approved matrix and execution receipt](S50-execution.md).
 Phase: durable. Proposed branch: `codex/fbp-50-durable-crash-qualification`.
 Order: S49 → S50 → S51.
 
@@ -51,4 +51,4 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. G1–G7 implementation readiness is blocked by the named decisions and predecessor evidence; revalidate at handoff rather than treating future commands as delivered.
+The user approved S50.A–C and authorized publication after the crash matrix passed. The execution receipt records predecessor evidence and the qualified boundaries.
