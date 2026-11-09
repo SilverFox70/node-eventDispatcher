@@ -2,7 +2,7 @@ import { FlowError } from 'event-driven-design';
 import type { Registry } from 'event-driven-design';
 import type { GraphSpec } from 'event-driven-design/model';
 
-type Definition = Readonly<{ spec: GraphSpec; registry: Registry }>;
+type Definition = Readonly<{ spec: GraphSpec; registry: Registry; operators: ReadonlyMap<string, string> }>;
 const definitions = new WeakMap<object, Definition>();
 
 export function rememberProfile(profile: object, definition: Definition): void {

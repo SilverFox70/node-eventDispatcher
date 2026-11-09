@@ -1,3 +1,5 @@
+import { commitRoutingStep, flushRouting, readRoutedOutputs } from './routing.js';
+import type { RoutingCommand } from '../delivery/model.js';
 import { runTiming } from './run-timing.js';
 import { scheduleStepRetry } from './retry.js';
 import { getReconciliationTarget } from './reconciliation-target.js';
@@ -101,6 +103,9 @@ export function openPostgresStore(connectionString: string) {
     cancelRun: (scope: StepScope) => runTiming(pool, scope, true),
     scheduleStepRetry: (scope: StepScope, profile: DurableProfile, claim: ClaimIdentity, code: string) =>
       scheduleStepRetry(pool, scope, profile, claim, code),
+    commitRoutingStep: (scope: StepScope, profile: DurableProfile, command: RoutingCommand) => commitRoutingStep(pool, scope, profile, command),
+    flushRouting: (scope: StepScope, profile: DurableProfile) => flushRouting(pool, scope, profile),
+    readRoutedOutputs: (scope: StepScope, after?: string) => readRoutedOutputs(pool, scope, after),
     close: () => pool.end(),
   });
 }

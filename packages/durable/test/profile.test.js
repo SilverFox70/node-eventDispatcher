@@ -1,6 +1,7 @@
+import { routingProfile } from './fixtures/routing-profile.mjs';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { compileGraph, contract, defineComponent, defineConfiguredFunction, defineFunction, FlowError, packet } from 'event-driven-design';
+import { broadcast, compileGraph, contract, defineComponent, defineConfiguredFunction, defineFunction, FlowError, packet } from 'event-driven-design';
 import { runGraph } from 'event-driven-design/testing';
 import { z } from 'zod';
 import { prepareDurableProfile, resumeDurableProfile } from '../dist/index.js';
@@ -125,5 +126,30 @@ test('resume refuses missing or changed code and contracts before invoking a rep
   for (const invalid of [null, { ...pin, format: 'other' }, { ...pin, executionDigest: 'bad' },
     { ...pin, adapterDigest: 'bad' }, { ...pin, extra: true }, { ...pin, extra: ' '.repeat(1024) }]) {
     assert.throws(() => readDurableProfilePin(invalid), /INVALID_PROFILE_PIN/);
+  }
+});
+
+
+test('reviewed routing operators run the shared kernel and reject incompatible declarations', async () => {
+  const profile = routingProfile();
+  const input = packet(1);
+  const forked = await profile.invokeDelivery('fork', input, { timeoutMs: 1000 }, 'in');
+  assert.equal(forked.status, 'computed');
+  assert.deepEqual(forked.outputs.left[0].parentPacketIds, [input.packetId]);
+  const component = defineFunction({ ...fields, input: numeric, output: numeric, handler: value => value });
+  const candidate = options(component);
+  const names = Array.from({ length: 33 }, (_, index) => 'out-' + index);
+  const wide = broadcast(numeric, names);
+  const binding = { component: 'broadcast@1', implementationDigest, contractsDigest: 'b'.repeat(64) };
+  assert.throws(() => prepareDurableProfile({
+    graph: { version: 1, nodes: [{ id: 'fork', component: binding.component }], edges: [],
+      inputs: { in: { node: 'fork', port: 'in' } },
+      outputs: Object.fromEntries(names.map(port => [port, { node: 'fork', port }])) },
+    registry: { [binding.component]: wide }, identity: { ...candidate.identity, bindings: [binding] },
+    adapters: [{ ...adapter, component: binding.component, operator: 'broadcast' }],
+  }), { code: 'PROFILE_INELIGIBLE' });
+  for (const operator of ['broadcast', 'unknown', null]) {
+    assert.throws(() => prepareDurableProfile({ ...candidate, adapters: [{ ...adapter, operator }] }),
+      { code: 'PROFILE_INELIGIBLE' });
   }
 });

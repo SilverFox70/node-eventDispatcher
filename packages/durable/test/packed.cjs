@@ -9,7 +9,11 @@ try {
     .replace('../dist/index.js', 'event-driven-design-durable')
     .replace('../dist/model/index.js', 'event-driven-design-durable/model');
   writeFileSync(join(fixture, 'profile.test.mjs'), tests);
-  assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'profile.test.mjs']), /^# pass 3$/m);
+  mkdirSync(join(fixture, 'fixtures'), { recursive: true });
+  const routingProfile = readFileSync(join(root, 'packages/durable/test/fixtures/routing-profile.mjs'), 'utf8')
+    .replace('../../dist/index.js', 'event-driven-design-durable');
+  writeFileSync(join(fixture, 'fixtures/routing-profile.mjs'), routingProfile);
+  assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'profile.test.mjs']), /^# pass 4$/m);
 
   run(process.execPath, ['--input-type=module', '-e', `
     import assert from 'node:assert/strict';
@@ -90,14 +94,17 @@ try {
       .replace('../dist/postgres/index.js', 'event-driven-design-durable/postgres')
       .replace('../dist/index.js', 'event-driven-design-durable');
     writeFileSync(join(fixture, 'timing.test.mjs'), timing);
-    mkdirSync(join(fixture, 'fixtures'));
-    for (const file of ['step-profile.mjs', 'step-worker.mjs', 'lease-worker.mjs', 'external-worker.mjs']) {
+    const routing = readFileSync(join(root, 'packages/durable/test/routing.test.js'), 'utf8')
+      .replace('../dist/postgres/index.js', 'event-driven-design-durable/postgres')
+      .replace('../dist/index.js', 'event-driven-design-durable');
+    writeFileSync(join(fixture, 'routing.test.mjs'), routing);
+    for (const file of ['step-profile.mjs', 'step-worker.mjs', 'lease-worker.mjs', 'external-worker.mjs', 'routing-profile.mjs', 'routing-worker.mjs']) {
       const contents = readFileSync(join(root, 'packages/durable/test/fixtures', file), 'utf8')
         .replace('../../dist/index.js', 'event-driven-design-durable')
         .replace('../../dist/postgres/index.js', 'event-driven-design-durable/postgres');
       writeFileSync(join(fixture, 'fixtures', file), contents);
     }
-    assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'postgres.test.mjs', 'steps.test.mjs', 'leases.test.mjs', 'operations.test.mjs', 'reconciliation.test.mjs', 'timing.test.mjs']), /^# pass 23$/m);
+    assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'postgres.test.mjs', 'steps.test.mjs', 'leases.test.mjs', 'operations.test.mjs', 'reconciliation.test.mjs', 'timing.test.mjs', 'routing.test.mjs']), /^# pass 26$/m);
   }
   console.log('Installed durable profile, passive model, and TypeScript declarations passed.');
 } finally { dispose(); }

@@ -6,7 +6,7 @@ import type { DurableProfile, StepClaim, StepResult, StepScope } from '../steps/
 import { checkScope } from '../steps/model.js';
 import { validIdentifier } from '../submission/input.js';
 
-type Store = Pick<ReturnType<typeof openPostgresStore>, 'claimSteps' | 'heartbeatStep' | 'commitStep' | 'scheduleStepRetry'>;
+type Store = Pick<ReturnType<typeof openPostgresStore>, 'claimSteps' | 'heartbeatStep' | 'commitStep' | 'scheduleStepRetry' | 'commitRoutingStep' | 'flushRouting'>;
 export type StepWorkerOptions = Readonly<{
   store: Store; scope: StepScope; profile: DurableProfile; workerId: string; timeoutMs: number;
   leaseMs?: number; heartbeatMs?: number; pollMs?: number; concurrency?: number;
@@ -59,14 +59,19 @@ export function startStepWorker(options: StepWorkerOptions) {
       const remaining = claim.remainingMs === null ? timeoutMs : Math.floor(claim.remainingMs - (performance.now() - claimStarted));
       if (remaining <= 0) return;
       const deadline = claim.remainingMs === null ? signal : globalThis.AbortSignal.timeout(remaining);
-      const computed = await profile.invokeOnce(claim.nodeId, claim.input, {
-        timeoutMs, signal: globalThis.AbortSignal.any([signal, deadline]),
-      });
+      const invocation = { timeoutMs, signal: globalThis.AbortSignal.any([signal, deadline]) };
+      const computed = profile.routed
+        ? await profile.invokeDelivery(claim.nodeId, claim.input, invocation, claim.inputPort)
+        : await profile.invokeOnce(claim.nodeId, claim.input, invocation);
       stopHeartbeat.abort();
       await pulse;
       if (signal.aborted || (claim.remainingMs !== null && deadline.aborted)) return;
       if (computed.status === 'stopped' && computed.retryCode &&
           await store.scheduleStepRetry(scope, profile, claim, computed.retryCode)) return;
+      if (computed.status === 'computed' && 'outputs' in computed) {
+        await store.commitRoutingStep(scope, profile, { stepId: claim.stepId, workerId, epoch: claim.epoch, outputs: computed.outputs });
+        return;
+      }
       const result: StepResult = computed.status === 'computed'
         ? { kind: 'computed', packet: computed.packet } : failure(computed.terminal.code);
       await store.commitStep(scope, profile, {
@@ -79,6 +84,7 @@ export function startStepWorker(options: StepWorkerOptions) {
   const done = (async () => {
     while (!shutdown.signal.aborted) {
       try {
+        if (profile.routed) await store.flushRouting(scope, profile);
         const claimStarted = performance.now();
         const claims = await store.claimSteps(scope, profile, { workerId, leaseMs, limit: concurrency });
         if (!shutdown.signal.aborted) await Promise.all(claims.map(claim => execute(claim, claimStarted)));

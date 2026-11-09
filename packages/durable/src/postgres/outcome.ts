@@ -32,6 +32,7 @@ export function commitStep(pool: Pool, scope: StepScope, profile: DurableProfile
     if (!step) throw new FlowError('STEP_NOT_FOUND');
     if (step.epoch !== epoch || step.lease_owner !== workerId) throw new FlowError('STALE_CLAIM');
     const definition = checkPin(profile, step.execution_digest, step.adapter_digest);
+    if (profile.routed && result.kind === 'computed') throw new FlowError('INVALID_DELIVERY');
     const input = admitPacket(JSON.parse(step.envelope));
     const outcome = interpretResult(definition, step.node_id, input, result);
     const { rows: [existing] } = await client.query<OutcomeRow>(
@@ -51,6 +52,9 @@ export function commitStep(pool: Pool, scope: StepScope, profile: DurableProfile
           AND (r.deadline_at IS NULL OR r.deadline_at > clock_timestamp()))`,
     [stepId, outcome.packet ? 'completed' : 'failed']);
     if (changed.rowCount !== 1) throw new FlowError('STALE_CLAIM');
+    if (profile.routed && outcome.failureCode) {
+      await client.query("UPDATE nodeflow_durable.workflow_runs SET status='failed',terminal_at=clock_timestamp() WHERE run_id=$1", [scope.runId]);
+    }
     await finishRunIfDone(client, scope.runId);
     return saved;
   });

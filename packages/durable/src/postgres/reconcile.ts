@@ -74,6 +74,7 @@ export async function reconcileExternalOperation(pool: Pool, scope: StepScope, p
     }
 
     await requireActiveRun(client, scope);
+    if (profile.routed) return refuse('PROFILE_INELIGIBLE');
     const definition = checkPin(profile, row.execution_digest, row.adapter_digest);
     const resultJson = serialize(found.value);
     if (!contractAt(definition, row.node_id, 'out').validate(found.value) ||

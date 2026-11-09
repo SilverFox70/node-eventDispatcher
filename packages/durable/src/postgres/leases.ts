@@ -29,7 +29,7 @@ export function claimSteps(pool: Pool, scope: StepScope, profile: DurableProfile
     checkPin(profile, run.execution_digest, run.adapter_digest);
     if (run.timeout_ms !== null) validateRunBudget(profile, run.timeout_ms);
     const { rows } = await client.query<{
-      step_id: string; node_id: string; epoch: number; lease_expires_at: Date; envelope: string;
+      step_id: string; node_id: string; input_port: string; epoch: number; lease_expires_at: Date; envelope: string;
     }>(`WITH due AS (
       SELECT s.step_id FROM nodeflow_durable.steps s
       WHERE run_id = $1 AND status = 'ready'
@@ -42,17 +42,22 @@ export function claimSteps(pool: Pool, scope: StepScope, profile: DurableProfile
         WHERE link.step_id = s.step_id AND operation.state = 'prepared')
       ELSE NOT EXISTS (SELECT 1 FROM nodeflow_durable.external_step_operations link WHERE link.step_id = s.step_id) END
       AND (lease_expires_at IS NULL OR lease_expires_at <= clock_timestamp())
+      AND NOT EXISTS (
+        SELECT 1 FROM nodeflow_durable.deliveries current
+        JOIN nodeflow_durable.deliveries earlier USING (run_id, edge_index)
+        JOIN nodeflow_durable.steps prior ON prior.step_id=earlier.target_step_id
+        WHERE current.target_step_id=s.step_id AND earlier.sequence < current.sequence AND prior.epoch=0)
       ORDER BY created_at, step_id LIMIT $2 FOR UPDATE SKIP LOCKED
     ), claimed AS (
       UPDATE nodeflow_durable.steps s SET epoch = s.epoch + 1, lease_owner = $3,
         lease_expires_at = clock_timestamp() + $4::integer * interval '1 millisecond'
       FROM due WHERE s.step_id = due.step_id RETURNING s.*
     )
-    SELECT c.step_id, c.node_id, c.epoch, c.lease_expires_at, p.envelope FROM claimed c
+    SELECT c.step_id, c.node_id, c.input_port, c.epoch, c.lease_expires_at, p.envelope FROM claimed c
       JOIN nodeflow_durable.step_packets p ON (p.run_id, p.packet_id) = (c.run_id, c.input_packet_id)
       ORDER BY c.created_at, c.step_id`, [scope.runId, limit, workerId, leaseMs, options.external === true]);
     return rows.map(row => Object.freeze({
-      stepId: row.step_id, nodeId: row.node_id, epoch: row.epoch, workerId,
+      stepId: row.step_id, nodeId: row.node_id, inputPort: row.input_port, epoch: row.epoch, workerId,
       leaseExpiresAt: row.lease_expires_at.toISOString(), remainingMs: remaining, input: admitPacket(JSON.parse(row.envelope)),
     }));
   });
