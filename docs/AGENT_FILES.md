@@ -6,7 +6,7 @@ This map is the repository's cross-tool navigation source. No personal home-dire
 | --- | --- | --- |
 | [AGENTS.md](../AGENTS.md) | Entry point, routing and authority | Start of repository work |
 | [CLAUDE.md](../CLAUDE.md) | Thin compatibility pointer | A client discovers this filename |
-| [Development guide](DEVELOPMENT_GUIDELINES.md) | Current commands, future tooling and edit boundaries | Before code/tooling changes |
+| [Development guide](DEVELOPMENT_GUIDELINES.md) | Current commands, prerequisites and edit boundaries | Before code/tooling changes |
 | [Scope and handoff](agent-rules/scope-and-handoff.md) | One story/branch, evidence and scope changes | Planning/executing work |
 | [Modules and contracts](agent-rules/modules-and-contracts.md) | Layer ownership and interface discipline | Source, public API and architecture work |
 | [Readability and structure](agent-rules/readability-and-structure.md) | Cohesive small files, meaningful hierarchy/utilities and selective JSDoc | Planning, implementing or reviewing code |
@@ -35,7 +35,9 @@ This map is the repository's cross-tool navigation source. No personal home-dire
 | [Dispatcher API/migration](architecture/dispatcher.md) | S02 synchronous instance API, logging/getter compatibility and legacy shim | Using or extending the dispatcher |
 | [System boundaries](architecture/system-boundaries.md) | Layer separation, packets/transport/model/runtime | Affected implementation layer |
 | [Decision register](architecture/decision-register.md) | Status/authority of directions and decisions | Choosing or changing behavior |
-| [Extension roadmap](architecture/roadmap.md) | Future optional profiles, including persistent/resumable execution | Evaluating a future capability |
+| [Extension roadmap](architecture/roadmap.md) | Merged milestones, candidate pilots and future profiles | Planning beyond S51 |
+| [Operate the optional durable host](runbooks/operate-durable-host.md) | PostgreSQL installation, restore, retention and version pins | Running or adopting durable workflows |
+| [Graph artifact storage](artifact-storage.md) | SQLite drafts, revisions and recovery | Saving and exporting graphs |
 | [ADRs](architecture/decisions/README.md) | Durable accepted/superseded decision records | Recording a material contract change |
 | [Foundation adoption acceptance](cursor_plans/fbp-slices/S19-execution.md) / [condition evidence](cursor_plans/fbp-slices/S19-condition-evidence.md) | Current foundation candidate, artifact/gate proof, retained limits and all99 condition pointers | Evaluating readiness or planning extensions |
 | [Extension plans](cursor_plans/fbp-extensions/INDEX.md) | Proposed diagnostics, visual authoring, saved/exportable graphs and optional durable host slices S20–S51; not execution approval | Planning/reviewing the next roadmap; read readiness gates before implementation |

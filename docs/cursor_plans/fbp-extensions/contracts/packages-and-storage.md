@@ -37,4 +37,4 @@ PostgreSQL host proposal: supported PostgreSQL18 major, `pg` server adapter with
 
 Artifact repository SQL schema, exact migrations/worker protocol/backup fixtures: S33 design preflight, explicitly blocked until reviewed. Durable schema keys/checks/CAS and ORM/domain transaction integration: S40 preflight, with S39 shared-kernel map and S43 provider policy before claiming durable effects. This is deliberate remaining scope, not a claim S20 wrote or verified full DDL.
 
-User storage engines remain settled. Exact SQL/driver/performance acceptance stays gated and cannot block independent metadata-only S21. No Realberry source or ORM was audited; same-database sample staging in S40 does not establish Realberry integration.
+User storage engines remain settled. Exact SQL/driver/performance acceptance stays gated and cannot block independent metadata-only S21. No application-specific source or ORM was audited; same-database sample staging in S40 does not establish application-specific integration.

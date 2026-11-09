@@ -1,25 +1,21 @@
 # Architecture documentation
 
-## Current state versus destination
+## Current state
 
-S00–S18B are merged. The package currently delivers a typed in-memory FBP runtime: contracts/components, immutable JSON packets, graph construction/compilation, bounded streams, cancellation/deadlines, explicit retries, branch/merge/keyed joins, testing helpers and installed CJS/ESM consumers. The Next fixture adds live graph/event inspection, optional bounded packet capture, node input/output dialogs, selectable output stages and controlled HTTP stress. [S19 adoption acceptance](../cursor_plans/fbp-slices/S19-execution.md) reconciles the candidate and proof; no npm release or deployment is inferred.
+The numbered roadmap is merged through S51. Core provides a typed JSON/DAG graph compiler and in-memory streaming runtime, independent synchronous dispatchers, and public node and graph tests. The Next fixture exercises live packet and event inspection, bounded payload capture and causal explanations.
 
-S21 [correlated metadata diagnostics](diagnostic-records.md) merged in PR33. S22 host-controlled selective capture merged in PR34. S23 bounded sinks/JSONL export merged in PR35. S24 controlled [Next diagnostic view](../nextjs.md#s24-live-diagnostic-controls) merged in PR36. S24A [bounded decision evidence](decision-evidence.md) merged in PR37. S24B [causal inspection](causal-inspection.md) merged in PR38. S24C [offline regression fixture export](../node-authoring.md#turn-a-reviewed-run-into-a-regression-test) merged in PR39. S24D [fixed-fixture revision comparison](../node-authoring.md#compare-two-revisions-on-one-reviewed-fixture) merged in PR40. S24E adds [product content review](../nextjs.md#product-content-review) on its feature branch.
+| Boundary | Delivered responsibility |
+| --- | --- |
+| [Core runtime](fbp-runtime.md) | Contracts, immutable packet lineage, FIFO channels, streaming execution, retry policies and tests |
+| [Next.js and editor](../nextjs.md) | Live inspection, causal diagnostics, visual authoring and controlled graph tests |
+| [Graph artifacts](../artifact-storage.md) | SQLite drafts, immutable graph revisions, portable bundles, readable TypeScript and version-pinned subflows |
+| [Optional durable host](../runbooks/operate-durable-host.md) | PostgreSQL transactions, worker claims, retained joins and waits, reconciled provider outcomes, progress, retention and restore |
 
-Visual graph editing/export tooling, a durable host, rich public packet profiles and cyclic graphs remain future extensions. The existing graph builder emits portable JSON GraphSpec; this is not a visual authoring or TypeScript generation claim.
-
-- [Dispatcher API and migration](dispatcher.md): instance ownership, synchronous delivery, bounded metadata logs and the legacy import.
-- [System boundaries](system-boundaries.md): proposed module responsibilities and present source map.
-- [Human-readable structure](../agent-rules/readability-and-structure.md): cohesive modules and legible responsibilities; strong size guideline with exceptions.
-- [Decision register](decision-register.md): what came from the user, what is proposed and what remains unsettled.
-- [Extension roadmap](roadmap.md): optional durable execution and other future profiles.
-- [Decision records](decisions/README.md): status/lifecycle and template for later concrete architecture amendments.
-- [Master plan](../cursor_plans/fbp-foundation-plan.md): requirement/invariant/condition specification.
-- [Slice index](../cursor_plans/fbp-slices/INDEX.md): implementation sequencing and feature ownership.
+See [system boundaries](system-boundaries.md), the [decision register](decision-register.md), the [extension merge index](../cursor_plans/fbp-extensions/INDEX.md) and the [roadmap beyond S51](roadmap.md).
 
 ## Authority and maintenance
 
-User instruction defines scope; accepted decisions and the approved feature contract settle behavior. Proposed plans are reviewable design, not implementation approval. For execution order SP1 supersedes old broad T task groupings. For unresolved packet/job/lineage/lookup semantics S00 owns the amendment; do not infer a complete contract from the word key.
+User instruction defines scope; accepted decisions and the approved feature contract settle behavior. Proposed plans are reviewable design, not implementation approval. For execution order SP1 supersedes old broad T task groupings. The [identity contract](../cursor_plans/fbp-identity-contract.md) distinguishes packet, job, run and correlation identities.
 
 After a feature merges, update only relevant current-state facts and decision status with its evidence link. Keep detailed historical plans/receipts in their existing locations; do not copy all55 conditions into an architecture overview. If an accepted ADR changes a shared interface, amend affected plans/consumers and proof owners together using [the runbook](../runbooks/change-contract.md).
 

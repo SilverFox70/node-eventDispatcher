@@ -1,6 +1,6 @@
 # Visual authoring contract — proposed EXT1-r2
 
-Owners S25–S31; S38 subflows later. [Shared rules](shared-contract.md), [artifact lifecycle](artifacts.md).
+Historical design for S25–S31 and S38. For the delivered editor, see the [Next.js guide](../../nextjs.md) and [editor package](../../../packages/editor/README.md). [Shared rules](shared-contract.md), [artifact lifecycle](artifacts.md).
 
 ## Product shape
 

@@ -1,54 +1,16 @@
 # Extension roadmap
 
-Status: future capability directions, not an approved implementation plan or a change to S00–S19. The default framework remains in-memory; applications that do not opt into durability need no database, checkpoint writes or durable worker dependency. Concrete extension interfaces and store choices require their own proposal, slices and failure proofs.
+**Current baseline:** S00–S51 are merged. See the [extension index](../cursor_plans/fbp-extensions/INDEX.md) for the delivered sequence and [architecture index](README.md) for package boundaries.
 
-## F01 — optional durable execution add-on
+## F01 — optional durable execution
 
-Authority: user direction, 2026-10-29. Goal: graphs can opt into a database/persistent-store-backed execution host that records work and resumes correctly after supported failures, while ordinary graphs retain the lightweight base runtime.
+S39–S51 delivered a PostgreSQL host for eligible pinned graphs. It stages obligations with business changes, retains worker claims and step outcomes, recovers branches and keyed joins, persists waits and shows durable progress. The [crash matrix](../cursor_plans/fbp-extensions/S50-execution.md) tests recovery with real workers, PostgreSQL and a controlled HTTP provider. The [adoption receipt](../cursor_plans/fbp-extensions/S51-execution.md) verifies installation, restore and retained evidence. Core in-memory execution remains independently installable.
 
-A durable execution should answer: which graph/component versions and inputs define this job; what completed; what is pending; what was in flight; and what next action is safe. Persistence supplies those answers after process loss; an ID or in-memory queue alone cannot.
+Provider operations use the linear durable profile. Recovery of an uncertain provider operation depends on authoritative evidence or a supported idempotency guarantee. Retained artifacts and bindings must be available to resume a pinned run.
 
-### Intended capability
+## Candidate next step — one durable obligation
 
-- Persist execution/job/packet identities and lineage, graph/component/contract versions, and enough data or versioned references to reconstruct eligible pending work.
-- Checkpoint committed node outcomes and downstream work creation consistently. Recovery must not mark work complete without its required evidence or lose the next scheduled work between commits.
-- Recover queued work, interrupted attempts and partially completed branches/joins; include durable wait/timer state when those features are supported. Do not model a whole graph's progress as only one last-completed-node pointer.
-- Resume on a worker that reacquires valid ownership. Leases/fencing/revisions prevent an old or competing worker from committing obsolete results.
-- Distinguish failed, retryable, uncertain, awaiting reconciliation and terminal outcomes. Retry rules and attempt identity belong to the durable profile, not an automatic replay of every node.
-- Retain queryable progress/results under an explicit retention/access/eviction contract, independent of the base runtime's bounded diagnostics. Stable job ID can address persisted execution once this store exists.
-- Pin the executing graph/handler/schema version. Resume across deployments only under a compatible version or an explicit migration; no silently running unfinished old work with new node semantics.
-
-### External effects and the recovery promise
-
-The target is reliable resumption within a declared failure/storage model, including worker/process crashes, restart/redeployment, duplicate delivery, transient provider/store outage and competing workers. The later design must state persistence acknowledgement and store recovery assumptions. A graph cannot recover data that its store has irretrievably lost merely because the topology is well constructed.
-
-For example: provider accepts a request, worker crashes before recording its result. Recovery must use an idempotency key/provider evidence or reconciliation policy; it cannot infer that the request failed and safely repeat it. An uncertain operation may need reconciliation or human attention rather than blind retry. Exactly-once external effects are not a promise of the generic add-on.
-
-Known committed outcomes should remain recorded; pending work should be reconstructible; uncertain effects should remain explicitly uncertain until resolved. “Knows where to pick up” therefore means a safe next action based on persisted evidence, not necessarily rerunning the last function.
-
-### Keep the add-on optional
-
-The base owns reusable contracts, graph definitions, node interfaces, identity, in-memory transport, inspection and tests. A future durable host owns store transactions/intents, checkpoints, scheduling/claims, recoverable waits, retries and reconciliation. Store adapters are part of that optional layer; no database vendor or persistence package is selected here.
-
-Reuse the same component/graph authoring model where eligible. Durable validation must reject or require an explicit adapter for nodes/payloads it cannot safely serialize, replay or resume. Rich class instances/resource handles and feedback loops need their own persistence semantics; eligibility is not implied by working in one process. Pure transformations and external-effect nodes may need different checkpoint/replay policies.
-
-No durable state machine is implemented inside every ordinary function, and no misleading durability=true flag or stub store API is added during the foundation slices. A Next route may submit/read durable work later, while execution and recovery live in a suitable worker host rather than depend on one request surviving.
-
-### Future feature sequence and acceptance
-
-These are roadmap milestones, not new branch plans or current release gates:
-
-1. Freeze the failure model, durable graph eligibility, identity/version/lifetime rules and storage transaction contract.
-2. Deliver one persistent execution/step-intent/outcome model with an actual store adapter and atomic advancement proof.
-3. Add ownership/recovery and explicit retry/uncertain-effect reconciliation; prove real competing-worker behavior, not only mocked transactions.
-4. Recover fork/join/waits and expose persisted progress through the existing inspection vocabulary, clearly distinguished from an ephemeral run snapshot.
-5. Ship store/host adapters, operational recovery guidance and consumer test helpers after crash-window proofs are complete.
-
-Required proof scenarios include crash before/after intent commit, after provider success/before acknowledgement, after outcome commit/before downstream scheduling, and mid-join; duplicate wake/delivery; expired worker completing after takeover; temporary store/provider outage; version mismatch after deployment; cancellation/recovery collision. Assert exact persisted state, next safe action and forbidden duplicate effects. Recovery tests start a new process/worker from persisted state; an in-memory mock or passing happy-path graph is insufficient.
-
-### Foundation dependencies
-
-[S00 identity design](../cursor_plans/fbp-slices/00-identity-contract-plan.md) must leave durable job identity distinct from run/attempt/packet identity, but it need not build this add-on. Generic representation boundaries, explicit effect contracts, one compiler/runtime model, safe inspection and the public testing API make the later integration easier. The exact durable protocol is still a future decision; do not freeze speculative persistence interfaces into the initial core.
+A bounded pilot would compare one durable obligation with its current application implementation. Start by verifying the actual transaction and provider boundaries. Use an isolated branch and controlled effects to demonstrate atomic staging, safe recovery after provider acceptance, one mutation and progress for unrelated work. Compare the time and effort to diagnose a stalled operation, test a step and change a workflow rule. Account-status projection is a separate consistency and maintainability study. These candidates require their own scope and acceptance evidence.
 
 ## Other recorded extension directions
 
@@ -60,25 +22,33 @@ Detailed existing goals remain in [the master extension horizon](../cursor_plans
 
 ## F02 — visual graph authoring, test loads and source generation
 
-Authority: user requested this workflow on2026-10-29. It is a future feature sequence, beyond S18's read-only inspector; no interactive editor or generator exists in the foundation yet.
+S25–S38 delivered visual wiring and configuration, controlled test runs, live packet inspection, saved and locked revisions, portable artifacts, readable TypeScript and pinned subflows. See the [Next.js guide](../nextjs.md) and [artifact storage guide](../artifact-storage.md). Node handlers remain ordinary registered server code. The following follow-ons preserve the user's original design goals.
 
-1. Select versioned components from a node palette, inspect input/output contracts, connect compatible named ports, and edit graph configuration through a Next.js-compatible visual editor.
-2. Save the same versioned GraphSpec consumed by the existing validator/compiler. Layout is separate presentation metadata. Invalid connections are refused before node effects; no second visual-only executor.
-3. Submit controlled fixtures/test loads through the production runtime and public test harness. Display bounded progress/results/errors; server-side authorization and execution budgets govern effectful nodes.
-4. Export readable, deterministic TypeScript graph composition plus necessary imports and version references, suitable for source control and ordinary code review. Save the graph specification alongside it; do not serialize function closures or invent a separate generated runtime.
-5. Prove save/load and generated-source execution match the original graph, and define how handwritten code and visual edits round-trip without silently overwriting user changes.
+### Inspect the function behind a node
 
-Node implementation remains ordinary human/agent-authored code registered on the server. Visual selection does not grant permission to execute arbitrary code or reveal credentials. Integration with rich payloads, feedback loops and durable execution follows each profile's eligibility rules. Concrete branch slices and acceptance tests are still to be planned; this direction does not enlarge S18 automatically.
+When a user selects a node in the visual editor, offer an **Open function code** action. Open a read-only, syntax-highlighted code panel showing the actual authored handler body for the component version used by that node. Preserve its formatting and comments. Keep registration, port and schema declarations, runtime wrappers, and service wiring out of the panel.
+
+Make source inspection opt-in for project-owned or explicitly published handlers. Resolve only approved source for the selected component version. If the source is private, unavailable, or cannot be matched to that version, explain why in the panel. Keep the lookup separate from running the node.
+
+The first milestone is inspection in a code-editor-style window. Editing and saving the handler can be scoped separately around a reviewable source change and the existing node tests.
+
+### Give the editor canvas room to work
+
+Let the editor use the full available viewport width without a page-level maximum content width. Give extra space on wide screens to the canvas so users can see more of their graph. On narrow screens, let supporting panels stack or collapse to keep the canvas usable.
+
+As the editor gains more tools, make side panels and top or bottom panes resizable where they share space with the canvas. Use keyboard-accessible resize handles and sensible minimum sizes so users can make room for the task at hand.
+
+### Editor UX and UI cleanup
+
+PR #52 delivered the post-S33 checkpoint with a full-width workspace, resizable panels and clearer packet visibility. Further UX work can use the same create → wire → run → inspect journey:
+
+- Keep validation, test actions, selected nodes and unsaved or conflicting edits easy to distinguish. Keep help and the walkthrough accessible.
+- Keep packet details and the canvas visible where space permits. Preserve job, node and transfer selection after the highlight fades.
+- Verify reopening a saved draft, panel sizing and focus on wide and narrow screens with mouse and keyboard.
 
 ### Durable graph artifacts and project adoption
 
-User clarification,2026-10-29: a graph that is tested and working must be durably saved and exportable for use in another project. Browser memory or an ephemeral editor session is insufficient. This stores the graph definition/release; F01 separately owns checkpoints and recovery of running jobs.
-
-- Persist editable drafts and explicit immutable published revisions, with stable graph identity, revision/content integrity, graph-format version, node/contract dependency versions, and separate layout metadata. Reopening or restarting the editor must recover the saved revision.
-- Lock a validated revision for deployment. Subsequent edits create a new draft/revision rather than silently changing a deployed graph. Associate the release with its test fixtures and verification result; importing projects must revalidate compatibility.
-- Export a portable graph artifact plus deterministic readable TypeScript and dependency/import manifest. Include or identify the node implementations and versions required to run it; credentials and environment-specific service bindings are supplied by the consuming project, never embedded in the artifact.
-- Demonstrate clean-project import/build/test/run using the ordinary package compiler/runtime, without the editor service being present. Round-trip export/import preserves graph meaning, versions and layout where included; incompatible formats or missing node versions produce clear refusal before effects.
-- Choose durable storage, artifact packaging, release/migration policy and bounded implementation slices in the editor proposal. No storage vendor, hosted service or arbitrary-code execution interface is selected by this roadmap entry.
+SQLite drafts and immutable tested revisions store graph definitions and layout. Portable bundles and readable TypeScript support adoption in a separate project. These artifacts are distinct from PostgreSQL checkpoints for running workflows. See the [graph adoption demo](../../examples/adoption/README.md).
 
 ## F03 — existing application discovery and assisted source transformation
 
@@ -111,8 +81,8 @@ For example: discover a page's load query, editable state and submit command; sh
 
 This sidecar can help teams understand and evolve applications without first rebuilding them as FBP programs. Its analysis and transformation tooling belongs outside the lightweight runtime. F01 durability remains independently optional; understanding an existing workflow does not make that workflow recoverable after failure.
 
-## Proposed extension slice breakdown
+## Numbered extension slices
 
-[EXT1-r2](../cursor_plans/fbp-extensions/INDEX.md) breaks diagnostics, visual authoring, saved/exportable graphs and optional durable execution into proposed S20–S51 stories. SQLite graph storage and PostgreSQL durable hosting are user-selected. Exact interfaces and implementation remain subject to the recorded decision gates; no extension is marked delivered by this planning document.
+[EXT1-r2](../cursor_plans/fbp-extensions/INDEX.md) preserves the S20–S51 plans and their delivery evidence. SQLite graph storage and PostgreSQL durable hosting are the verified default choices for their respective optional packages.
 
-The r2 [explainability/application milestone](../cursor_plans/fbp-extensions/explainability.md) inserts S24A–S24F before S25 visual authoring. It tests retained ancestry, missing-result decisions, sanitized offline fixtures and revision comparison in an installed application, then records a fair ordinary-TypeScript comparison. These are proposed capabilities, not current runtime guarantees.
+The r2 [explainability/application milestone](../cursor_plans/fbp-extensions/explainability.md) inserts S24A–S24F before S25 visual authoring. It tests retained ancestry, missing-result decisions, sanitized offline fixtures and revision comparison in an installed application, then records a fair ordinary-TypeScript comparison. Their owning receipts record the implemented capabilities and verification limits.

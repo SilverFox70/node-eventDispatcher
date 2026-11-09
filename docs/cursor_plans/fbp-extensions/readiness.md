@@ -20,7 +20,7 @@ Current merge/base differences still require preflight before implementation. Re
 
 Research is primary-source only: [Node-RED editor](https://nodered.org/docs/user-guide/editor/), [React Flow docs](https://reactflow.dev/learn), [PostgreSQL SELECT/row locks](https://www.postgresql.org/docs/current/sql-select.html). These establish relevant interfaces, not our compatibility or correctness. Exact supported dependency versions/license, native SQLite API status, package-name ownership and ORM/domain integration remain unverified.
 
-Realberry source/tickets were **not re-audited in this planning pass**. IAW-2919 workload details are prior conversation context and a future acceptance hypothesis, not a current source-backed replacement assessment. No access to all other chats is assumed. A later adoption investigation must read the actual current repository, contracts and tests first.
+An adoption pilot must validate the consuming application’s current source, contracts and tests before proposing replacement. This planning pass evaluated framework boundaries.
 
 ## Decisions and explicit release gates
 
@@ -47,7 +47,7 @@ S20 owns the bounded design-review story: produce these explicit decisions/artif
 | G6 commands/coverage | Existing commands resolved; future package/DB commands assigned owners and labeled unavailable; per-file ≥95% and condition proof required | Package-owning slice introduces actual scripts/instrumentation before result claims |
 | G7 integration | Installed/browser/SQL/process/provider acceptance owners assigned, with local tests in owning slices and composed milestones | Actual downstream receipts; helper green never discharges DB/provider guarantee |
 
-**Readiness:** S20 is `ready-for-review` as a bounded design/decision story. S21–S51 remain `blocked-on-decision`, additionally waiting for their sequential predecessors. No task is `approved-for-execution`. These are detailed executable-direction drafts, not a claim that unspecified schemas can safely be implemented today. D3 engine selection is resolved; D3 implementation evidence remains open.
+**Readiness at EXT1-r2 planning time:** S20 was ready for design review and the later slices awaited their own gates. The [current extension manifest](manifest.json) records the delivered sequence through S51. Application-specific pilots require their own readiness evidence.
 
 ## Two-executor and failure walkthrough
 

@@ -2,7 +2,7 @@
 
 ## Select checks for the delivered phase
 
-Inspect package.json/config and the current slice. The existing npm test placeholder is a known exit1; the scratch main demo uses external HTTP. Documentation setup uses `node scripts/check-agent-guidance.mjs`. S01 adds actual build/type/lint/test/coverage commands and baseline; S16 adds packed consumers/examples; S17 adds production Next/HTTP/asset checks; S18 adds graphic/keyboard/UI checks. Do not run absent future commands then claim unavailable product verification, or report a planned gate as passed.
+Inspect package.json/config and the [development guide](../DEVELOPMENT_GUIDELINES.md). Core build, test, lint and coverage run without PostgreSQL. The packaged Next acceptance, durable integration and native adoption drill use disposable PostgreSQL. Documentation verification uses `node scripts/check-agent-guidance.mjs`. Match each check to the changed boundary and report its actual result.
 
 Use scoped behavioral checks during iteration and applicable full gates before authorized publication. Prove public types from generated declarations, runtime behavior through real compiler/channels/processes, package behavior from isolated tarball install, and server/client behavior from production fixture builds. Reuse outputs only when candidate/dirty scope, ancestry, config/tool/runtime/lock and checked boundary remain applicable. No blanket repeated suite list when nothing changed.
 

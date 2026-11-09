@@ -1,6 +1,6 @@
 # System boundaries
 
-Status: architecture summary of SC-FBP-4/SP1 proposals; no implemented-runtime claim. Exact schemas/signatures/error rules live in the approved feature contract and master, not a second API definition here.
+This map summarizes the delivered boundaries. Use the owning contract and source for exact schemas, signatures and errors.
 
 ## Current source
 
@@ -12,7 +12,7 @@ Status: architecture summary of SC-FBP-4/SP1 proposals; no implemented-runtime c
 | examples/legacy/eventNodeMap.cjs, fileLoader.cjs | Heuristic source scanning/examples, not authoritative runtime relationship graph |
 | Historical scratch scripts | Removed at S16; retained in Git history rather than the package |
 
-## Proposed layers and owners
+## Layers and owners
 
 | Layer | Owns | Does not own | Slice |
 | --- | --- | --- | --- |
@@ -28,7 +28,15 @@ Status: architecture summary of SC-FBP-4/SP1 proposals; no implemented-runtime c
 | Function API / test SDK | Easy authoring and bounded tests delegating to production runtime | Competing scheduler, hosted agent engine | S13–S14 |
 | Package / Next fixture | Real install/declarations, bounded server flow, browser-safe metadata and graphical inspector | Core Next dependency, persistent route-hosted jobs or full editor | S16–S18 |
 
-Separate intended package exports: root is Node execution/authoring; /model is serializable browser-safe definitions/inspection; /testing is Node helpers with no assertion-framework dependency. The framework stays useful independently of Next or a renderer. UI consumes structured snapshots and cannot grant server execution capability.
+Optional layers:
+
+| Package | Owns |
+| --- | --- |
+| `event-driven-design-editor` | Browser authoring, live packet inspection and durable progress rendering |
+| `event-driven-design-artifacts` | Draft and locked revision storage, fingerprints, bundles, TypeScript and pinned subflows |
+| `event-driven-design-durable` | Pinned PostgreSQL execution, worker recovery, signal commands and provider reconciliation |
+
+Package exports: root is Node execution/authoring; /model is serializable browser-safe definitions/inspection; /testing is Node helpers with no assertion-framework dependency. The framework stays useful independently of Next or a renderer. UI consumes structured snapshots and cannot grant server execution capability.
 
 ## Deliberate initial limits
 

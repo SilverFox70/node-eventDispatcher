@@ -40,7 +40,7 @@ Baseline reference: [baseline index](../../agent-baselines/INDEX.md) plus [S19 r
 | S43 | controllable local provider endpoint/call ledger and crash injection | actual HTTP accept/response/result-loss boundaries |
 | S50–S51 | composed qualification and isolated packed durable adoption commands | real DB/process/provider plus clean consumer |
 
-Exact new script names/config/files are frozen in the owning contract/preflight, then implemented and proved by that slice. **Unavailable now**: workspace/editor/artifact/durable/SQL qualification scripts. A future command name in a plan must never be reported as an available passing gate. Root/core-only gates remain available and independent of SQL/editor installation; optional-package suites are required when their code changes.
+Exact new script names/config/files are frozen in the owning contract/preflight, then implemented and proved by that slice. For the delivered commands, use the [development guide](../../DEVELOPMENT_GUIDELINES.md) and the owning receipts. The [S50 qualification](S50-execution.md) and [S51 adoption](S51-execution.md) receipts record the PostgreSQL-specific gates. Root/core-only gates remain available and independent of SQL/editor installation; optional-package suites are required when their code changes.
 
 The first package slice must add source-mapped all-files coverage over its production source, including never-imported files; generated code and tests are excluded from the denominator with documented rationale. Every changed production file targets statements/lines/branches≥95% plus assertions for100% of meaningful reachable conditions. No suite-total substitution. Unreachable exceptions require branch-specific evidence. Browser UI needs DOM/keyboard/event assertions as well as line coverage; SQL needs transaction effects, not only adapter-line execution.
 
@@ -60,8 +60,8 @@ Create `SNN-execution.md` in this directory at actual execution start. Record co
 
 Distinguish implementation complete, behavioral proof, quality/coverage, publication and actual merge. A future journal/merge receipt establishes completion; plan status never does. Update only the selected manifest entry with verified facts when authorized; never mark all future slices ready from one green suite.
 
-Commit/push/PR/merge/deployment remain governed by the current user’s scope, repository hooks and protections. This planning pass saves local documents only. No release/npm publication or Realberry change is implied.
+Commit/push/PR/merge/deployment remain governed by the current user’s scope, repository hooks and protections. This planning pass saves local documents only. No release/npm publication or application-specific change is implied.
 
 ## Explainability insertion proof ownership
 
-S24A–S24F use existing core/testing/Next acceptance paths, extended by each owning slice. No SQL/editor/artifact package dependency is introduced early. Current scripts do not yet prove these new features. S24C owns generated offline fixture installed proof; S24D same-fixture semantic comparison; S24E real application/browser/effect counters; S24F executable parity protocol and honestly labeled usability evidence. Record the S24F checkpoint before S25.
+S24A–S24F use existing core/testing/Next acceptance paths, extended by each owning slice. No SQL/editor/artifact package dependency is introduced early. The owning receipts record the scripts and assertions that proved these features. S24C owns generated offline fixture installed proof; S24D same-fixture semantic comparison; S24E real application/browser/effect counters; S24F executable parity protocol and honestly labeled usability evidence. Record the S24F checkpoint before S25.

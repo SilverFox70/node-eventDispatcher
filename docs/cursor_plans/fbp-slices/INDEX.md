@@ -68,6 +68,8 @@ Suggested execution request: “Execute SNN using its saved plan and SP1. Implem
 
 ## Completion record
 
+**Historical planning snapshot.** For delivered foundation evidence see [S19](S19-execution.md) and for current status see the [extension index](../fbp-extensions/INDEX.md).
+
 S00: design complete, awaiting review/acceptance/merge. S01–S19: not-started. All merge SHAs: null. Authorized execution: S00.A–C design and PR submission only,2026-10-29. Planning/source anchor: master9cb666d. Current package's npm test is the historical exit1 placeholder; S01 establishes proper baseline and tooling. No new production test/coverage/build claim is made during slicing.
 
 Use the master ledger for exact behavior and SP1's final-owner table for split proof handoffs; don't copy condition assertions into competing test matrices. C55–C65 now specify the identity proposal; dependent release still requires its acceptance and actual predecessor merge. Per-slice journals retain actual commands/red/green/current-candidate outputs. This index must never say “merged” without the actual default-branch commit evidence.

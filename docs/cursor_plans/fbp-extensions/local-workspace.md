@@ -31,6 +31,6 @@ Application business nodes/graphs stay ordinary editable project source. Readabl
 - **S37 / X37.2:** exported TS/JSON works with local workspace runtime/registry bindings and installed packages; same fixture outputs and failure categories. Changed local implementation invalidates pinned code digests/receipts rather than masquerading as the old revision.
 - **S51 / X51.2:** optional durable host can be composed locally while retaining code/schema pins and core-only dependency isolation. Local rebuild never silently changes code for an already-pinned running workflow.
 
-Each owning slice introduces the exact executable setup/commands and extends existing acceptance fixtures; no workspace scripts are claimed available today. These additions are part of the existing canonical condition rows, not a second condition ledger. No new slice IDs or branch order change.
+Use `npm run test:content-workspace` for the installed Next workspace journey. The [S51 adoption drill](S51-execution.md) creates a clean npm workspace and verifies pinned resume after rebuild. These proofs use the existing condition ledger.
 
 Installed tarball tests remain required: workspace links alone can hide missing package files or accidental private imports. Conversely, a packed-consumer pass does not prove local rebuild/watch behavior. Both paths serve different useful development and distribution boundaries.

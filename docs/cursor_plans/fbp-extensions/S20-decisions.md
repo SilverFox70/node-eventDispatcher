@@ -1,5 +1,7 @@
 # S20 decisions and release checkpoint SC20-r1
 
+This checkpoint preserves decisions as of S20. For implementation and merge evidence through S51, see the [extension index](INDEX.md).
+
 2026-11-03. User authorized S20.A–C design execution. This selects a concrete proposal for review; it does not claim user preapproval of every new field, merged status, successor implementation, npm publication or deployment.
 
 ## Selected design and exact contract owners

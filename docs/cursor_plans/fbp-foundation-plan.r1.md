@@ -31,7 +31,7 @@ Inspected 2026-10-28 in `/Users/william.brinkert/Desktop/projects/node-eventDisp
 
 Sources read: README.md, docs/guide.md, package.json, .gitignore, and every JS module under server/src. Also read sibling FBP-Presentation/readme.md, NodeFunction.js, src/NodeFunction.js, src/main.js, src/eventDispatcher.js and lib/OneExample.js. That repository is design evidence only; no changes there are proposed.
 
-Workflow: `/Users/william.brinkert/.agents/skills/batch-plan/SKILL.md`, its live references/workflow.md, and `/Users/william.brinkert/agent-flows/references/execution-contract.md` in full. No applicable AGENTS.md found at inspected repository/ancestor locations. CLAUDE.md, docs/AGENT_FILES.md, docs/architecture/README.md, docs/DEVELOPMENT_GUIDELINES.md, .cursor/rules, feedback history and baseline index are absent. Realberry-specific policies are not imported into this independent library. No ticket was supplied; no Jira integration or remote ticket check is needed for these user-originated requirements.
+Workflow: `/Users/william.brinkert/.agents/skills/batch-plan/SKILL.md`, its live references/workflow.md, and `/Users/william.brinkert/agent-flows/references/execution-contract.md` in full. No applicable AGENTS.md found at inspected repository/ancestor locations. CLAUDE.md, docs/AGENT_FILES.md, docs/architecture/README.md, docs/DEVELOPMENT_GUIDELINES.md, .cursor/rules, feedback history and baseline index are absent. application-specific-specific policies are not imported into this independent library. No ticket was supplied; no Jira integration or remote ticket check is needed for these user-originated requirements.
 
 Observed baseline: `npm test` exits 1 with `Error: no test specified`. This is a deliberately failing placeholder, not evidence of a behavioral regression. `npm run main` invokes scratch code and a public HTTP endpoint; it is not an automated test and was not run. No lint/type/build/coverage gate exists. No expensive baseline capture performed; T0 owns a durable receipt and targeted characterization.
 
@@ -93,7 +93,7 @@ Use an async process API over owned channel objects. A component runs once per n
 
 Use an explicit FIFO channel implementation with a small contract and tests. Node streams are not a second scheduler; stream adapters can be a later extension. Separate EventDispatcher as a synchronous utility/compatibility surface, not the transport for core packets.
 
-Initial graph model: finite acyclic networks, including long-lived streams until ingress closes. Cycles/self-loops are rejected. This restriction avoids pretending that cycle bootstrap, feedback termination and deadlock detection are already solved. General feedback graphs, bracket packets, dynamic topology, nested subgraphs, worker threads, distributed delivery, durable obligations, replay, retries, visual editor, browser bundle, plugins from untrusted code and Realberry adapters are excluded. Each requires a later plan with its own semantics. Generic components may still have several inputs/outputs.
+Initial graph model: finite acyclic networks, including long-lived streams until ingress closes. Cycles/self-loops are rejected. This restriction avoids pretending that cycle bootstrap, feedback termination and deadlock detection are already solved. General feedback graphs, bracket packets, dynamic topology, nested subgraphs, worker threads, distributed delivery, durable obligations, replay, retries, visual editor, browser bundle, plugins from untrusted code and application-specific adapters are excluded. Each requires a later plan with its own semantics. Generic components may still have several inputs/outputs.
 
 ## 4. Public boundaries and exact proposed API
 
@@ -221,7 +221,7 @@ Network diagnostics: snapshot() returns detached immutable data in the exact sha
 | www/wwwPromise | T9 replace request implementation with fetch examples, local test server only; error/HTTP status explicit, no request dependency. |
 | fileLoader/eventNodeMap | T9 move to examples/legacy; fix rejection fallthrough; label scanner heuristic, C30. |
 | FBP-Presentation | No edits; document incompatible emit signature; port components replace copied class state. |
-| Realberry/2919 | Excluded; no imported domain/null/DB policies. |
+| Application-specific adoption | Excluded; no imported domain/null/DB policies. |
 
 Boundary parity verdict: proposed mappings settled; current legacy incompatibility is evidenced above. Runtime integration tests are planned, not existing proof. DB/actor ownership parity N/A: no domain persistence or actor boundary.
 

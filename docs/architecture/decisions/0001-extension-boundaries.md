@@ -20,4 +20,4 @@ Alternatives declined: silently extend strict v1; serialize closures; use latest
 
 ## Authority and release
 
-User S20 execution authorizes design work, branch and existing review-submission workflow. Explicit earlier product choices remain accepted; this new exact API proposal awaits design review/merge. No S21 implementation, automatic merge, npm publish, deployment or Realberry mutation authorized here. Actual receipt: [S20 journal](../../cursor_plans/fbp-extensions/S20-execution.md).
+User S20 execution authorizes design work, branch and existing review-submission workflow. Explicit earlier product choices remain accepted; this new exact API proposal awaits design review/merge. No S21 implementation, automatic merge, npm publish, deployment or application-specific mutation authorized here. Actual receipt: [S20 journal](../../cursor_plans/fbp-extensions/S20-execution.md).
