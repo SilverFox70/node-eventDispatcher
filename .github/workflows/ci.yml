@@ -93,3 +93,7 @@ jobs:
       - run: npm run test:postgres
         env:
           FBP_POSTGRES_TEST_URL: postgresql://postgres:nodeflow@127.0.0.1:${{ job.services.postgres.ports[5432] }}/postgres
+      - name: Qualify durable crash recovery
+        run: node --import ./packages/durable/test/resolve-core.js --test packages/durable/test/qualification/*.test.js
+        env:
+          FBP_POSTGRES_TEST_URL: postgresql://postgres:nodeflow@127.0.0.1:${{ job.services.postgres.ports[5432] }}/postgres
