@@ -1,3 +1,4 @@
+import { markRoutingOperator } from './shared/routing-identity.js';
 import { observeFilterResult } from '../runtime/diagnostics/decision-stream.js';
 import { defineComponent } from '../component.js';
 import type { Contract } from '../contracts.js';
@@ -8,7 +9,7 @@ import { FlowError } from '../errors.js';
 /** True forwards the original envelope; false intentionally consumes it. */
 export function filter<T extends Json>(input: Contract<T>, predicate: (value: Readonly<NoInfer<T>>, context: FunctionContext) => boolean | Promise<boolean>) {
   if (typeof predicate !== 'function') throw new FlowError('INVALID_ARGUMENT');
-  return defineComponent({
+  return markRoutingOperator(defineComponent({
     id: 'filter', version: 1, title: 'Filter', description: 'Serial predicate routing', in: { in: input }, out: { out: input },
     create: () => async ctx => {
       for await (const packet of ctx.inputs.in) {
@@ -21,5 +22,5 @@ export function filter<T extends Json>(input: Contract<T>, predicate: (value: Re
         if (keep) await ctx.send('out', packet);
       }
     }
-  });
+  }), 'filter');
 }

@@ -13,6 +13,7 @@ export type DurableTaskAdapter = Readonly<{
   implementationDigest: string;
   adapterVersion: 1;
   replayPolicy: 'pure';
+  operator?: 'broadcast' | 'filter' | 'merge';
 }>;
 
 export type DurableProfileOptions = Readonly<{
@@ -25,15 +26,26 @@ export type DurableProfileOptions = Readonly<{
 function prepare(options: DurableProfileOptions) {
   const compiled = compileGraph(options.graph, options.registry);
   if (!compiled.ok) throw new FlowError('PROFILE_INELIGIBLE');
-  const { spec, catalog, registry, invoke, invokeOnce } = prepareBoundedTasks(compiled.graph);
+  const adapters = JSON.parse(canonicalJson(options.adapters, 1024 * 1024)) as DurableTaskAdapter[];
+  const operators = new Map<string, NonNullable<DurableTaskAdapter['operator']>>();
+  if (!Array.isArray(adapters)) throw new FlowError('PROFILE_INELIGIBLE');
+  for (const adapter of adapters) {
+    if (adapter && Object.hasOwn(adapter, 'operator')) {
+      if (!adapter.operator || !['broadcast', 'filter', 'merge'].includes(adapter.operator)) throw new FlowError('PROFILE_INELIGIBLE');
+      operators.set(adapter.component, adapter.operator);
+    }
+  }
+  const { spec, catalog, registry, invoke, invokeOnce, invokeDelivery } = prepareBoundedTasks(compiled.graph, operators);
+  if (catalog.components.some(component => Object.keys(component.in).length > 32 || Object.keys(component.out).length > 32)) {
+    throw new FlowError('PROFILE_INELIGIBLE');
+  }
   const { runtimeVersion, policyVersion, serviceProfileDigest, bindings } = options.identity;
   const execution = executionIdentity({ graph: spec, bindings, runtimeVersion, policyVersion, serviceProfileDigest });
   if (execution.status !== 'verified') throw new FlowError('PROFILE_INELIGIBLE');
-  const adapters = JSON.parse(canonicalJson(options.adapters, 1024 * 1024)) as DurableTaskAdapter[];
-  if (!Array.isArray(adapters) || adapters.length !== bindings.length) throw new FlowError('PROFILE_INELIGIBLE');
+  if (adapters.length !== bindings.length) throw new FlowError('PROFILE_INELIGIBLE');
   const implementations = new Map(bindings.map(binding => [binding.component, binding.implementationDigest]));
   for (const adapter of adapters) {
-    if (!adapter || Object.keys(adapter).length !== 4 || adapter.adapterVersion !== 1 || adapter.replayPolicy !== 'pure' ||
+    if (!adapter || Object.keys(adapter).length !== (adapter.operator ? 5 : 4) || adapter.adapterVersion !== 1 || adapter.replayPolicy !== 'pure' ||
         !implementations.has(adapter.component) || implementations.get(adapter.component) !== adapter.implementationDigest) {
       throw new FlowError('PROFILE_INELIGIBLE');
     }
@@ -48,8 +60,8 @@ function prepare(options: DurableProfileOptions) {
         return { adapter, input, output, configuration: configuration ?? null };
       }))).digest('hex'),
   });
-  const profile = Object.freeze({ pin, invoke, invokeOnce });
-  rememberProfile(profile, { spec, registry });
+  const profile = Object.freeze({ pin, invoke, invokeOnce, invokeDelivery, routed: operators.size > 0 });
+  rememberProfile(profile, { spec, registry, operators });
   return profile;
 }
 

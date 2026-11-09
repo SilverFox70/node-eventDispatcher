@@ -1,3 +1,4 @@
+import { markRoutingOperator } from './shared/routing-identity.js';
 import type { Component } from '../component.js';
 import { defineComponent } from '../component.js';
 import type { Contract } from '../contracts.js';
@@ -11,10 +12,10 @@ export function merge<T extends Json, const N extends readonly string[]>(input: 
   const captured = namedPorts(input, names);
   const inputs: Readonly<Record<string, Contract<T>>> = captured.ports;
   const order = captured.order;
-  return defineComponent({
+  return markRoutingOperator(defineComponent({
     id: 'merge', version: 1, title: 'Merge', description: 'Bounded readiness-ordered fan-in', in: inputs, out: { out: input },
     create: () => async ctx => {
       for await (const { value } of readyInputs(ctx.inputs, order)) await ctx.send('out', value);
     }
-  }) as unknown as Component<{ readonly [K in N[number]]: Contract<T> }, { out: Contract<T> }>;
+  }), 'merge') as unknown as Component<{ readonly [K in N[number]]: Contract<T> }, { out: Contract<T> }>;
 }

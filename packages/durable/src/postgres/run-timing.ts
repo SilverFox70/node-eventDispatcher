@@ -43,7 +43,7 @@ export async function finishRunIfDone(client: PoolClient, runId: string): Promis
     status=CASE WHEN EXISTS (SELECT 1 FROM nodeflow_durable.steps WHERE run_id=$1 AND status='failed')
       THEN 'failed' ELSE 'completed' END
     WHERE r.run_id=$1 AND r.status='queued' AND r.steps_initialized
-      AND NOT EXISTS (SELECT 1 FROM nodeflow_durable.steps WHERE run_id=$1 AND status='ready')`, [runId]);
+      AND NOT EXISTS (SELECT 1 FROM nodeflow_durable.steps WHERE run_id=$1 AND status IN ('ready','routing'))`, [runId]);
 }
 
 export function runTiming(pool: Pool, scope: StepScope, cancel = false) {

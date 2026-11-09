@@ -72,3 +72,21 @@ test('leased invocation consumes one attempt even when the graph permits retries
   assert.equal(retried.status, 'computed');
   assert.equal(retried.attemptIds.length, 2);
 });
+
+test('bounded routing reuses the broadcast and merge factories with named ports', async () => {
+  const { broadcast, merge } = require('../dist/cjs');
+  const registry = { 'broadcast@1': broadcast(numeric, ['a', 'b']), 'merge@1': merge(numeric, ['a', 'b']) };
+  const compiled = compileGraph({
+    version: 1, nodes: [{ id: 'fork', component: 'broadcast@1' }, { id: 'merge', component: 'merge@1' }],
+    edges: ['a', 'b'].map(port => ({ from: { node: 'fork', port }, to: { node: 'merge', port } })),
+    inputs: { in: { node: 'fork', port: 'in' } }, outputs: { out: { node: 'merge', port: 'out' } },
+  }, registry);
+  assert(compiled.ok);
+  assert.throws(() => prepareBoundedTasks(compiled.graph, new Map([['broadcast@1', 'merge']])), { code: 'PROFILE_INELIGIBLE' });
+  const { invokeDelivery } = prepareBoundedTasks(compiled.graph, new Map([['broadcast@1', 'broadcast'], ['merge@1', 'merge']]));
+  const input = packet(1);
+  const fork = await invokeDelivery('fork', input, { timeoutMs: 1000 }, 'in');
+  assert.equal(fork.status, 'computed');
+  const merged = await invokeDelivery('merge', fork.outputs.b[0], { timeoutMs: 1000 }, 'b');
+  assert.equal(merged.outputs.out[0].packetId, fork.outputs.b[0].packetId);
+});

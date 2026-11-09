@@ -14,7 +14,7 @@ export async function requireLiveClaim(client: PoolClient, scope: StepScope, cla
   const { rows } = await client.query(`
     SELECT s.step_id FROM nodeflow_durable.steps s JOIN nodeflow_durable.workflow_runs r USING (run_id)
     WHERE r.workspace_id = $1 AND s.run_id = $2 AND s.step_id = $3 AND s.epoch = $4 AND s.lease_owner = $5
-      AND s.status = 'ready' AND s.lease_expires_at > clock_timestamp() FOR UPDATE OF s
+      AND NOT r.routing_enabled AND s.status = 'ready' AND s.lease_expires_at > clock_timestamp() FOR UPDATE OF s
   `, [scope.workspaceId, scope.runId, claim.stepId, claim.epoch, claim.workerId]);
   if (!rows.length) throw new FlowError('STALE_CLAIM');
 }

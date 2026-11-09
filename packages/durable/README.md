@@ -96,3 +96,11 @@ Pass `timing: { timeoutMs, notBeforeMs }` when staging a run. PostgreSQL compute
 A worker schedules another attempt only for a settled failure code in the pinned retry policy. It persists the next due time and releases the lease in one transaction. The persisted claim count covers both planned retries and crash takeover. The default is zero retries. Each leased invocation runs once, and a delayed attempt cannot start after the workflow deadline. A returned failure with no allowance becomes terminal when the run finishes. An interrupted attempt with no remaining allowance stays held for operator review.
 
 Use `getRunTiming(scope)` to read and refresh deadline state and `cancelRun(scope)` to stop a queued run. The first terminal state wins. A deadline or cancellation fences new claims and commits, and preserves unresolved provider intent as uncertain. Applications can still inspect that evidence.
+
+## Recover fan-out and merge
+
+Register the built-in broadcast, filter, and merge as version 1 pure adapters with their matching `operator` names. Bounded map functions keep their pure adapter declaration. The compiler checks the real component identity and pins the adapter, graph wiring and contracts. A routed worker invokes the existing runtime for each named input port.
+
+An invocation's complete output batch is recorded once. PostgreSQL admits all branches together when every target edge has capacity. A full edge holds the computed batch for a later sweep, without running its source again. Sequence numbers preserve admission order per edge. Independent branches can finish in either order. Filter drops are recorded as consumed, and filter and merge forwards preserve the original packet envelope.
+
+`readRoutedOutputs(scope, afterSequence)` returns up to 1,000 exposed packets in persisted arrival order. Pass the last returned sequence to read the next page. A terminal branch failure fences sibling commits. This profile caps each operator at 32 ports and uses bounded batches. Provider continuation remains available through the linear profile.

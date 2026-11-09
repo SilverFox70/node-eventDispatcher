@@ -1,3 +1,4 @@
+import { markRoutingOperator } from './shared/routing-identity.js';
 import type { Component } from '../component.js';
 import { defineComponent } from '../component.js';
 import type { Contract } from '../contracts.js';
@@ -10,12 +11,12 @@ export function broadcast<T extends Json, const N extends readonly string[]>(inp
   const captured = namedPorts(input, names);
   const outputs: Readonly<Record<string, Contract<T>>> = captured.ports;
   const order = captured.order;
-  return defineComponent({
+  return markRoutingOperator(defineComponent({
     id: 'broadcast', version: 1, title: 'Broadcast', description: 'Explicit bounded fan-out', in: { in: input }, out: outputs,
     create: () => async ctx => {
       for await (const packet of ctx.inputs.in) {
         for (const name of order) await ctx.send(name, derivePacket(packet.value, [packet]));
       }
     }
-  }) as Component<{ in: Contract<T> }, { readonly [K in N[number]]: Contract<T> }>;
+  }), 'broadcast') as Component<{ in: Contract<T> }, { readonly [K in N[number]]: Contract<T> }>;
 }

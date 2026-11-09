@@ -13,10 +13,10 @@ export async function storePacket(client: PoolClient, runId: string, input: Pack
     VALUES ($1, $2, $3, $4)`, [runId, input.packetId, parentId, serialize(input)]);
 }
 
-export async function addReady(client: PoolClient, runId: string, nodeId: string, packetId: string, maxClaims: number) {
+export async function addReady(client: PoolClient, runId: string, nodeId: string, packetId: string, maxClaims: number, inputPort = 'in') {
   const stepId = randomUUID();
-  await client.query(`INSERT INTO nodeflow_durable.steps (step_id, run_id, node_id, input_packet_id, max_claims)
-    VALUES ($1, $2, $3, $4, $5)`, [stepId, runId, nodeId, packetId, maxClaims]);
+  await client.query(`INSERT INTO nodeflow_durable.steps (step_id, run_id, node_id, input_packet_id, max_claims, input_port)
+    VALUES ($1, $2, $3, $4, $5, $6)`, [stepId, runId, nodeId, packetId, maxClaims, inputPort]);
   return stepId;
 }
 
@@ -36,14 +36,14 @@ export function initializeSteps(pool: Pool, scope: StepScope, profile: DurablePr
     for (const [port, packets] of Object.entries(inputs)) {
       const endpoint = Object.hasOwn(definition.spec.inputs, port) && definition.spec.inputs[port];
       if (!endpoint) throw new FlowError('UNKNOWN_PORT');
-      const contract = contractAt(definition, endpoint.node, 'in');
+      const contract = contractAt(definition, endpoint.node, 'in', endpoint.port);
       for (const input of packets) {
         if (!contract.validate(input.value)) throw new FlowError('INPUT_CONTRACT');
         await storePacket(client, scope.runId, input, null);
-        await addReady(client, scope.runId, endpoint.node, input.packetId, claimBudget(definition, endpoint.node));
+        await addReady(client, scope.runId, endpoint.node, input.packetId, claimBudget(definition, endpoint.node), endpoint.port);
       }
     }
-    await client.query('UPDATE nodeflow_durable.workflow_runs SET steps_initialized = true WHERE run_id = $1', [scope.runId]);
+    await client.query('UPDATE nodeflow_durable.workflow_runs SET steps_initialized = true, routing_enabled = $2 WHERE run_id = $1', [scope.runId, profile.routed]);
     await finishRunIfDone(client, scope.runId);
   });
 }

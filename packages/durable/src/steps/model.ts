@@ -9,7 +9,7 @@ import { validIdentifier } from '../submission/input.js';
 export type StepScope = Readonly<{ workspaceId: string; runId: string }>;
 export type DurableProfile = ReturnType<typeof prepareDurableProfile>;
 export type ReadyStep = Readonly<{ stepId: string; nodeId: string; epoch: number; input: Packet }>;
-export type StepClaim = Readonly<ReadyStep & { workerId: string; leaseExpiresAt: string; remainingMs: number | null }>;
+export type StepClaim = Readonly<ReadyStep & { workerId: string; leaseExpiresAt: string; remainingMs: number | null; inputPort: string }>;
 export type ClaimOptions = Readonly<{ workerId: string; leaseMs: number; limit: number; external?: true }>;
 export type ClaimIdentity = Pick<StepClaim, 'stepId' | 'workerId' | 'epoch'>;
 
@@ -47,9 +47,9 @@ export function checkPin(profile: DurableProfile, execution: string, adapter: st
   return definition;
 }
 
-export function contractAt(definition: ReturnType<typeof profileDefinition>, nodeId: string, side: 'in' | 'out') {
+export function contractAt(definition: ReturnType<typeof profileDefinition>, nodeId: string, side: 'in' | 'out', port: string = side) {
   const node = definition.spec.nodes.find(node => node.id === nodeId);
-  return definition.registry[node!.component]![side][side] as Contract<Json>;
+  return definition.registry[node!.component]![side][port] as Contract<Json>;
 }
 
 export function interpretResult(definition: ReturnType<typeof profileDefinition>, nodeId: string, input: Packet, result: StepResult) {
