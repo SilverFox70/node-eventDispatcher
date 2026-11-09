@@ -3,6 +3,8 @@ import type { Component, PortMap, Values } from '../component.js';
 import { objectContract } from '../contracts.js';
 import type { Contract } from '../contracts.js';
 import { derivePacket } from '../packet.js';
+import { joinValue } from './join-by-key/collate.js';
+import { markJoinOperator } from './shared/routing-identity.js';
 import type { Json } from '../packet.js';
 import { readRecord } from '../packet/data.js';
 import { FlowError } from '../errors.js';
@@ -22,7 +24,7 @@ export function joinByKey<const P extends PortMap>(inputs: P, options: JoinOptio
   const output = objectContract(policy.outputId, captured as PortMap);
   // Framework contracts validate JSON; restore each port's exact inferred type at the public boundary.
   const ports = captured as Readonly<Record<string, Contract<Json>>>;
-  return defineComponent({
+  return markJoinOperator(defineComponent({
     id: 'join-by-key', version: 1, title: 'Join by key', description: 'Bounded job/key result collation', in: ports, out: { out: output },
     create: () => async ctx => {
       const groups = new JoinGroups(names, policy.maxKeys, policy.completedGroupLimit);
@@ -30,11 +32,11 @@ export function joinByKey<const P extends PortMap>(inputs: P, options: JoinOptio
       for await (const { name, value: packet } of readyInputs(ctx.inputs, names)) {
         const parents = groups.accept(name, packet);
         if (!parents) continue;
-        const value = Object.fromEntries(names.map((port, index) => [port, parents[index]!.value]));
+        const value = joinValue(names, parents);
         validateProcessOutput(ctx, 'out', value);
         await ctx.send('out', derivePacket(value, parents));
       }
       groups.finish();
     }
-  }) as unknown as Component<P, { out: Contract<Values<P>> }>;
+  }), { names, ...policy }) as unknown as Component<P, { out: Contract<Values<P>> }>;
 }

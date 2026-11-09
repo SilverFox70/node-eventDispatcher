@@ -90,3 +90,19 @@ test('bounded routing reuses the broadcast and merge factories with named ports'
   const merged = await invokeDelivery('merge', fork.outputs.b[0], { timeoutMs: 1000 }, 'b');
   assert.equal(merged.outputs.out[0].packetId, fork.outputs.b[0].packetId);
 });
+
+test('a keyed join is recognized but cannot run as a single-packet task', async () => {
+  const { joinByKey } = require('../dist/cjs');
+  const { joinPolicy } = require('../dist/cjs/runtime/task-profile.js');
+  const component = joinByKey({ stats: numeric, species: numeric }, { outputId: 'result@1' });
+  const ref = 'join-by-key@1';
+  const { ok, graph } = compileGraph({ version: 1, nodes: [{ id: 'join', component: ref }], edges: [],
+    inputs: { stats: { node: 'join', port: 'stats' }, species: { node: 'join', port: 'species' } },
+    outputs: { out: { node: 'join', port: 'out' } },
+  }, { [ref]: component });
+  assert(ok);
+  assert.deepEqual(joinPolicy(component).names, ['stats', 'species']);
+  assert.equal(joinPolicy(numeric), undefined);
+  const { invokeDelivery } = prepareBoundedTasks(graph, new Map([[ref, 'join-by-key']]));
+  await assert.rejects(invokeDelivery('join', packet(1), { timeoutMs: 1000 }, 'stats'), { code: 'UNKNOWN_TASK_NODE' });
+});

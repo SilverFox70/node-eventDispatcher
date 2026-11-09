@@ -10,10 +10,12 @@ try {
     .replace('../dist/model/index.js', 'event-driven-design-durable/model');
   writeFileSync(join(fixture, 'profile.test.mjs'), tests);
   mkdirSync(join(fixture, 'fixtures'), { recursive: true });
-  const routingProfile = readFileSync(join(root, 'packages/durable/test/fixtures/routing-profile.mjs'), 'utf8')
-    .replace('../../dist/index.js', 'event-driven-design-durable');
-  writeFileSync(join(fixture, 'fixtures/routing-profile.mjs'), routingProfile);
-  assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'profile.test.mjs']), /^# pass 4$/m);
+  for (const file of ['routing-profile.mjs', 'join-profile.mjs']) {
+    const profile = readFileSync(join(root, 'packages/durable/test/fixtures', file), 'utf8')
+      .replace('../../dist/index.js', 'event-driven-design-durable');
+    writeFileSync(join(fixture, 'fixtures', file), profile);
+  }
+  assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'profile.test.mjs']), /^# pass 5$/m);
 
   run(process.execPath, ['--input-type=module', '-e', `
     import assert from 'node:assert/strict';
@@ -94,17 +96,19 @@ try {
       .replace('../dist/postgres/index.js', 'event-driven-design-durable/postgres')
       .replace('../dist/index.js', 'event-driven-design-durable');
     writeFileSync(join(fixture, 'timing.test.mjs'), timing);
-    const routing = readFileSync(join(root, 'packages/durable/test/routing.test.js'), 'utf8')
-      .replace('../dist/postgres/index.js', 'event-driven-design-durable/postgres')
-      .replace('../dist/index.js', 'event-driven-design-durable');
-    writeFileSync(join(fixture, 'routing.test.mjs'), routing);
-    for (const file of ['step-profile.mjs', 'step-worker.mjs', 'lease-worker.mjs', 'external-worker.mjs', 'routing-profile.mjs', 'routing-worker.mjs']) {
+    for (const file of ['routing', 'joins']) {
+      const routed = readFileSync(join(root, 'packages/durable/test', file + '.test.js'), 'utf8')
+        .replace('../dist/postgres/index.js', 'event-driven-design-durable/postgres')
+        .replace('../dist/index.js', 'event-driven-design-durable');
+      writeFileSync(join(fixture, file + '.test.mjs'), routed);
+    }
+    for (const file of ['step-profile.mjs', 'step-worker.mjs', 'lease-worker.mjs', 'external-worker.mjs', 'routing-worker.mjs', 'join-worker.mjs']) {
       const contents = readFileSync(join(root, 'packages/durable/test/fixtures', file), 'utf8')
         .replace('../../dist/index.js', 'event-driven-design-durable')
         .replace('../../dist/postgres/index.js', 'event-driven-design-durable/postgres');
       writeFileSync(join(fixture, 'fixtures', file), contents);
     }
-    assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'postgres.test.mjs', 'steps.test.mjs', 'leases.test.mjs', 'operations.test.mjs', 'reconciliation.test.mjs', 'timing.test.mjs', 'routing.test.mjs']), /^# pass 26$/m);
+    assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'postgres.test.mjs', 'steps.test.mjs', 'leases.test.mjs', 'operations.test.mjs', 'reconciliation.test.mjs', 'timing.test.mjs', 'routing.test.mjs', 'joins.test.mjs']), /^# pass 31$/m);
   }
   console.log('Installed durable profile, passive model, and TypeScript declarations passed.');
 } finally { dispose(); }

@@ -1,3 +1,5 @@
+export { joinPolicy } from '../components/shared/routing-identity.js';
+export { joinValue } from '../components/join-by-key/collate.js';
 import { routingOperator } from '../components/shared/routing-identity.js';
 import type { RoutingOperator } from '../components/shared/routing-identity.js';
 import { settledTaskFailureCode } from '../runtime.js';
@@ -21,6 +23,7 @@ export function prepareBoundedTasks(graph: CompiledGraph, operators: ReadonlyMap
     const component = registry[node.component]!;
     const operator = operators.get(node.component);
     if (operator ? routingOperator(component) !== operator : !isBoundedFunction(component)) throw new FlowError('PROFILE_INELIGIBLE');
+    if (operator === 'join-by-key') continue;
     const project = (binding: typeof node) => {
       const projected = compileGraph({
         version: spec.version, nodes: [binding], edges: [],
