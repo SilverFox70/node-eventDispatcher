@@ -1,3 +1,5 @@
+import { settledTaskFailureCode } from '../runtime.js';
+import type { NetworkRun } from '../runtime.js';
 import { ok as assert } from 'node:assert/strict';
 import { FlowError } from '../errors.js';
 import { isBoundedFunction } from '../function.js';
@@ -34,14 +36,18 @@ export function prepareBoundedTasks(graph: CompiledGraph) {
     async (nodeId: string, input: Packet, options: TaskInvocationOptions) => {
       const task = projections.get(nodeId);
       if (!task) throw new FlowError('UNKNOWN_TASK_NODE');
+      let run: NetworkRun;
       const result = await runFiniteGraph(task, {
-        ...options, inputs: { in: [input] }, maxOutputPackets: 1, decisionEvidence: true,
+        ...options, inputs: { in: [input] }, maxOutputPackets: 1, decisionEvidence: true, observe: observed => { run = observed; },
       });
       const attemptIds = Object.freeze(result.diagnostics!.events.flatMap(event =>
         event.kind === 'attempt-started' ? [event.attemptId] : []));
       const evidence = { runId: result.snapshot.runId, attemptIds };
       if (result.terminal.status !== 'completed') {
-        return Object.freeze({ status: 'stopped' as const, terminal: result.terminal, ...evidence });
+        const code = settledTaskFailureCode(run!);
+        const retry = spec.nodes.find(node => node.id === nodeId)?.retry;
+        const retryCode = code && retry?.codes.includes(code) ? code : undefined;
+        return Object.freeze({ status: 'stopped' as const, terminal: result.terminal, retryCode, ...evidence });
       }
       return Object.freeze({ status: 'computed' as const, packet: result.outputs.out![0]!, ...evidence });
     };

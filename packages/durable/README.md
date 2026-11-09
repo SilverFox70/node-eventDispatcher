@@ -88,3 +88,11 @@ After recording uncertainty, read the linked step with `getReconciliationTarget(
 The command identifies the actor, step, operation, command key, and lookup or manual mode. The host's pinned adapter authorizes the actor for that scope and returns provider evidence. For manual decisions, the adapter verifies the operator's evidence independently. Evidence carries the complete binding and a safe reference. A successful result must satisfy the pinned output contract and match any previously recorded result.
 
 The operation change, step output, successor, wake, and accepted audit record commit together. A stale, unauthorized, conflicting or duplicate scoped decision is refused and audited. An inconclusive result records a reason and a database-time review timestamp while leaving the operation held. Provider absence gives no new invocation permit. The supported policy requires provider evidence to continue.
+
+## Persist workflow time and retry policy
+
+Pass `timing: { timeoutMs, notBeforeMs }` when staging a run. PostgreSQL computes the absolute deadline and earliest start from its clock. Timing is part of the submission fingerprint. Existing submissions without timing retain their previous behavior. The host must initialize the pinned profile before execution. A node timeout, retry delay or settlement budget incompatible with the flow budget is refused before a claim.
+
+A worker schedules another attempt only for a settled failure code in the pinned retry policy. It persists the next due time and releases the lease in one transaction. The persisted claim count covers both planned retries and crash takeover. The default is zero retries. Each leased invocation runs once, and a delayed attempt cannot start after the workflow deadline. A returned failure with no allowance becomes terminal when the run finishes. An interrupted attempt with no remaining allowance stays held for operator review.
+
+Use `getRunTiming(scope)` to read and refresh deadline state and `cancelRun(scope)` to stop a queued run. The first terminal state wins. A deadline or cancellation fences new claims and commits, and preserves unresolved provider intent as uncertain. Applications can still inspect that evidence.

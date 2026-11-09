@@ -1,3 +1,5 @@
+import { runTiming } from './run-timing.js';
+import { scheduleStepRetry } from './retry.js';
 import { getReconciliationTarget } from './reconciliation-target.js';
 import { reconcileExternalOperation } from './reconcile.js';
 import type { ReconciliationAdapter, ReconciliationCommand } from '../reconciliation/model.js';
@@ -19,6 +21,7 @@ import type { ClaimIdentity, ClaimOptions, DurableProfile, StepCommit, StepScope
 import { inTransaction } from './transaction.js';
 
 export type { Submission, StagedRun };
+export type { RunTiming, RunStatus } from '../scheduling/policy.js';
 export type { ReconciliationAdapter, ReconciliationBinding, ReconciliationCommand, ReconciliationEvidence, ReconciliationResult } from '../reconciliation/model.js';
 export type { ExternalOperation, ExternalOperationRequest } from '../operations/model.js';
 export type { ClaimIdentity, ClaimOptions, StepClaim } from '../steps/model.js';
@@ -94,6 +97,10 @@ export function openPostgresStore(connectionString: string) {
     getReconciliationTarget: (scope: StepScope, stepId: string, id: string) => getReconciliationTarget(pool, scope, stepId, id),
     reconcileExternalOperation: (scope: StepScope, profile: DurableProfile, command: ReconciliationCommand,
       adapter: ReconciliationAdapter) => reconcileExternalOperation(pool, scope, profile, command, adapter),
+    getRunTiming: (scope: StepScope) => runTiming(pool, scope),
+    cancelRun: (scope: StepScope) => runTiming(pool, scope, true),
+    scheduleStepRetry: (scope: StepScope, profile: DurableProfile, claim: ClaimIdentity, code: string) =>
+      scheduleStepRetry(pool, scope, profile, claim, code),
     close: () => pool.end(),
   });
 }

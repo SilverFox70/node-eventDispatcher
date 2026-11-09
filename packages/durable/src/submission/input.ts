@@ -1,3 +1,5 @@
+import { readTiming } from '../scheduling/policy.js';
+import type { RunTiming } from '../scheduling/policy.js';
 import { createHash } from 'node:crypto';
 import { admitPacket, FlowError } from 'event-driven-design';
 import type { Packet } from 'event-driven-design';
@@ -9,6 +11,7 @@ export type Submission = Readonly<{
   jobId: string;
   revisionId: string;
   profilePin: DurableProfilePin;
+  timing?: RunTiming;
   inputs: Readonly<Record<string, readonly Packet[]>>;
 }>;
 
@@ -22,7 +25,7 @@ export function prepareSubmission(value: Submission) {
   try {
     const row = JSON.parse(canonicalJson(value, limit)) as Submission;
     const { jobId, revisionId, inputs } = row;
-    if (Object.keys(row).length !== 4 || !validIdentifier(jobId) || !validIdentifier(revisionId) ||
+    if (Object.keys(row).some(key => !['jobId','revisionId','profilePin','inputs','timing'].includes(key)) || !validIdentifier(jobId) || !validIdentifier(revisionId) ||
         !inputs || typeof inputs !== 'object' || Array.isArray(inputs)) throw Error();
     const pin = readDurableProfilePin(row.profilePin);
     const ports = Object.entries(inputs);
@@ -36,11 +39,12 @@ export function prepareSubmission(value: Submission) {
         seen.add(packet.packetId);
       }
     }
+    const timing = Object.hasOwn(row, 'timing') ? readTiming(row.timing!) : null;
     const inputJson = canonicalJson(inputs, limit);
     const fingerprint = createHash('sha256').update(canonicalJson({
-      format: 'nodeflow.submission', version: 1, revisionId, profilePin: pin, inputs,
+      format: 'nodeflow.submission', version: 1, revisionId, profilePin: pin, inputs, ...(timing && { timing }),
     })).digest('hex');
-    return { jobId, revisionId, pin, inputJson, fingerprint };
+    return { jobId, revisionId, pin, inputJson, fingerprint, timing };
   } catch {
     throw new FlowError('INVALID_SUBMISSION');
   }

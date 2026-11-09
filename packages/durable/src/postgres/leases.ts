@@ -1,3 +1,5 @@
+import { holdRun, lockRun, remainingBudget } from './run-timing.js';
+import { validateRunBudget } from '../scheduling/policy.js';
 import { admitPacket, FlowError } from 'event-driven-design';
 import type { Pool } from 'pg';
 import { validIdentifier } from '../submission/input.js';
@@ -17,16 +19,23 @@ export function claimSteps(pool: Pool, scope: StepScope, profile: DurableProfile
   validateLease(workerId, leaseMs);
   if (!Number.isInteger(limit) || limit < 1 || limit > 100) throw new FlowError('INVALID_CLAIM_LIMIT');
   return inTransaction(pool, async client => {
-    const { rows: [run] } = await client.query<{ execution_digest: string; adapter_digest: string }>(
-      'SELECT execution_digest, adapter_digest FROM nodeflow_durable.workflow_runs WHERE workspace_id = $1 AND run_id = $2',
-      [scope.workspaceId, scope.runId]);
-    if (!run) throw new FlowError('RUN_NOT_FOUND');
+    const run = await lockRun(client, scope);
+    if (run.status !== 'queued') return [];
+    const remaining = await remainingBudget(client, scope.runId);
+    if (remaining !== null && remaining <= 0) {
+      await holdRun(client, scope.runId, 'timed-out');
+      return [];
+    }
     checkPin(profile, run.execution_digest, run.adapter_digest);
+    if (run.timeout_ms !== null) validateRunBudget(profile, run.timeout_ms);
     const { rows } = await client.query<{
       step_id: string; node_id: string; epoch: number; lease_expires_at: Date; envelope: string;
     }>(`WITH due AS (
       SELECT s.step_id FROM nodeflow_durable.steps s
-      WHERE run_id = $1 AND status = 'ready' AND not_before <= clock_timestamp() AND epoch < max_claims
+      WHERE run_id = $1 AND status = 'ready'
+        AND EXISTS (SELECT 1 FROM nodeflow_durable.workflow_runs r WHERE r.run_id=$1
+          AND (r.not_before IS NULL OR r.not_before <= clock_timestamp())
+          AND (r.deadline_at IS NULL OR r.deadline_at > clock_timestamp())) AND not_before <= clock_timestamp() AND epoch < max_claims
         AND CASE WHEN $5::boolean THEN EXISTS (
         SELECT 1 FROM nodeflow_durable.external_step_operations link
         JOIN nodeflow_durable.external_operations operation USING (operation_id)
@@ -44,7 +53,7 @@ export function claimSteps(pool: Pool, scope: StepScope, profile: DurableProfile
       ORDER BY c.created_at, c.step_id`, [scope.runId, limit, workerId, leaseMs, options.external === true]);
     return rows.map(row => Object.freeze({
       stepId: row.step_id, nodeId: row.node_id, epoch: row.epoch, workerId,
-      leaseExpiresAt: row.lease_expires_at.toISOString(), input: admitPacket(JSON.parse(row.envelope)),
+      leaseExpiresAt: row.lease_expires_at.toISOString(), remainingMs: remaining, input: admitPacket(JSON.parse(row.envelope)),
     }));
   });
 }
@@ -60,7 +69,8 @@ export async function heartbeatStep(pool: Pool, scope: StepScope, claim: ClaimId
     FROM nodeflow_durable.workflow_runs r
     WHERE r.run_id = s.run_id AND r.workspace_id = $1 AND s.run_id = $2 AND s.step_id = $3
       AND s.lease_owner = $4 AND s.epoch = $5 AND s.status = 'ready'
-      AND s.lease_expires_at > clock_timestamp()
+      AND s.lease_expires_at > clock_timestamp() AND r.status='queued'
+      AND (r.deadline_at IS NULL OR r.deadline_at > clock_timestamp())
     RETURNING s.lease_expires_at`, [scope.workspaceId, scope.runId, stepId, workerId, epoch, leaseMs]);
   if (!row) throw new FlowError('STALE_CLAIM');
   return row.lease_expires_at.toISOString();

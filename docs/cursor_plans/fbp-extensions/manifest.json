@@ -871,8 +871,8 @@
         "X44.3"
       ],
       "status": "approved-for-execution",
-      "execution_status": "complete-for-review",
-      "merge_sha": null,
+      "execution_status": "merged",
+      "merge_sha": "2e69a224c65a3426bd236975edd493577a583ee5",
       "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety",
       "journal": "S44-execution.md",
       "execution_approval": {
@@ -894,10 +894,15 @@
         "X45.2",
         "X45.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
-      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety",
+      "journal": "S45-execution.md",
+      "execution_approval": {
+        "authority": "user requested S45 after S44 merged",
+        "tasks": ["S45.A", "S45.B", "S45.C"]
+      }
     },
     {
       "id": "S46",

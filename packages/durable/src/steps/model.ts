@@ -9,7 +9,7 @@ import { validIdentifier } from '../submission/input.js';
 export type StepScope = Readonly<{ workspaceId: string; runId: string }>;
 export type DurableProfile = ReturnType<typeof prepareDurableProfile>;
 export type ReadyStep = Readonly<{ stepId: string; nodeId: string; epoch: number; input: Packet }>;
-export type StepClaim = Readonly<ReadyStep & { workerId: string; leaseExpiresAt: string }>;
+export type StepClaim = Readonly<ReadyStep & { workerId: string; leaseExpiresAt: string; remainingMs: number | null }>;
 export type ClaimOptions = Readonly<{ workerId: string; leaseMs: number; limit: number; external?: true }>;
 export type ClaimIdentity = Pick<StepClaim, 'stepId' | 'workerId' | 'epoch'>;
 

@@ -13,7 +13,7 @@ export async function migrate(pool: Pool): Promise<void> {
     )`);
     const { rows } = await client.query<{ version: number }>('SELECT version FROM nodeflow_durable.schema_version');
     const version = rows[0]?.version ?? 0;
-    const migrations = ['001-submissions.sql', '002-step-continuations.sql', '003-worker-leases.sql', '004-external-operations.sql', '005-reconciliation.sql'];
+    const migrations = ['001-submissions.sql', '002-step-continuations.sql', '003-worker-leases.sql', '004-external-operations.sql', '005-reconciliation.sql', '006-run-timing.sql'];
     if (version > migrations.length) throw new FlowError('UNSUPPORTED_DURABLE_SCHEMA');
     for (const [index, file] of migrations.entries()) {
       if (index < version) continue;
