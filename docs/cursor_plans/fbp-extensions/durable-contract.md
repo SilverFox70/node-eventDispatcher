@@ -33,7 +33,7 @@ The [S40 adapter](../../../packages/durable/README.md#stage-a-workflow-in-the-bu
 
 For Realberry, do not assume Prisma/ORM integration from this signature: a future adapter must prove it uses the actual domain transaction and current DB constraints. S40 demonstrates atomic sample domain-row mutation plus obligation staging on real PostgreSQL; application adoption is separate.
 
-A step commit checks `(runId,stepId,claimEpoch,expectedState)` under transaction, validates output and atomically stores outcome, derived packets, successor readiness and notification intent. Crash before commit means none exist; crash after commit means all exist even if wake fails. A rescan finds ready work without a notification. At most one committed outcome per logical step is the guarantee; computation may repeat only under its replay policy.
+The [S41 continuation store](../../../packages/durable/README.md#commit-a-step-and-its-continuation) checks the workspace, run, step, epoch and exact profile pin, and locks the step row. It validates output and atomically stores outcome, derived packet, successor readiness and notification intent. The bounded function profile has at most one successor per step. S42 adds claimed-work state, lease recovery and epoch changes. Crash before commit means none exist; crash after commit means all exist even if wake fails. A rescan finds ready work without a notification. At most one committed outcome per logical step is the guarantee; computation may repeat only under its replay policy.
 
 ## Leases, scheduling and capacity
 

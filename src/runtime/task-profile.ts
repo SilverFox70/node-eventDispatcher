@@ -38,5 +38,5 @@ export function prepareBoundedTasks(graph: CompiledGraph) {
     }
     return Object.freeze({ status: 'computed' as const, packet: result.outputs.out![0]!, ...evidence });
   }
-  return { spec, catalog, invoke };
+  return { spec, catalog, registry, invoke };
 }

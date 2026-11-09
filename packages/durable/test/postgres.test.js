@@ -189,6 +189,6 @@ test('invalid envelopes refuse before inserts and unknown schema versions refuse
   }
   assert.equal(await count('invalid'), 0);
   await assert.rejects(store.withDurableTransaction('!', () => {}), { code: 'INVALID_WORKSPACE' });
-  await observer.query('UPDATE nodeflow_durable.schema_version SET version = 2');
+  await observer.query('UPDATE nodeflow_durable.schema_version SET version = 99');
   await assert.rejects(store.migrate(), { code: 'UNSUPPORTED_DURABLE_SCHEMA' });
 });
