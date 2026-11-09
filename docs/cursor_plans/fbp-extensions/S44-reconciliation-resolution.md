@@ -1,6 +1,6 @@
 # S44 — Resolve uncertain provider outcomes with evidence and an audit trail.
 
-Plan revision EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan revision EXT1-r2. Status **approved-for-execution**. See the [execution receipt](S44-execution.md).
 Phase: durable. Proposed branch: `codex/fbp-44-reconciliation-resolution`.
 Order: S43 → S44 → S45.
 
@@ -51,4 +51,4 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. G1–G7 implementation readiness is blocked by the named decisions and predecessor evidence; revalidate at handoff rather than treating future commands as delivered.
+The user approved S44 after PR #62 merged green. The supported policy attaches authoritative success and holds inconclusive evidence for review. A provider policy with independently verified safe replay evidence remains future work.

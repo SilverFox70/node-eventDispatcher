@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { admitPacket, FlowError } from 'event-driven-design';
-import type { Pool } from 'pg';
+import type { Pool, PoolClient } from 'pg';
 import { checkPin, checkScope, claimBudget, interpretResult, readCommit } from '../steps/model.js';
 import type { CommittedStep, DurableProfile, StepCommit, StepScope } from '../steps/model.js';
 import { addReady, storePacket } from './ready.js';
@@ -41,27 +41,34 @@ export function commitStep(pool: Pool, scope: StepScope, profile: DurableProfile
 
     const linked = await client.query('SELECT 1 FROM nodeflow_durable.external_step_operations WHERE step_id=$1', [stepId]);
     if (linked.rowCount) throw new FlowError('EXTERNAL_OPERATION_HELD');
-    const successor = definition.spec.edges.find(edge => edge.from.node === step.node_id)?.to;
-    let successorId = null;
-    if (outcome.packet) {
-      await storePacket(client, scope.runId, outcome.packet, input.packetId);
-      if (successor) successorId = await addReady(client, scope.runId, successor.node, outcome.packet.packetId, claimBudget(definition, successor.node));
-    }
-    const { rows: [row] } = await client.query<OutcomeRow>(`
-      INSERT INTO nodeflow_durable.step_outcomes
-        (outcome_id, run_id, step_id, commit_key, fingerprint, output_packet_id, failure_code, successor_id)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-      ON CONFLICT (run_id, commit_key) DO NOTHING RETURNING *
-    `, [randomUUID(), scope.runId, stepId, commitKey, outcome.fingerprint,
-      outcome.packet?.packetId ?? null, outcome.failureCode, successorId]);
-    if (!row) throw new FlowError('OUTCOME_CONFLICT');
-    await client.query('INSERT INTO nodeflow_durable.notification_outbox (outcome_id) VALUES ($1)', [row.outcome_id]);
+    const saved = await saveStepOutcome(client, scope.runId, stepId, step.node_id, input.packetId, definition, outcome, commitKey);
     const changed = await client.query(`UPDATE nodeflow_durable.steps SET status = $2
       WHERE step_id = $1 AND status = 'ready' AND lease_expires_at > clock_timestamp()`,
     [stepId, outcome.packet ? 'completed' : 'failed']);
     if (changed.rowCount !== 1) throw new FlowError('STALE_CLAIM');
-    return receipt(row);
+    return saved;
   });
+}
+
+export async function saveStepOutcome(client: PoolClient, runId: string, stepId: string, nodeId: string,
+  inputPacketId: string, definition: Parameters<typeof interpretResult>[0],
+  outcome: ReturnType<typeof interpretResult>, commitKey: string): Promise<CommittedStep> {
+  const successor = definition.spec.edges.find(edge => edge.from.node === nodeId)?.to;
+  let successorId = null;
+  if (outcome.packet) {
+    await storePacket(client, runId, outcome.packet, inputPacketId);
+    if (successor) successorId = await addReady(client, runId, successor.node, outcome.packet.packetId, claimBudget(definition, successor.node));
+  }
+  const { rows: [row] } = await client.query<OutcomeRow>(`
+    INSERT INTO nodeflow_durable.step_outcomes
+      (outcome_id, run_id, step_id, commit_key, fingerprint, output_packet_id, failure_code, successor_id)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    ON CONFLICT (run_id, commit_key) DO NOTHING RETURNING *
+  `, [randomUUID(), runId, stepId, commitKey, outcome.fingerprint,
+    outcome.packet?.packetId ?? null, outcome.failureCode, successorId]);
+  if (!row) throw new FlowError('OUTCOME_CONFLICT');
+  await client.query('INSERT INTO nodeflow_durable.notification_outbox (outcome_id) VALUES ($1)', [row.outcome_id]);
+  return receipt(row);
 }
 
 /** A notification can be lost or repeated. Ready rows remain the source of truth. */

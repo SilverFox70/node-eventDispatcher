@@ -80,3 +80,11 @@ Use a dedicated host for runs containing external operations. The host claims th
 S43 supports the conservative `reconcile-required` policy. Call `invokeExternalOperation(scope, claim, operationId, request, send)` with the same request. The store commits a single invocation permit before it calls `send`. The callback owns one provider request and validates the response before returning JSON. A lost or invalid response holds the operation as uncertain. An expired worker cannot obtain a permit or save a late result.
 
 Use `recoverExternalOperation(scope, operationId)` to inspect the linked operation and mark expired intent uncertain. Recovery does not dispatch a request. A dedicated host can claim a still-prepared operation with `external: true` within the original claim budget. Linked steps stay out of the ordinary worker pool. S44 owns evidence-backed reconciliation and continuation from the ledger.
+
+## Reconcile an external outcome
+
+After recording uncertainty, read the linked step with `getReconciliationTarget(scope, stepId, operationId)`. It returns the exact provider binding, the operation's revision, and any hold reason or review time. Submit that revision to `reconcileExternalOperation(scope, profile, command, adapter)`.
+
+The command identifies the actor, step, operation, command key, and lookup or manual mode. The host's pinned adapter authorizes the actor for that scope and returns provider evidence. For manual decisions, the adapter verifies the operator's evidence independently. Evidence carries the complete binding and a safe reference. A successful result must satisfy the pinned output contract and match any previously recorded result.
+
+The operation change, step output, successor, wake, and accepted audit record commit together. A stale, unauthorized, conflicting or duplicate scoped decision is refused and audited. An inconclusive result records a reason and a database-time review timestamp while leaving the operation held. Provider absence gives no new invocation permit. The supported policy requires provider evidence to continue.

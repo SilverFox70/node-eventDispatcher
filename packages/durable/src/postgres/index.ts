@@ -1,3 +1,6 @@
+import { getReconciliationTarget } from './reconciliation-target.js';
+import { reconcileExternalOperation } from './reconcile.js';
+import type { ReconciliationAdapter, ReconciliationCommand } from '../reconciliation/model.js';
 import { prepareExternalOperation } from './external-prepare.js';
 import { invokeExternalOperation, recoverExternalOperation } from './external-invoke.js';
 import type { ExternalOperationRequest } from '../operations/model.js';
@@ -16,6 +19,7 @@ import type { ClaimIdentity, ClaimOptions, DurableProfile, StepCommit, StepScope
 import { inTransaction } from './transaction.js';
 
 export type { Submission, StagedRun };
+export type { ReconciliationAdapter, ReconciliationBinding, ReconciliationCommand, ReconciliationEvidence, ReconciliationResult } from '../reconciliation/model.js';
 export type { ExternalOperation, ExternalOperationRequest } from '../operations/model.js';
 export type { ClaimIdentity, ClaimOptions, StepClaim } from '../steps/model.js';
 export type { CommittedStep, ReadyStep, StepCommit, StepResult, StepScope } from '../steps/model.js';
@@ -87,6 +91,9 @@ export function openPostgresStore(connectionString: string) {
     invokeExternalOperation: (scope: StepScope, claim: ClaimIdentity, id: string, input: ExternalOperationRequest,
       send: (payload: Json) => Promise<Json>) => invokeExternalOperation(pool, scope, claim, id, input, send),
     recoverExternalOperation: (scope: StepScope, id: string) => recoverExternalOperation(pool, scope, id),
+    getReconciliationTarget: (scope: StepScope, stepId: string, id: string) => getReconciliationTarget(pool, scope, stepId, id),
+    reconcileExternalOperation: (scope: StepScope, profile: DurableProfile, command: ReconciliationCommand,
+      adapter: ReconciliationAdapter) => reconcileExternalOperation(pool, scope, profile, command, adapter),
     close: () => pool.end(),
   });
 }

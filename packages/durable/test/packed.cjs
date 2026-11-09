@@ -50,6 +50,14 @@ try {
     if (step && outcome.status === 'computed') await store.commitStep(scope, profile, {
       stepId: step.stepId, epoch: step.epoch, workerId: 'worker', commitKey: 'commit', result: { kind: 'computed', packet: outcome.packet },
     });
+    const target = await store.getReconciliationTarget(scope, 'step', 'operation');
+    await store.reconcileExternalOperation(scope, profile, {
+      operationId: target.binding.operationId, stepId: 'step', commandKey: 'review',
+      actorId: 'operator', mode: 'manual', expectedRevision: target.revision,
+    }, {
+      provider: target.binding.provider, policyVersion: target.binding.policyVersion, authorize: () => true,
+      async readEvidence(binding) { return { binding, kind: 'succeeded', evidenceRef: 'receipt', value: 5 }; },
+    });
     await store.withDurableTransaction('workspace', async tx => {
       await tx.query<{ revision: number }>('SELECT revision FROM person');
       await tx.stage({ jobId: 'job', revisionId: 'rev', profilePin: profile.pin, inputs: {} });
@@ -75,6 +83,9 @@ try {
     const operations = readFileSync(join(root, 'packages/durable/test/operations.test.js'), 'utf8')
       .replace('../dist/postgres/index.js', 'event-driven-design-durable/postgres');
     writeFileSync(join(fixture, 'operations.test.mjs'), operations);
+    const reconciliation = readFileSync(join(root, 'packages/durable/test/reconciliation.test.js'), 'utf8')
+      .replace('../dist/postgres/index.js', 'event-driven-design-durable/postgres');
+    writeFileSync(join(fixture, 'reconciliation.test.mjs'), reconciliation);
     mkdirSync(join(fixture, 'fixtures'));
     for (const file of ['step-profile.mjs', 'step-worker.mjs', 'lease-worker.mjs', 'external-worker.mjs']) {
       const contents = readFileSync(join(root, 'packages/durable/test/fixtures', file), 'utf8')
@@ -82,7 +93,7 @@ try {
         .replace('../../dist/postgres/index.js', 'event-driven-design-durable/postgres');
       writeFileSync(join(fixture, 'fixtures', file), contents);
     }
-    assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'postgres.test.mjs', 'steps.test.mjs', 'leases.test.mjs', 'operations.test.mjs']), /^# pass 16$/m);
+    assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'postgres.test.mjs', 'steps.test.mjs', 'leases.test.mjs', 'operations.test.mjs', 'reconciliation.test.mjs']), /^# pass 20$/m);
   }
   console.log('Installed durable profile, passive model, and TypeScript declarations passed.');
 } finally { dispose(); }

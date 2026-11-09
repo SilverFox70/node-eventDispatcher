@@ -21,7 +21,7 @@ export async function invokeExternalOperation(pool: Pool, scope: StepScope, clai
     await requireLiveClaim(client, scope, claim);
     await lockResource(client, scope.workspaceId, request.provider, request.resourceKey);
     const { rowCount } = await client.query(`
-      UPDATE nodeflow_durable.external_operations o SET state='invocation-intent',
+      UPDATE nodeflow_durable.external_operations o SET state='invocation-intent', resolution_revision=resolution_revision+1,
         intent_step_id=$2, intent_epoch=$3, intent_worker=$4, intent_at=clock_timestamp()
       FROM nodeflow_durable.external_step_operations link
       WHERE o.operation_id=$1 AND link.step_id=$2 AND link.operation_id=o.operation_id
@@ -39,13 +39,13 @@ export async function invokeExternalOperation(pool: Pool, scope: StepScope, clai
   let result: string;
   try { result = serialize(await send(request.payload)); }
   catch {
-    await pool.query(`UPDATE nodeflow_durable.external_operations SET state='uncertain'
+    await pool.query(`UPDATE nodeflow_durable.external_operations SET state='uncertain', resolution_revision=resolution_revision+1
       WHERE operation_id=$1 AND state='invocation-intent'`, [operationId]);
     return { operationId, state: 'uncertain' };
   }
   await inTransaction(pool, async client => {
     await requireLiveClaim(client, scope, claim);
-    const { rowCount } = await client.query(`UPDATE nodeflow_durable.external_operations SET state='succeeded', result_json=$2
+    const { rowCount } = await client.query(`UPDATE nodeflow_durable.external_operations SET state='succeeded', result_json=$2, resolution_revision=resolution_revision+1
       WHERE operation_id=$1 AND state='invocation-intent' AND intent_step_id=$3 AND intent_epoch=$4 AND intent_worker=$5
         AND EXISTS (SELECT 1 FROM nodeflow_durable.steps s WHERE s.step_id=$3
           AND s.lease_expires_at > clock_timestamp())`,
@@ -64,7 +64,7 @@ export async function recoverExternalOperation(pool: Pool, scope: StepScope, ope
         SELECT 1 FROM nodeflow_durable.external_step_operations link JOIN nodeflow_durable.steps s USING (step_id)
         WHERE link.operation_id=o.operation_id AND s.run_id=$3)
     ), expired AS (
-      UPDATE nodeflow_durable.external_operations o SET state='uncertain'
+      UPDATE nodeflow_durable.external_operations o SET state='uncertain', resolution_revision=o.resolution_revision+1
       FROM visible v, nodeflow_durable.steps s
       WHERE o.operation_id=v.operation_id AND s.step_id=o.intent_step_id AND o.state='invocation-intent'
         AND (s.lease_expires_at <= clock_timestamp() OR s.epoch <> o.intent_epoch OR s.lease_owner <> o.intent_worker)
