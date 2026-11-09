@@ -1,3 +1,7 @@
+import { submitSignal, sweepExpiredSignals } from '../commands/submit-signal.js';
+import { registerWait } from '../operators/wait/register.js';
+import type { SignalAuthorization, SignalCommand } from '../signals/model.js';
+export type { SignalAuthorization, SignalCommand, SignalReceipt } from '../signals/model.js';
 import { commitRoutingStep, flushRouting, readRoutedOutputs } from './routing.js';
 import type { RoutingCommand } from '../delivery/model.js';
 import { runTiming } from './run-timing.js';
@@ -105,6 +109,10 @@ export function openPostgresStore(connectionString: string) {
       scheduleStepRetry(pool, scope, profile, claim, code),
     commitRoutingStep: (scope: StepScope, profile: DurableProfile, command: RoutingCommand) => commitRoutingStep(pool, scope, profile, command),
     flushRouting: (scope: StepScope, profile: DurableProfile) => flushRouting(pool, scope, profile),
+    registerWait: (scope: StepScope, profile: DurableProfile, claim: ClaimIdentity) => registerWait(pool, scope, profile, claim),
+    submitSignal: (scope: StepScope, profile: DurableProfile, command: SignalCommand, authorize: SignalAuthorization) =>
+      submitSignal(pool, scope, profile, command, authorize),
+    sweepExpiredSignals: (scope: StepScope) => sweepExpiredSignals(pool, scope),
     readRoutedOutputs: (scope: StepScope, after?: string) => readRoutedOutputs(pool, scope, after),
     close: () => pool.end(),
   });

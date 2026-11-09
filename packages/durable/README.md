@@ -112,3 +112,13 @@ Register the built-in `joinByKey` with `operator: 'join-by-key'` in the routed p
 The final input closes the group and records a packet with every immediate parent in declared port order. A full downstream edge can delay delivery of that saved packet. The completion record stays for the lifetime of the retained run, including after cancellation or failure. An identical step commit retry returns its existing receipt. A distinct delivery to a filled slot or completed group fails with `DUPLICATE_KEY` or `JOIN_GROUP_COMPLETED`.
 
 The built-in partial and completed-group limits apply. An overflow fails the run and releases partial slots. If no work remains to fill a partial group, `getRunTiming(scope)` reports a failed run with `failureCode: 'JOIN_INCOMPLETE'`. Partial slots are also cleared on cancellation and timeout. Slot commits follow the existing claim policy. A crash after a claim but before its transaction commits can leave that delivery held when it has no remaining claim allowance.
+
+## Wait for an authorized signal
+
+Build a wait with `durableWait(triggerContract, signalContract, signalName)` and register it as a pure routed adapter with `operator: 'wait'`. The worker stores the wait and releases the trigger lease. The run stays active while waiting, and any configured flow deadline still applies.
+
+The trusted application host correlates the signal to the run, node and persisted wait step ID. That step ID is the generation and is available on the ready step before registration. Call `store.submitSignal(scope, profile, command, authorize)` with the signal name, generation, expected revision `1`, actor ID, command key and payload. Bind the actor ID to the authenticated principal and implement the authorization callback on the server. The callback receives the scoped target and immutable command. The payload must satisfy the pinned signal contract.
+
+A signal can arrive after the step exists and before registration. Repeating the identical authorized command returns its current receipt. A conflicting replay or a new command for a consumed or closed wait cannot create a second result. Consumption and the continuation commit together, including when the output must wait for downstream capacity.
+
+An unconsumed signal expires seven days after admission. The worker sweeps expired signals, and a host can call `sweepExpiredSignals(scope)` for a run without an active worker. Expiry clears the payload and keeps an `expired` receipt. It leaves an open wait eligible for a fresh authorized command. Each workspace can hold up to 1,000 live pending signals.

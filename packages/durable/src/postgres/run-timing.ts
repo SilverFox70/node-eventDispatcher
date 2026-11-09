@@ -1,6 +1,7 @@
 import { FlowError } from 'event-driven-design';
 import type { Pool, PoolClient } from 'pg';
 import type { RunStatus } from '../scheduling/policy.js';
+import { closeWaits } from '../signals/inbox.js';
 import { checkScope } from '../steps/model.js';
 import type { StepScope } from '../steps/model.js';
 import { inTransaction } from './transaction.js';
@@ -37,6 +38,7 @@ export async function holdRun(client: PoolClient, runId: string, status: 'timed-
   await client.query(`UPDATE nodeflow_durable.workflow_runs SET status=$2, terminal_at=clock_timestamp()
     WHERE run_id=$1 AND status='queued'`, [runId, status]);
   await clearPartialJoins(client, runId);
+  await closeWaits(client, runId);
   await client.query(`UPDATE nodeflow_durable.external_operations o
     SET state='uncertain', resolution_revision=resolution_revision+1
     FROM nodeflow_durable.steps s
@@ -49,6 +51,7 @@ export async function finishRunIfDone(client: PoolClient, runId: string): Promis
     status=CASE WHEN EXISTS (SELECT 1 FROM nodeflow_durable.steps WHERE run_id=$1 AND status='failed')
       OR EXISTS (SELECT 1 FROM nodeflow_durable.join_groups WHERE run_id=$1) THEN 'failed' ELSE 'completed' END
     WHERE r.run_id=$1 AND r.status='queued' AND r.steps_initialized
+      AND NOT EXISTS (SELECT 1 FROM nodeflow_durable.waits WHERE run_id=$1 AND state='waiting')
       AND NOT EXISTS (SELECT 1 FROM nodeflow_durable.steps WHERE run_id=$1 AND status IN ('ready','routing'))`, [runId]);
   if (rowCount) await clearPartialJoins(client, runId);
 }

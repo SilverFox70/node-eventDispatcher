@@ -8,7 +8,7 @@ import { isJoinRefusal } from '../operators/join/refusals.js';
 import { checkScope } from '../steps/model.js';
 import { validIdentifier } from '../submission/input.js';
 
-type Store = Pick<ReturnType<typeof openPostgresStore>, 'claimSteps' | 'heartbeatStep' | 'commitStep' | 'scheduleStepRetry' | 'commitRoutingStep' | 'flushRouting'>;
+type Store = Pick<ReturnType<typeof openPostgresStore>, 'claimSteps' | 'heartbeatStep' | 'commitStep' | 'scheduleStepRetry' | 'commitRoutingStep' | 'flushRouting' | 'registerWait'>;
 export type StepWorkerOptions = Readonly<{
   store: Store; scope: StepScope; profile: DurableProfile; workerId: string; timeoutMs: number;
   leaseMs?: number; heartbeatMs?: number; pollMs?: number; concurrency?: number;
@@ -74,16 +74,20 @@ export function startStepWorker(options: StepWorkerOptions) {
       if (remaining <= 0) return;
       const deadline = claim.remainingMs === null ? signal : globalThis.AbortSignal.timeout(remaining);
       const invocation = { timeoutMs, signal: globalThis.AbortSignal.any([signal, deadline]) };
-      if (profileDefinition(profile).joins.has(claim.nodeId)) {
-        if (!invocation.signal.aborted) await commitJoin(claim);
-        return;
-      }
-      const computed = profile.routed
+      const definition = profileDefinition(profile);
+      const waiting = definition.waits.has(claim.nodeId);
+      const persisted = waiting || definition.joins.has(claim.nodeId);
+      const computed = persisted ? null : profile.routed
         ? await profile.invokeDelivery(claim.nodeId, claim.input, invocation, claim.inputPort)
         : await profile.invokeOnce(claim.nodeId, claim.input, invocation);
       stopHeartbeat.abort();
       await pulse;
       if (signal.aborted || (claim.remainingMs !== null && deadline.aborted)) return;
+      if (computed === null) {
+        if (waiting) await store.registerWait(scope, profile, claim);
+        else await commitJoin(claim);
+        return;
+      }
       if (computed.status === 'stopped' && computed.retryCode &&
           await store.scheduleStepRetry(scope, profile, claim, computed.retryCode)) return;
       if (computed.status === 'computed' && 'outputs' in computed) {
