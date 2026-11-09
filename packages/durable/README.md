@@ -104,3 +104,11 @@ Register the built-in broadcast, filter, and merge as version 1 pure adapters wi
 An invocation's complete output batch is recorded once. PostgreSQL admits all branches together when every target edge has capacity. A full edge holds the computed batch for a later sweep, without running its source again. Sequence numbers preserve admission order per edge. Independent branches can finish in either order. Filter drops are recorded as consumed, and filter and merge forwards preserve the original packet envelope.
 
 `readRoutedOutputs(scope, afterSequence)` returns up to 1,000 exposed packets in persisted arrival order. Pass the last returned sequence to read the next page. A terminal branch failure fences sibling commits. This profile caps each operator at 32 ports and uses bounded batches. Provider continuation remains available through the linear profile.
+
+## Recover a keyed join
+
+Register the built-in `joinByKey` with `operator: 'join-by-key'` in the routed profile. A join accepts 2–256 distinct named ports. Its port order and capacity limits are part of the profile pin. The worker records each accepted input in PostgreSQL under the run, node, job and packet key.
+
+The final input closes the group and records a packet with every immediate parent in declared port order. A full downstream edge can delay delivery of that saved packet. The completion record stays for the lifetime of the retained run, including after cancellation or failure. An identical step commit retry returns its existing receipt. A distinct delivery to a filled slot or completed group fails with `DUPLICATE_KEY` or `JOIN_GROUP_COMPLETED`.
+
+The built-in partial and completed-group limits apply. An overflow fails the run and releases partial slots. If no work remains to fill a partial group, `getRunTiming(scope)` reports a failed run with `failureCode: 'JOIN_INCOMPLETE'`. Partial slots are also cleared on cancellation and timeout. Slot commits follow the existing claim policy. A crash after a claim but before its transaction commits can leave that delivery held when it has no remaining claim allowance.

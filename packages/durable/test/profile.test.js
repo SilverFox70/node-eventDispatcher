@@ -1,3 +1,4 @@
+import { joinProfileOptions } from './fixtures/join-profile.mjs';
 import { routingProfile } from './fixtures/routing-profile.mjs';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
@@ -152,4 +153,26 @@ test('reviewed routing operators run the shared kernel and reject incompatible d
     assert.throws(() => prepareDurableProfile({ ...candidate, adapters: [{ ...adapter, operator }] }),
       { code: 'PROFILE_INELIGIBLE' });
   }
+});
+
+test('durable keyed joins pin ordered slots and admit 2–256 distinct ports', async () => {
+  const candidate = joinProfileOptions();
+  const profile = prepareDurableProfile(candidate);
+  assert.equal(profile.routed, true);
+  await assert.rejects(profile.invokeDelivery('join', packet(1), invokeOptions, 'stats'), { code: 'UNKNOWN_TASK_NODE' });
+  for (const changed of [joinProfileOptions(['species', 'stats']), joinProfileOptions(undefined, { maxKeys: 1 })]) {
+    assert.throws(() => resumeDurableProfile(profile.pin, changed), { code: 'VERSION_UNAVAILABLE' });
+  }
+  for (const count of [2, 256]) {
+    const options = joinProfileOptions(Array.from({ length: count }, (_, index) => 'port-' + index));
+    assert.equal(prepareDurableProfile(options).routed, true);
+  }
+  for (const count of [1, 257]) {
+    assert.throws(() => joinProfileOptions(Array.from({ length: count }, (_, index) => 'port-' + index)),
+      { code: 'INVALID_ARGUMENT' });
+  }
+  const duplicate = { ...candidate, graph: { ...candidate.graph, inputs: {
+    ...candidate.graph.inputs, duplicate: candidate.graph.inputs['a-stats'],
+  } } };
+  assert.throws(() => prepareDurableProfile(duplicate), { code: 'PROFILE_INELIGIBLE' });
 });

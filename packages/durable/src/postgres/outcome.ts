@@ -1,4 +1,4 @@
-import { finishRunIfDone, lockRun, requireActiveRun } from './run-timing.js';
+import { clearPartialJoins, finishRunIfDone, lockRun, requireActiveRun } from './run-timing.js';
 import { randomUUID } from 'node:crypto';
 import { admitPacket, FlowError } from 'event-driven-design';
 import type { Pool, PoolClient } from 'pg';
@@ -54,6 +54,7 @@ export function commitStep(pool: Pool, scope: StepScope, profile: DurableProfile
     if (changed.rowCount !== 1) throw new FlowError('STALE_CLAIM');
     if (profile.routed && outcome.failureCode) {
       await client.query("UPDATE nodeflow_durable.workflow_runs SET status='failed',terminal_at=clock_timestamp() WHERE run_id=$1", [scope.runId]);
+      await clearPartialJoins(client, scope.runId);
     }
     await finishRunIfDone(client, scope.runId);
     return saved;

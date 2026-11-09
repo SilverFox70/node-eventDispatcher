@@ -5,6 +5,7 @@ import type { RoutingCommand, RoutingStatus } from '../delivery/model.js';
 import { validateOutputs } from '../delivery/model.js';
 import { checkPin, checkScope, serialize } from '../steps/model.js';
 import type { DurableProfile, StepScope } from '../steps/model.js';
+import { acceptJoinSlot } from './join-slots.js';
 import { materializeRoute } from './routing-materialize.js';
 import type { PendingRoute } from './routing-materialize.js';
 import { finishRunIfDone, lockRun, remainingBudget, requireActiveRun } from './run-timing.js';
@@ -16,13 +17,14 @@ export async function commitRoutingStep(pool: Pool, scope: StepScope, profile: D
   const { stepId, workerId, epoch } = command;
   scope = checkScope(scope, stepId);
   if (Object.keys(command).length !== 4 || !profile.routed) throw new FlowError('INVALID_DELIVERY');
-  const fingerprint = createHash('sha256').update(serialize(command.outputs)).digest('hex');
+  const submitted = serialize(command.outputs);
+  const fingerprint = createHash('sha256').update(submitted).digest('hex');
   return inTransaction(pool, async client => {
     const run = await lockRun(client, scope);
     const definition = checkPin(profile, run.execution_digest, run.adapter_digest);
     const { rows: [step] } = await client.query<{
-      node_id: string; input_packet_id: string; envelope: string; epoch: number; lease_owner: string;
-    }>(`SELECT s.node_id,s.input_packet_id,s.epoch,s.lease_owner,p.envelope FROM nodeflow_durable.steps s
+      node_id: string; input_port: string; input_packet_id: string; envelope: string; epoch: number; lease_owner: string;
+    }>(`SELECT s.node_id,s.input_port,s.input_packet_id,s.epoch,s.lease_owner,p.envelope FROM nodeflow_durable.steps s
       JOIN nodeflow_durable.step_packets p ON (p.run_id,p.packet_id)=(s.run_id,s.input_packet_id)
       WHERE s.run_id=$1 AND s.step_id=$2 FOR UPDATE OF s`, [scope.runId, stepId]);
     if (!step || step.epoch !== epoch || step.lease_owner !== workerId) throw new FlowError('STALE_CLAIM');
@@ -34,14 +36,20 @@ export async function commitRoutingStep(pool: Pool, scope: StepScope, profile: D
     }
     await requireActiveRun(client, scope);
     const packet = admitPacket(JSON.parse(step.envelope));
-    const outputs = serialize(validateOutputs(definition, step.node_id, packet, command.outputs));
+
     const { rowCount } = await client.query(`UPDATE nodeflow_durable.steps SET status='routing'
       WHERE step_id=$1 AND status='ready' AND lease_expires_at > clock_timestamp()
         AND NOT EXISTS (SELECT 1 FROM nodeflow_durable.external_step_operations WHERE step_id=$1)`, [stepId]);
     if (rowCount !== 1) throw new FlowError('STALE_CLAIM');
+    const pending = { ...step, step_id: stepId };
+    const join = definition.joins.has(step.node_id);
+    if (join && submitted !== '{}') throw new FlowError('INVALID_DELIVERY');
+    const outputs = serialize(join
+      ? await acceptJoinSlot(client, scope.runId, definition, pending, packet)
+      : validateOutputs(definition, step.node_id, packet, command.outputs));
     await client.query('INSERT INTO nodeflow_durable.routing_commits (step_id,run_id,fingerprint,outputs) VALUES ($1,$2,$3,$4)',
       [stepId, scope.runId, fingerprint, outputs]);
-    const materialized = await materializeRoute(client, scope.runId, definition, { ...step, step_id: stepId, outputs });
+    const materialized = await materializeRoute(client, scope.runId, definition, { ...pending, outputs });
     await requireActiveRun(client, scope);
     await finishRunIfDone(client, scope.runId);
     return materialized ? 'committed' : 'pending';

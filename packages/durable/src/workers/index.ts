@@ -3,6 +3,8 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { FlowError } from 'event-driven-design';
 import type { openPostgresStore } from '../postgres/index.js';
 import type { DurableProfile, StepClaim, StepResult, StepScope } from '../steps/model.js';
+import { profileDefinition } from '../profile/definition.js';
+import { isJoinRefusal } from '../operators/join/refusals.js';
 import { checkScope } from '../steps/model.js';
 import { validIdentifier } from '../submission/input.js';
 
@@ -42,6 +44,18 @@ export function startStepWorker(options: StepWorkerOptions) {
   }
   const shutdown = new globalThis.AbortController();
 
+  async function commitJoin(claim: StepClaim) {
+    const identity = { stepId: claim.stepId, workerId, epoch: claim.epoch };
+    try {
+      await store.commitRoutingStep(scope, profile, { ...identity, outputs: {} });
+    } catch (error) {
+      if (!(error instanceof FlowError) || !(isJoinRefusal(error.code) || error.code === 'OUTPUT_CONTRACT')) throw error;
+      await store.commitStep(scope, profile, {
+        ...identity, commitKey: claim.stepId, result: { kind: 'failed', code: error.code },
+      });
+    }
+  }
+
   async function execute(claim: StepClaim, claimStarted: number) {
     const stopHeartbeat = new globalThis.AbortController();
     const lost = new globalThis.AbortController();
@@ -60,6 +74,10 @@ export function startStepWorker(options: StepWorkerOptions) {
       if (remaining <= 0) return;
       const deadline = claim.remainingMs === null ? signal : globalThis.AbortSignal.timeout(remaining);
       const invocation = { timeoutMs, signal: globalThis.AbortSignal.any([signal, deadline]) };
+      if (profileDefinition(profile).joins.has(claim.nodeId)) {
+        if (!invocation.signal.aborted) await commitJoin(claim);
+        return;
+      }
       const computed = profile.routed
         ? await profile.invokeDelivery(claim.nodeId, claim.input, invocation, claim.inputPort)
         : await profile.invokeOnce(claim.nodeId, claim.input, invocation);

@@ -4,6 +4,7 @@ import type { Contract, Json, Packet } from 'event-driven-design';
 import { canonicalJson } from 'event-driven-design/model';
 import { profileDefinition } from '../profile/definition.js';
 import type { prepareDurableProfile } from '../profile/index.js';
+import { joinRefusals } from '../operators/join/refusals.js';
 import { validIdentifier } from '../submission/input.js';
 
 export type StepScope = Readonly<{ workspaceId: string; runId: string }>;
@@ -14,14 +15,14 @@ export type ClaimOptions = Readonly<{ workerId: string; leaseMs: number; limit: 
 export type ClaimIdentity = Pick<StepClaim, 'stepId' | 'workerId' | 'epoch'>;
 
 export type StepResult = Readonly<{ kind: 'computed'; packet: Packet } |
-  { kind: 'failed'; code: 'OUTPUT_CONTRACT' | 'COMPONENT_FAILED' | 'NODE_TIMEOUT' | 'TIMEOUT' | 'CANCELLED' }>;
+  { kind: 'failed'; code: 'OUTPUT_CONTRACT' | 'COMPONENT_FAILED' | 'NODE_TIMEOUT' | 'TIMEOUT' | 'CANCELLED' | typeof joinRefusals[number] }>;
 export type StepCommit = Readonly<{ stepId: string; epoch: number; workerId: string; commitKey: string; result: StepResult }>;
 export type CommittedStep = Readonly<{
   outcomeId: string; outputPacketId: string | null; failureCode: string | null; successorId: string | null;
 }>;
 
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
-const failureCodes = new Set(['OUTPUT_CONTRACT', 'COMPONENT_FAILED', 'NODE_TIMEOUT', 'TIMEOUT', 'CANCELLED']);
+const failureCodes = new Set(['OUTPUT_CONTRACT', 'COMPONENT_FAILED', 'NODE_TIMEOUT', 'TIMEOUT', 'CANCELLED', ...joinRefusals]);
 const limit = 10 * 1024 * 1024;
 export const serialize = (value: unknown) => canonicalJson(value, limit);
 

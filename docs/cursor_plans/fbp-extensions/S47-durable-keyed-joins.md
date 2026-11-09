@@ -1,6 +1,6 @@
 # S47 — Recover partially collated results and never reopen a completed join.
 
-Plan revision EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan revision EXT1-r3. Status **approved-for-execution**. See the [approved storage design and execution receipt](S47-execution.md).
 Phase: durable. Proposed branch: `codex/fbp-47-durable-keyed-joins`.
 Order: S46 → S47 → S48.
 
@@ -51,4 +51,4 @@ Read predecessor journal/merge receipt at execution time; this plan is not that 
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. G1–G7 implementation readiness is blocked by the named decisions and predecessor evidence; revalidate at handoff rather than treating future commands as delivered.
+The user approved S47.A–C and keeping completion records for the lifetime of each retained run. The execution receipt records merge evidence, implementation limits and verification.
