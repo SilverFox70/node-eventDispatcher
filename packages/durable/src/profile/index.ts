@@ -25,7 +25,7 @@ export type DurableProfileOptions = Readonly<{
 function prepare(options: DurableProfileOptions) {
   const compiled = compileGraph(options.graph, options.registry);
   if (!compiled.ok) throw new FlowError('PROFILE_INELIGIBLE');
-  const { spec, catalog, registry, invoke } = prepareBoundedTasks(compiled.graph);
+  const { spec, catalog, registry, invoke, invokeOnce } = prepareBoundedTasks(compiled.graph);
   const { runtimeVersion, policyVersion, serviceProfileDigest, bindings } = options.identity;
   const execution = executionIdentity({ graph: spec, bindings, runtimeVersion, policyVersion, serviceProfileDigest });
   if (execution.status !== 'verified') throw new FlowError('PROFILE_INELIGIBLE');
@@ -48,7 +48,7 @@ function prepare(options: DurableProfileOptions) {
         return { adapter, input, output, configuration: configuration ?? null };
       }))).digest('hex'),
   });
-  const profile = Object.freeze({ pin, invoke });
+  const profile = Object.freeze({ pin, invoke, invokeOnce });
   rememberProfile(profile, { spec, registry });
   return profile;
 }

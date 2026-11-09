@@ -6,11 +6,13 @@ import type { StagedRun, Submission } from '../submission/input.js';
 import { migrate } from './migrate.js';
 import { stageRun } from './stage.js';
 import { commitStep, publishStepWake } from './outcome.js';
+import { claimSteps, heartbeatStep } from './leases.js';
 import { initializeSteps, sweepReady } from './ready.js';
-import type { DurableProfile, StepCommit, StepScope } from '../steps/model.js';
+import type { ClaimIdentity, ClaimOptions, DurableProfile, StepCommit, StepScope } from '../steps/model.js';
 import { inTransaction } from './transaction.js';
 
 export type { Submission, StagedRun };
+export type { ClaimIdentity, ClaimOptions, StepClaim } from '../steps/model.js';
 export type { CommittedStep, ReadyStep, StepCommit, StepResult, StepScope } from '../steps/model.js';
 export type DurableTransaction = Readonly<{
   query<Row extends Record<string, unknown> = Record<string, unknown>>(sql: string, values?: readonly unknown[]):
@@ -70,6 +72,8 @@ export function openPostgresStore(connectionString: string) {
   return Object.freeze({
     migrate: () => migrate(pool), withDurableTransaction,
     initializeSteps: (scope: StepScope, profile: DurableProfile) => initializeSteps(pool, scope, profile),
+    claimSteps: (scope: StepScope, profile: DurableProfile, options: ClaimOptions) => claimSteps(pool, scope, profile, options),
+    heartbeatStep: (scope: StepScope, claim: ClaimIdentity, leaseMs: number) => heartbeatStep(pool, scope, claim, leaseMs),
     sweepReady: (scope: StepScope) => sweepReady(pool, scope),
     commitStep: (scope: StepScope, profile: DurableProfile, command: StepCommit) => commitStep(pool, scope, profile, command),
     publishStepWake: (scope: StepScope, outcomeId: string) => publishStepWake(pool, scope, outcomeId),

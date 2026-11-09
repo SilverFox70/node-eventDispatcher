@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { admitPacket, FlowError } from 'event-driven-design';
 import type { Packet } from 'event-driven-design';
 import type { Pool, PoolClient } from 'pg';
-import { checkPin, checkScope, contractAt, serialize } from '../steps/model.js';
+import { checkPin, checkScope, claimBudget, contractAt, serialize } from '../steps/model.js';
 import type { DurableProfile, ReadyStep, StepScope } from '../steps/model.js';
 import { inTransaction } from './transaction.js';
 
@@ -11,10 +11,10 @@ export async function storePacket(client: PoolClient, runId: string, input: Pack
     VALUES ($1, $2, $3, $4)`, [runId, input.packetId, parentId, serialize(input)]);
 }
 
-export async function addReady(client: PoolClient, runId: string, nodeId: string, packetId: string) {
+export async function addReady(client: PoolClient, runId: string, nodeId: string, packetId: string, maxClaims: number) {
   const stepId = randomUUID();
-  await client.query(`INSERT INTO nodeflow_durable.steps (step_id, run_id, node_id, input_packet_id)
-    VALUES ($1, $2, $3, $4)`, [stepId, runId, nodeId, packetId]);
+  await client.query(`INSERT INTO nodeflow_durable.steps (step_id, run_id, node_id, input_packet_id, max_claims)
+    VALUES ($1, $2, $3, $4, $5)`, [stepId, runId, nodeId, packetId, maxClaims]);
   return stepId;
 }
 
@@ -36,7 +36,7 @@ export function initializeSteps(pool: Pool, scope: StepScope, profile: DurablePr
       for (const input of packets) {
         if (!contract.validate(input.value)) throw new FlowError('INPUT_CONTRACT');
         await storePacket(client, scope.runId, input, null);
-        await addReady(client, scope.runId, endpoint.node, input.packetId);
+        await addReady(client, scope.runId, endpoint.node, input.packetId, claimBudget(definition, endpoint.node));
       }
     }
     await client.query('UPDATE nodeflow_durable.workflow_runs SET steps_initialized = true WHERE run_id = $1', [scope.runId]);
@@ -51,6 +51,8 @@ export async function sweepReady(pool: Pool, scope: StepScope): Promise<readonly
     JOIN nodeflow_durable.workflow_runs r USING (run_id)
     JOIN nodeflow_durable.step_packets p ON (p.run_id, p.packet_id) = (s.run_id, s.input_packet_id)
     WHERE r.workspace_id = $1 AND s.run_id = $2 AND s.status = 'ready'
+      AND s.not_before <= clock_timestamp() AND s.epoch < s.max_claims
+      AND (s.lease_expires_at IS NULL OR s.lease_expires_at <= clock_timestamp())
     ORDER BY s.created_at, s.step_id LIMIT 100
   `, [scope.workspaceId, scope.runId]);
   return rows.map(row => Object.freeze({

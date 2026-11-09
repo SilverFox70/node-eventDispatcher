@@ -16,7 +16,7 @@ const admin = new pg.Pool({ connectionString: adminUrl });
 const database = 'fbp_s41_' + randomUUID().replaceAll('-', '');
 const url = new globalThis.URL(adminUrl);
 url.pathname = '/' + database;
-const profile = stepProfile();
+const profile = stepProfile({ retry: true });
 let store, observer, created = false;
 
 before(async () => {
@@ -48,7 +48,7 @@ async function stage(jobId, inputs = { request: [packet(1, { jobId, key: 'test' 
   return { workspaceId, runId };
 }
 const commandFor = (step, value, commitKey = 'finish-' + step.nodeId) => ({
-  stepId: step.stepId, epoch: step.epoch, commitKey,
+  stepId: step.stepId, epoch: step.epoch, workerId: step.workerId, commitKey,
   result: { kind: 'computed', packet: derivePacket(value, [step.input]) },
 });
 async function counts(scope) {
@@ -101,7 +101,7 @@ test('a killed producer leaves a committed successor that the restart sweep find
     const wakes = [];
     listener.on('notification', notice => wakes.push(notice.payload));
     await listener.query('LISTEN nodeflow_step_ready');
-    const [step] = await restarted.sweepReady(scope);
+    const [step] = await restarted.claimSteps(scope, profile, { workerId: 'restart', leaseMs: 10000, limit: 1 });
     assert.equal(step.nodeId, 'B');
     assert.equal(step.input.value, 2);
     const original = worker.messages.find(msg => msg.state === 'committing').command;
@@ -111,7 +111,7 @@ test('a killed producer leaves a committed successor that the restart sweep find
     assert(await restarted.publishStepWake(scope, finished.receipt.outcomeId));
     await until(() => wakes.length === 2);
     assert.deepEqual(wakes, [finished.receipt.outcomeId, finished.receipt.outcomeId]);
-    assert.equal((await restarted.sweepReady(scope))[0].stepId, step.stepId);
+    assert.deepEqual(await restarted.sweepReady(scope), []);
     const result = await profile.invoke(step.nodeId, step.input, { timeoutMs: 1000 });
     assert.equal(result.status, 'computed');
     const command = { ...commandFor(step, 3), result: { kind: 'computed', packet: result.packet } };
@@ -149,15 +149,16 @@ test('a process killed while the outbox insert is blocked leaves no partial outc
   }
   await until(async () => !(await observer.query("SELECT pid FROM pg_stat_activity WHERE application_name = 's41-before'")).rowCount);
   assert.deepEqual(await counts(scope), { steps: 1, packets: 1, outcomes: 0, wakes: 0 });
+  await observer.query("UPDATE nodeflow_durable.steps SET lease_expires_at = clock_timestamp() - interval '1 second' WHERE run_id = $1", [scope.runId]);
   assert.equal((await store.sweepReady(scope))[0].nodeId, 'A');
 });
 
 test('stale claims, conflicting commits, and invalid output cannot publish success', async () => {
   const scope = await stage('refusal');
   await store.initializeSteps(scope, profile);
-  const [step] = await store.sweepReady(scope);
+  const [step] = await store.claimSteps(scope, profile, { workerId: 'test-worker', leaseMs: 10000, limit: 1 });
   const valid = commandFor(step, 2);
-  await assert.rejects(store.commitStep(scope, profile, { ...valid, epoch: 1 }), { code: 'STALE_CLAIM' });
+  await assert.rejects(store.commitStep(scope, profile, { ...valid, epoch: 2 }), { code: 'STALE_CLAIM' });
   await assert.rejects(store.commitStep({ ...scope, workspaceId: 'other' }, profile, valid), { code: 'STEP_NOT_FOUND' });
   await assert.rejects(store.commitStep(scope, { ...profile }, valid), { code: 'VERSION_UNAVAILABLE' });
   const wrongLineage = { ...valid, result: { kind: 'computed', packet: packet(2, { jobId: 'refusal' }) } };
@@ -193,7 +194,7 @@ test('initialization validates scoped run pins and input contracts, and explicit
   await observer.query('UPDATE nodeflow_durable.workflow_runs SET adapter_digest = $2 WHERE run_id = $1',
     [scope.runId, profile.pin.adapterDigest]);
   await store.initializeSteps(scope, profile);
-  const [step] = await store.sweepReady(scope);
+  const [step] = await store.claimSteps(scope, profile, { workerId: 'test-worker', leaseMs: 10000, limit: 1 });
   const command = commandFor(step, 2);
   for (const invalid of [null, { ...command, extra: true }, { ...command, stepId: 'bad' },
     { ...command, commitKey: '' }, { ...command, epoch: -1 }, { ...command, epoch: 1.5 },

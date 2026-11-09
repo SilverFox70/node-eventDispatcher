@@ -9,9 +9,13 @@ import { validIdentifier } from '../submission/input.js';
 export type StepScope = Readonly<{ workspaceId: string; runId: string }>;
 export type DurableProfile = ReturnType<typeof prepareDurableProfile>;
 export type ReadyStep = Readonly<{ stepId: string; nodeId: string; epoch: number; input: Packet }>;
+export type StepClaim = Readonly<ReadyStep & { workerId: string; leaseExpiresAt: string }>;
+export type ClaimOptions = Readonly<{ workerId: string; leaseMs: number; limit: number }>;
+export type ClaimIdentity = Pick<StepClaim, 'stepId' | 'workerId' | 'epoch'>;
+
 export type StepResult = Readonly<{ kind: 'computed'; packet: Packet } |
   { kind: 'failed'; code: 'OUTPUT_CONTRACT' | 'COMPONENT_FAILED' | 'NODE_TIMEOUT' | 'TIMEOUT' | 'CANCELLED' }>;
-export type StepCommit = Readonly<{ stepId: string; epoch: number; commitKey: string; result: StepResult }>;
+export type StepCommit = Readonly<{ stepId: string; epoch: number; workerId: string; commitKey: string; result: StepResult }>;
 export type CommittedStep = Readonly<{
   outcomeId: string; outputPacketId: string | null; failureCode: string | null; successorId: string | null;
 }>;
@@ -29,8 +33,8 @@ export function checkScope(scope: StepScope, id = scope.runId): StepScope {
 
 export function readCommit(command: StepCommit): StepCommit {
   const value = JSON.parse(serialize(command)) as StepCommit;
-  if (!value || Object.keys(value).length !== 4 || !uuid.test(value.stepId) || !validIdentifier(value.commitKey) || !Number.isInteger(value.epoch) ||
-      value.epoch < 0 || value.epoch > 2147483647) throw new FlowError('INVALID_STEP_COMMIT');
+  if (!value || Object.keys(value).length !== 5 || !uuid.test(value.stepId) || !validIdentifier(value.workerId) || !validIdentifier(value.commitKey) || !Number.isInteger(value.epoch) ||
+      value.epoch < 1 || value.epoch > 2147483647) throw new FlowError('INVALID_STEP_COMMIT');
   if (!value.result || Object.keys(value.result).length !== 2) throw new FlowError('INVALID_STEP_COMMIT');
   if (value.result.kind === 'computed') admitPacket(value.result.packet);
   else if (value.result.kind !== 'failed' || !failureCodes.has(value.result.code)) throw new FlowError('INVALID_STEP_COMMIT');
@@ -58,4 +62,8 @@ export function interpretResult(definition: ReturnType<typeof profileDefinition>
     return { fingerprint, packet: null, failureCode: 'OUTPUT_CONTRACT' };
   }
   return { fingerprint, packet: output, failureCode: null };
+}
+
+export function claimBudget(definition: ReturnType<typeof profileDefinition>, nodeId: string): number {
+  return 1 + (definition.spec.nodes.find(node => node.id === nodeId)?.retry?.maxRetries ?? 0);
 }

@@ -27,7 +27,7 @@ const result = await reopened.invoke('adjust', inputPacket, { timeoutMs: 1000 })
 
 Only functions reviewed as pure are eligible in v1. The declaration is the application's assurance that the function can be recomputed without changing external state. Arbitrary streaming factories and provider policies are refused. Retries default to zero and use the ordinary graph policy when explicitly configured.
 
-A computed result carries an output packet and the attempt IDs from that invocation. Input contract violations reject the invocation. A failed or cancelled run returns a stopped result with its terminal code. Recomputing may allocate new packet, run, and attempt IDs while preserving the input job and immediate parent. The result is compute evidence. The future SQL host owns claim fencing, attempt budgets across restarts, and committing one outcome.
+A computed result carries an output packet and the attempt IDs from that invocation. Input contract violations reject the invocation. A failed or cancelled run returns a stopped result with its terminal code. Recomputing may allocate new packet, run, and attempt IDs while preserving the input job and immediate parent. The result is compute evidence. The PostgreSQL host owns claims and outcome commits. S45 adds persisted retry scheduling and deadline policy.
 
 The passive `event-driven-design-durable/model` entry reads a profile pin without loading runtime or SQL code. From the repository, run `npm run build` and `npm run test:durable` for the coverage gate and installed-package verification.
 
@@ -59,6 +59,16 @@ The adapter stores a queued obligation. S41 adds atomic step continuation and S4
 
 After staging, pass the authorized workspace and run ID as `scope`. Reopen the exact durable profile and call `store.initializeSteps(scope, profile)`. This idempotent operation validates stored input packets and creates the initial ready steps. `store.sweepReady(scope)` lists up to 100 ready steps for that run in creation order. The sweep reads persisted readiness directly.
 
-For an owned step, invoke the profile using its node ID and packet. Pass the result, step ID, epoch, and a stable commit key to `store.commitStep(scope, profile, command)`. Successful output must match the pinned contract and reference exactly the input packet as its immediate parent. The transaction stores the outcome, derived packet, any successor, and an outbox row. A terminal task error or output contract failure stores a failure without a successor. Repeating the exact command returns the original receipt. A stale epoch, reused key, or different result is refused.
+For an owned step, invoke the profile using its node ID and packet. Pass the result, step ID, worker ID, epoch, and a stable commit key to `store.commitStep(scope, profile, command)`. Successful output must match the pinned contract and reference exactly the input packet as its immediate parent. The transaction stores the outcome, derived packet, any successor, and an outbox row. A terminal task error or output contract failure stores a failure without a successor. Repeating the exact command returns the original receipt. A stale epoch, reused key, or different result is refused.
 
-After commit, a caller may send an advisory wake with `store.publishStepWake(scope, receipt.outcomeId)`. A lost wake leaves the successor visible to a sweep. Duplicate wakes leave the same ready row. This slice supports the bounded single-input and single-output function profile. Worker claims and epoch changes arrive in S42.
+After commit, a caller may send an advisory wake with `store.publishStepWake(scope, receipt.outcomeId)`. A lost wake leaves the successor visible to a sweep. Duplicate wakes leave the same ready row. This slice supports the bounded single-input and single-output function profile. A worker must claim the step before committing it.
+
+## Claim and recover work
+
+After initialization, run `startStepWorker` from `event-driven-design-durable` with a store, an authorized run scope, the pinned profile, a unique worker ID, and a task timeout. Each worker periodically claims up to its configured concurrency. PostgreSQL orders due work by creation time and step ID. The worker renews its leases while tasks run. Call `await worker.stop()` before closing the store to stop polling and abort local work.
+
+Hosts that manage their own worker can call `store.claimSteps(scope, profile, { workerId, leaseMs, limit })` and `store.heartbeatStep(scope, claim, leaseMs)`. Claiming increments the epoch. A commit must carry the claim's worker ID and epoch. After expiry, an old worker cannot renew its lease or commit. Retrying the exact command after a successful commit still returns that worker's receipt.
+
+Each lease consumes one invocation allowance. The worker uses `profile.invokeOnce` so in-process retries cannot multiply the recovery budget. By default an expired claim is held. A node's explicit retry allowance permits a bounded number of takeovers of its reviewed pure computation. Returned task failures are terminal in this slice. Persisted retry delays and deadline policy belong to S45. Existing S41 rows upgrade with one claim allowance.
+
+S42 workers sweep one authorized run. A notification can prompt a sweep, and periodic polling still works if the listener disappears. The worker can recompute eligible work, while the outcome store accepts at most one committed result.
