@@ -1,3 +1,7 @@
+import { cancelProgress } from '../commands/cancel-progress.js';
+import { queryRun } from '../query/progress.js';
+import type { ProgressAuthorization, ProgressCancellation, ProgressRequest } from '../query/progress-model.js';
+export type { ProgressAuthorization, ProgressCancellation, ProgressRequest, ProgressStep, RunProgress } from '../query/progress-model.js';
 import { submitSignal, sweepExpiredSignals } from '../commands/submit-signal.js';
 import { registerWait } from '../operators/wait/register.js';
 import type { SignalAuthorization, SignalCommand } from '../signals/model.js';
@@ -104,6 +108,9 @@ export function openPostgresStore(connectionString: string) {
     reconcileExternalOperation: (scope: StepScope, profile: DurableProfile, command: ReconciliationCommand,
       adapter: ReconciliationAdapter) => reconcileExternalOperation(pool, scope, profile, command, adapter),
     getRunTiming: (scope: StepScope) => runTiming(pool, scope),
+    queryRun: (scope: StepScope, request: ProgressRequest, authorize: ProgressAuthorization) => queryRun(pool, scope, request, authorize),
+    cancelProgress: (scope: StepScope, request: ProgressCancellation, authorize: ProgressAuthorization) =>
+      cancelProgress(pool, scope, request, authorize),
     cancelRun: (scope: StepScope) => runTiming(pool, scope, true),
     scheduleStepRetry: (scope: StepScope, profile: DurableProfile, claim: ClaimIdentity, code: string) =>
       scheduleStepRetry(pool, scope, profile, claim, code),

@@ -42,3 +42,5 @@ Follow [readability and structure](agent-rules/readability-and-structure.md): ai
 S04 adds public packet/derivePacket factories and FlowError, with internal admission/channel primitives. See [ownership/validation](architecture/packets-and-channels.md); a generic type or internal rich-value test does not enable public custom codecs.
 
 S05 adds contract/jsonContract, defineComponent/describeRegistry and browser-safe catalog helpers. See [authoring/profile boundaries](architecture/contracts-and-components.md); unsupported schema features fail explicitly, and UI payload evaluation remains backend-authoritative. Offline packed tests require the dependency cache populated by npm ci.
+
+The packaged Next.js acceptance suite includes the durable inspector. Set `FBP_POSTGRES_TEST_URL` to a disposable PostgreSQL server with permission to create and drop a test database before running `npm run test:next`. The manual `npm run demo:next` command can start without PostgreSQL.

@@ -191,3 +191,6 @@ export function GraphEditor({ catalog, initialNodes = [], initialGraph, initialL
     </div>
   </div>;
 }
+
+export { DurableRunInspector } from './durable/progress.js';
+export type { DurableRunInspectorProps } from './durable/progress.js';

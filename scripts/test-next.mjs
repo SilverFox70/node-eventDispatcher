@@ -8,6 +8,7 @@ import { measureFixture } from './next/coverage.mjs';
 import { startServer } from './next/server.mjs';
 import { demoOptions } from './next/demo-options.mjs';
 const demo = demoOptions(process.argv.slice(2));
+if (!demo.serve && !process.env.FBP_POSTGRES_TEST_URL) throw Error('Set FBP_POSTGRES_TEST_URL to a disposable PostgreSQL server for the packaged consumer tests.');
 
 const root = resolve(fileURLToPath(new globalThis.URL('..', import.meta.url)));
 const session = realpathSync(mkdtempSync(join(tmpdir(), 'fbp-next-')));
@@ -26,6 +27,8 @@ try {
   assert.equal(editorBuild.code, 0, editorBuild.output);
   const artifactBuild = await npmCommand(['run', 'build:artifacts'], { cwd: root, log: join(evidence, 'artifact-build.log') });
   assert.equal(artifactBuild.code, 0, artifactBuild.output);
+  const durableBuild = await npmCommand(['run', 'build:durable'], { cwd: root, log: join(evidence, 'durable-build.log') });
+  assert.equal(durableBuild.code, 0, durableBuild.output);
   cpSync(join(root, 'fixtures/next-consumer'), app, { recursive: true,
     filter: path => !['node_modules', '.next', 'vendor'].includes(basename(path)) });
   mkdirSync(join(app, 'vendor'));
@@ -40,14 +43,19 @@ try {
     '--workspace', 'event-driven-design-artifacts', '--pack-destination', join(app, 'vendor')], { cwd: root });
   assert.equal(draftPack.code, 0, draftPack.output);
   const draftArtifact = JSON.parse(draftPack.output)[0];
+  const durablePack = await npmCommand(['pack', '--offline', '--ignore-scripts', '--json',
+    '--workspace', 'event-driven-design-durable', '--pack-destination', join(app, 'vendor')], { cwd: root });
+  assert.equal(durablePack.code, 0, durablePack.output);
+  const durableArtifact = JSON.parse(durablePack.output)[0];
   assert(editorArtifact.files.some(file => file.path === 'dist/styles.css'));
   assert(!artifact.files.some(file => file.path.startsWith('packages/editor')));
-  writeFileSync(join(evidence, 'artifact.json'), JSON.stringify({ core: artifact, editor: editorArtifact, artifacts: draftArtifact }, null, 2));
+  writeFileSync(join(evidence, 'artifact.json'), JSON.stringify({ core: artifact, editor: editorArtifact, artifacts: draftArtifact, durable: durableArtifact }, null, 2));
   const lockPath = join(app, 'package-lock.json'), lock = JSON.parse(readFileSync(lockPath, 'utf8'));
   assert.equal(lock.packages['node_modules/event-driven-design'].version, artifact.version);
   lock.packages['node_modules/event-driven-design'].integrity = artifact.integrity;
   lock.packages['node_modules/event-driven-design-editor'].integrity = editorArtifact.integrity;
   lock.packages['node_modules/event-driven-design-artifacts'].integrity = draftArtifact.integrity;
+  lock.packages['node_modules/event-driven-design-durable'].integrity = durableArtifact.integrity;
   writeFileSync(lockPath, JSON.stringify(lock, null, 2) + '\n');
   const install = await npmCommand(['ci', '--no-audit', '--no-fund'], { cwd: app, log: join(evidence, 'install.log') });
   assert.equal(install.code, 0, install.output);
@@ -94,7 +102,7 @@ try {
       assert.equal(probe.code, 0, probe.output || `Chromium launch stopped with ${probe.signal}`);
     }
     cpSync(join(root, 'examples/content-review'), join(app, 'lib/s24f'), { recursive: true });
-    const tests = ['consumer', 'inspector', 'inspector-state', 'coverage-signal', 'execution', 'demo-address', 'http', 'diagnostics', 'diagnostic-state', 'diagnostic-api', 'editor', 'content-review', 'content-comparison'].map(name => join(root, `test/next/${name}.test.js`));
+    const tests = ['consumer', 'inspector', 'inspector-state', 'coverage-signal', 'execution', 'demo-address', 'http', 'diagnostics', 'diagnostic-state', 'diagnostic-api', 'editor', 'content-review', 'content-comparison', 'durable-progress'].map(name => join(root, `test/next/${name}.test.js`));
     const tested = await command(process.execPath, ['--test', '--test-reporter=tap', ...tests], {
       cwd: root, env: { FBP_NEXT_APP: app, FBP_NEXT_EVIDENCE: evidence, NODE_V8_COVERAGE: join(evidence, 'v8-test'), ...browserEnv },
       log: join(evidence, 'consumer-tests.log'),

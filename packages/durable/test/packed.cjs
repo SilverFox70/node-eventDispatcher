@@ -102,7 +102,7 @@ try {
       .replace('../dist/postgres/index.js', 'event-driven-design-durable/postgres')
       .replace('../dist/index.js', 'event-driven-design-durable');
     writeFileSync(join(fixture, 'timing.test.mjs'), timing);
-    for (const file of ['routing', 'joins', 'signals']) {
+    for (const file of ['routing', 'joins', 'signals', 'progress']) {
       const routed = readFileSync(join(root, 'packages/durable/test', file + '.test.js'), 'utf8')
         .replace('../dist/postgres/index.js', 'event-driven-design-durable/postgres')
         .replace('../dist/index.js', 'event-driven-design-durable');
@@ -114,7 +114,7 @@ try {
         .replace('../../dist/postgres/index.js', 'event-driven-design-durable/postgres');
       writeFileSync(join(fixture, 'fixtures', file), contents);
     }
-    assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'postgres.test.mjs', 'steps.test.mjs', 'leases.test.mjs', 'operations.test.mjs', 'reconciliation.test.mjs', 'timing.test.mjs', 'routing.test.mjs', 'joins.test.mjs', 'signals.test.mjs']), /^# pass 38$/m);
+    assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'postgres.test.mjs', 'steps.test.mjs', 'leases.test.mjs', 'operations.test.mjs', 'reconciliation.test.mjs', 'timing.test.mjs', 'routing.test.mjs', 'joins.test.mjs', 'signals.test.mjs', 'progress.test.mjs']), /^# pass 40$/m);
   }
   console.log('Installed durable profile, passive model, and TypeScript declarations passed.');
 } finally { dispose(); }
