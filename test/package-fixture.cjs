@@ -31,7 +31,7 @@ function runCommand(command, args, cwd, timeoutMs = commandTimeoutMs) {
   return result.stdout;
 }
 /** Install the actual tarball in a real isolated consumer. Never link checkout source or dependencies. */
-function installedPackage({ tools = false, contentOnlyCache = false } = {}) {
+function installedPackage({ tools = false, contentOnlyCache = false, additionalPackages = [] } = {}) {
   const fixture = realpathSync(mkdtempSync(join(tmpdir(), 'fbp-installed-')));
   const attempt = (command, args, cwd = fixture) => attemptCommand(command, args, cwd);
   const run = (command, args, cwd = fixture, timeoutMs = commandTimeoutMs) => runCommand(command, args, cwd, timeoutMs);
@@ -40,16 +40,30 @@ function installedPackage({ tools = false, contentOnlyCache = false } = {}) {
     const pkg = require('../package.json'), locked = require('../package-lock.json');
     const dependencies = { 'event-driven-design': `file:${packed.filename}` };
     const selected = new Map();
+    const optionalPackages = {};
     function include(name) {
       if (selected.has(name)) return;
       const record = { ...locked.packages[`node_modules/${name}`] };
       assert(record.integrity, `Missing locked dependency: ${name}`);
       delete record.dev;
       selected.set(name, record);
-      for (const child of Object.keys(record.dependencies ?? {})) include(child);
+      for (const child of Object.keys({ ...record.dependencies, ...record.optionalDependencies })) include(child);
     }
     for (const name of Object.keys(pkg.dependencies)) include(name);
     if (tools) for (const name of ['typescript', '@types/node']) { dependencies[name] = pkg.devDependencies[name]; include(name); }
+    for (const path of additionalPackages) {
+      const [archive] = JSON.parse(run('npm', ['pack', './' + path, '--ignore-scripts', '--json', '--offline',
+        '--pack-destination', fixture, '--cache', join(fixture, 'pack-cache')], root));
+      const metadata = require(join(root, path, 'package.json'));
+      const location = 'file:' + archive.filename;
+      dependencies[metadata.name] = location;
+      optionalPackages['node_modules/' + metadata.name] = {
+        version: metadata.version, resolved: location, integrity: archive.integrity,
+        dependencies: metadata.dependencies, peerDependencies: metadata.peerDependencies,
+        peerDependenciesMeta: metadata.peerDependenciesMeta,
+      };
+      for (const name of Object.keys(metadata.dependencies ?? {})) include(name);
+    }
     const sourceCache = run('npm', ['config', 'get', 'cache'], root).trim();
     const cache = contentOnlyCache ? join(fixture, 'content-only-cache') : sourceCache;
     if (contentOnlyCache) {
@@ -62,7 +76,7 @@ function installedPackage({ tools = false, contentOnlyCache = false } = {}) {
     }
     const manifest = { name: 'fbp-installed-consumer', version: '1.0.0', private: true, dependencies };
     const packages = { '': manifest, 'node_modules/event-driven-design': { version: pkg.version,
-      resolved: `file:${packed.filename}`, integrity: packed.integrity, dependencies: pkg.dependencies, engines: pkg.engines } };
+      resolved: `file:${packed.filename}`, integrity: packed.integrity, dependencies: pkg.dependencies, engines: pkg.engines }, ...optionalPackages };
     for (const [name, record] of selected) packages[`node_modules/${name}`] = record;
     writeFileSync(join(fixture, 'package.json'), JSON.stringify(manifest));
     writeFileSync(join(fixture, 'package-lock.json'), JSON.stringify({ name: manifest.name, version: manifest.version, lockfileVersion: 3, requires: true, packages }));

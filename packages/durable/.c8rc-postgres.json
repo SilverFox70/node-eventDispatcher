@@ -1,0 +1,9 @@
+{
+  "all": true,
+  "src": ["packages/durable/dist"],
+  "include": ["packages/durable/{dist,src}/postgres/**", "packages/durable/{dist,src}/submission/**"],
+  "exclude": ["**/*.d.ts"],
+  "exclude-after-remap": true,
+  "reports-dir": "coverage/postgres",
+  "reporter": ["text", "json"]
+}

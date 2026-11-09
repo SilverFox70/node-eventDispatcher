@@ -2,7 +2,7 @@
   "all": true,
   "src": ["packages/durable/dist"],
   "include": ["packages/durable/dist/**/*.js", "packages/durable/src/**/*.ts"],
-  "exclude": ["**/*.d.ts"],
+  "exclude": ["**/*.d.ts", "**/postgres/**", "**/submission/**"],
   "exclude-after-remap": true,
   "reports-dir": "coverage/durable",
   "reporter": ["text", "json"]

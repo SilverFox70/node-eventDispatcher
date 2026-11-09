@@ -29,7 +29,7 @@ Names describe proposed SQL tables; S20 freezes DDL constraints, timestamp units
 
 ## Transactional submission and atomic progress
 
-Proposed API: `withDurableTransaction(db, async tx => { await domainMutation(tx.connection); return tx.stage({jobId,revisionId,input}); })`. Host owns the concrete PostgreSQL connection/BEGIN/COMMIT/ROLLBACK. `tx.stage` is scoped to that open transaction and invalid after completion; it cannot silently open another connection. Return submission only after commit; no worker can see uncommitted readiness. Domain and durable schemas must reside in the same transactional database for this profile. A separate application database requires a later transactional-outbox adapter with its own proof, not a fictitious cross-database transaction.
+The [S40 adapter](../../../packages/durable/README.md#stage-a-workflow-in-the-business-transaction) uses `store.withDurableTransaction(authorizedWorkspaceId, callback)`. The callback receives `tx.query(sql, values)` and `tx.stage({jobId, revisionId, profilePin, inputs})` bound to one checked-out PostgreSQL client. The scope expires on callback exit and cannot be borrowed by a different transaction. The outer promise returns only after commit. Domain and durable tables reside in the same transactional database. The stage identity is `(workspaceId, jobId)`. Its fingerprint includes the pinned revision and exact original input envelopes.
 
 For Realberry, do not assume Prisma/ORM integration from this signature: a future adapter must prove it uses the actual domain transaction and current DB constraints. S40 demonstrates atomic sample domain-row mutation plus obligation staging on real PostgreSQL; application adoption is separate.
 
