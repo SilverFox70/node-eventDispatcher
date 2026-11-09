@@ -12,10 +12,15 @@ export async function migrate(pool: Pool): Promise<void> {
       version integer NOT NULL CHECK (version > 0)
     )`);
     const { rows } = await client.query<{ version: number }>('SELECT version FROM nodeflow_durable.schema_version');
-    if (rows[0]?.version === 1) return;
-    if (rows.length) throw new FlowError('UNSUPPORTED_DURABLE_SCHEMA');
-    const sql = await readFile(new URL('../../migrations/001-submissions.sql', import.meta.url), 'utf8');
-    await client.query(sql);
-    await client.query('INSERT INTO nodeflow_durable.schema_version VALUES (true, 1)');
+    const version = rows[0]?.version ?? 0;
+    const migrations = ['001-submissions.sql', '002-step-continuations.sql'];
+    if (version > migrations.length) throw new FlowError('UNSUPPORTED_DURABLE_SCHEMA');
+    for (const [index, file] of migrations.entries()) {
+      if (index < version) continue;
+      const sql = await readFile(new URL('../../migrations/' + file, import.meta.url), 'utf8');
+      await client.query(sql);
+      await client.query(`INSERT INTO nodeflow_durable.schema_version VALUES (true, $1)
+        ON CONFLICT (singleton) DO UPDATE SET version = EXCLUDED.version`, [index + 1]);
+    }
   });
 }

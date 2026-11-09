@@ -6,6 +6,7 @@ import type { ComponentDescriptorV2, GraphSpec } from 'event-driven-design/model
 import { prepareBoundedTasks } from 'event-driven-design/task-profile';
 import { readDurableProfilePin } from '../model/index.js';
 import type { DurableProfilePin } from '../model/index.js';
+import { rememberProfile } from './definition.js';
 
 export type DurableTaskAdapter = Readonly<{
   component: string;
@@ -24,7 +25,7 @@ export type DurableProfileOptions = Readonly<{
 function prepare(options: DurableProfileOptions) {
   const compiled = compileGraph(options.graph, options.registry);
   if (!compiled.ok) throw new FlowError('PROFILE_INELIGIBLE');
-  const { spec, catalog, invoke } = prepareBoundedTasks(compiled.graph);
+  const { spec, catalog, registry, invoke } = prepareBoundedTasks(compiled.graph);
   const { runtimeVersion, policyVersion, serviceProfileDigest, bindings } = options.identity;
   const execution = executionIdentity({ graph: spec, bindings, runtimeVersion, policyVersion, serviceProfileDigest });
   if (execution.status !== 'verified') throw new FlowError('PROFILE_INELIGIBLE');
@@ -47,7 +48,9 @@ function prepare(options: DurableProfileOptions) {
         return { adapter, input, output, configuration: configuration ?? null };
       }))).digest('hex'),
   });
-  return Object.freeze({ pin, invoke });
+  const profile = Object.freeze({ pin, invoke });
+  rememberProfile(profile, { spec, registry });
+  return profile;
 }
 
 /** Admit a new pure task profile. Application review is the authority for replay safety. */

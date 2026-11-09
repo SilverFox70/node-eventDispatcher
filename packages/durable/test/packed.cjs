@@ -1,5 +1,5 @@
 const assert = require('node:assert/strict');
-const { copyFileSync, readFileSync, writeFileSync } = require('node:fs');
+const { copyFileSync, mkdirSync, readFileSync, writeFileSync } = require('node:fs');
 const { join } = require('node:path');
 const { installedPackage } = require('../../../test/package-fixture.cjs');
 
@@ -44,6 +44,12 @@ try {
     if (outcome.status === 'computed') outcome.packet.parentPacketIds satisfies readonly string[];
     declare const url: string;
     const store = openPostgresStore(url);
+    const scope = { workspaceId: 'workspace', runId: 'id' };
+    await store.initializeSteps(scope, profile);
+    const [step] = await store.sweepReady(scope);
+    if (step && outcome.status === 'computed') await store.commitStep(scope, profile, {
+      stepId: step.stepId, epoch: step.epoch, commitKey: 'commit', result: { kind: 'computed', packet: outcome.packet },
+    });
     await store.withDurableTransaction('workspace', async tx => {
       await tx.query<{ revision: number }>('SELECT revision FROM person');
       await tx.stage({ jobId: 'job', revisionId: 'rev', profilePin: profile.pin, inputs: {} });
@@ -58,7 +64,18 @@ try {
       .replace('../../../examples/durable/update-person.mjs', './update-person.mjs');
     copyFileSync(join(root, 'examples/durable/update-person.mjs'), join(fixture, 'update-person.mjs'));
     writeFileSync(join(fixture, 'postgres.test.mjs'), integration);
-    assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'postgres.test.mjs']), /^# pass 5$/m);
+    const steps = readFileSync(join(root, 'packages/durable/test/steps.test.js'), 'utf8')
+      .replace('../dist/postgres/index.js', 'event-driven-design-durable/postgres')
+      .replace('../migrations/001-submissions.sql', './node_modules/event-driven-design-durable/migrations/001-submissions.sql');
+    writeFileSync(join(fixture, 'steps.test.mjs'), steps);
+    mkdirSync(join(fixture, 'fixtures'));
+    for (const file of ['step-profile.mjs', 'step-worker.mjs']) {
+      const contents = readFileSync(join(root, 'packages/durable/test/fixtures', file), 'utf8')
+        .replace('../../dist/index.js', 'event-driven-design-durable')
+        .replace('../../dist/postgres/index.js', 'event-driven-design-durable/postgres');
+      writeFileSync(join(fixture, 'fixtures', file), contents);
+    }
+    assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'postgres.test.mjs', 'steps.test.mjs']), /^# pass 9$/m);
   }
   console.log('Installed durable profile, passive model, and TypeScript declarations passed.');
 } finally { dispose(); }

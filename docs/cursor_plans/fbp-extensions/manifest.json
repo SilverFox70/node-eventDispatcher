@@ -775,8 +775,8 @@
         "X40.3"
       ],
       "status": "approved-for-execution",
-      "execution_status": "complete-for-review",
-      "merge_sha": null,
+      "execution_status": "merged",
+      "merge_sha": "3a4487b03f1de27d52e29d75206ba7c4349d686f",
       "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety",
       "journal": "S40-execution.md",
       "execution_approval": {
@@ -798,10 +798,15 @@
         "X41.2",
         "X41.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
-      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety",
+      "journal": "S41-execution.md",
+      "execution_approval": {
+        "authority": "user requested proceeding with the next slice after S40",
+        "tasks": ["S41.A", "S41.B", "S41.C"]
+      }
     },
     {
       "id": "S42",

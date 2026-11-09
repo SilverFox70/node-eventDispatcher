@@ -54,3 +54,11 @@ Supply the workspace ID from host authorization and the revision and pin from th
 The uniqueness key is workspace plus job ID. For the same key, replay the original input envelopes, revision and pin. An identical submission returns the existing run ID with `created: false`. A different fingerprint returns `INPUT_CONFLICT`. Retain the original request for retry if the connection is lost while committing. Reusing `created` as shown prevents a replay from applying the domain mutation again.
 
 The adapter stores a queued obligation. S41 adds atomic step continuation and S42 adds worker recovery. The real database suite is `npm run test:postgres`. Set `FBP_POSTGRES_TEST_URL` to a disposable PostgreSQL 18 server with permission to create and drop test databases. Build core first with `npm run build`. The suite tests the source workspace and the installed package.
+
+## Commit a step and its continuation
+
+After staging, pass the authorized workspace and run ID as `scope`. Reopen the exact durable profile and call `store.initializeSteps(scope, profile)`. This idempotent operation validates stored input packets and creates the initial ready steps. `store.sweepReady(scope)` lists up to 100 ready steps for that run in creation order. The sweep reads persisted readiness directly.
+
+For an owned step, invoke the profile using its node ID and packet. Pass the result, step ID, epoch, and a stable commit key to `store.commitStep(scope, profile, command)`. Successful output must match the pinned contract and reference exactly the input packet as its immediate parent. The transaction stores the outcome, derived packet, any successor, and an outbox row. A terminal task error or output contract failure stores a failure without a successor. Repeating the exact command returns the original receipt. A stale epoch, reused key, or different result is refused.
+
+After commit, a caller may send an advisory wake with `store.publishStepWake(scope, receipt.outcomeId)`. A lost wake leaves the successor visible to a sweep. Duplicate wakes leave the same ready row. This slice supports the bounded single-input and single-output function profile. Worker claims and epoch changes arrive in S42.
