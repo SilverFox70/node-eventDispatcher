@@ -128,3 +128,9 @@ An unconsumed signal expires seven days after admission. The worker sweeps expir
 Call `store.queryRun(scope, { actorId, limit, after }, authorize)` from the server. The callback authorizes the authenticated actor for the workspace and run. The snapshot includes pinned revisions, step stages, safe wait and operation metadata, and a bounded cursor. A cursor selects the next page of the current projection. Start with a fresh snapshot after reconnect. The query leaves packet payloads and provider evidence in their owning stores.
 
 Use `store.cancelProgress(scope, { actorId, expectedRevision }, authorize)` with the snapshot's lifecycle revision. Competing or stale cancellations return a conflict. Signal and provider resolution continue through their existing commands and separate authorization policies. For browser use, `DurableRunInspector` from the optional editor package accepts a host endpoint and an optional origin map for the pinned revision. The host owns authentication and command payloads.
+
+## Operate a durable host
+
+Migration 010 retains the identities that fence replay. Ordinary DELETE and TRUNCATE against workflow runs, provider operation identities, join completion markers and signal receipts refuse with `DURABLE_RETENTION_REQUIRED`. Signal expiry still clears pending payloads. Back up the database, graph artifacts and pinned executable bindings, and rehearse a restore into an isolated database before a production upgrade. Resolve provider effects since the backup before enabling restored workers.
+
+The repository contains an approval workflow and an installed acceptance drill that verifies tarballs, npm workspace builds, native PostgreSQL backup and restore, and pinned resume.
