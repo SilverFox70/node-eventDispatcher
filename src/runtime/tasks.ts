@@ -21,7 +21,7 @@ function errorCode(error: unknown): unknown {
 }
 /** One operation owner per node. Retries never overlap an unsettled attempt. */
 export function createTasks(state: RunState, scope: TaskScope, nodeId: string, policy: TaskPolicy, diagnostics: Diagnostics, component: RegistryComponent) {
-  let busy = false, working = false;
+  let busy = false, working = false, pendingAttempt = false;
   const provenance = createProvenance();
   let failure: { error: unknown } | undefined;
   function consumeFailure(error: unknown): boolean {
@@ -70,9 +70,9 @@ export function createTasks(state: RunState, scope: TaskScope, nodeId: string, p
       const retry = policy.retry;
       for (let attempt = 1; ; attempt++) {
         if (!state.check()) throw new FlowError('RUN_TERMINATED');
-        pending = true;
+        pending = true; pendingAttempt = true;
         const current = taskAttempt(handler, state, scope, nodeId, attempt, policy.taskTimeoutMs,
-          () => { pending = false; if (ended) busy = false; }, { diagnostics, operationId, inputs, declarations: component.decisions ?? [] });
+          () => { pending = false; pendingAttempt = false; if (ended) busy = false; }, { diagnostics, operationId, inputs, declarations: component.decisions ?? [] });
         cancelAttempt = current.cancel;
         const outcome = await current.result;
         if (!state.check()) throw new FlowError('RUN_TERMINATED');
@@ -94,5 +94,10 @@ export function createTasks(state: RunState, scope: TaskScope, nodeId: string, p
     void result.catch(() => {});
     return result;
   }
-  return { task, pending: () => working, delivered: provenance.delivered, consumeFailure };
+  function settledFailureCode(error: unknown): string | undefined {
+    if (!failure || !Object.is(failure.error, error) || pendingAttempt) return;
+    const code = errorCode(error);
+    return typeof code === 'string' && /^[A-Z][A-Z0-9_]{0,63}$/.test(code) ? code : undefined;
+  }
+  return { task, pending: () => working, delivered: provenance.delivered, consumeFailure, settledFailureCode };
 }

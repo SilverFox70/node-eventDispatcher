@@ -1,3 +1,4 @@
+import { requireActiveRun } from './run-timing.js';
 import { randomUUID } from 'node:crypto';
 import { FlowError } from 'event-driven-design';
 import type { Pool, PoolClient } from 'pg';
@@ -30,6 +31,7 @@ export async function prepareExternalOperation(pool: Pool, scope: StepScope, cla
   const { request, fingerprint } = readOperation(input);
   const { provider, businessKey, resourceKey, revision, policyVersion } = request;
   return inTransaction(pool, async client => {
+    await requireActiveRun(client, scope);
     await requireLiveClaim(client, scope, claim);
     await client.query(`INSERT INTO nodeflow_durable.external_resources VALUES ($1,$2,$3)
       ON CONFLICT DO NOTHING`, [scope.workspaceId, provider, resourceKey]);

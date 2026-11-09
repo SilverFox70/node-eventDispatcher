@@ -38,6 +38,12 @@ export type NetworkRun = Readonly<{
   finish(): Promise<Terminal>; cancel(): void; done: Promise<Terminal>; snapshot(): Snapshot;
 }>;
 
+const taskFailureCodes = new WeakMap<NetworkRun, string>();
+
+export function settledTaskFailureCode(run: NetworkRun): string | undefined {
+  return taskFailureCodes.get(run);
+}
+
 const definitions = new WeakMap<NetworkRun, GraphDefinition>();
 
 
@@ -192,6 +198,8 @@ export function startNetwork(graph: CompiledGraph, options: StartOptions = {}): 
         for (const target of outputPorts.values()) target.channel.close();
         state.record('PROCESS_COMPLETED', node.id); complete();
       }).catch(error => {
+        const code = operations.settledFailureCode(error);
+        if (code) taskFailureCodes.set(run, code);
         const reported = operations.consumeFailure(error);
         if (state.check() && !reported) diagnostics.record({ kind: 'process-error', nodeId: node.id, code: diagnosticErrorCode(error) });
         fail(error, node.id);

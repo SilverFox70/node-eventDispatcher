@@ -1,3 +1,5 @@
+import { finishRunIfDone, requireActiveRun } from './run-timing.js';
+import { validateRunBudget } from '../scheduling/policy.js';
 import { randomUUID } from 'node:crypto';
 import { admitPacket, FlowError } from 'event-driven-design';
 import type { Packet } from 'event-driven-design';
@@ -21,12 +23,14 @@ export async function addReady(client: PoolClient, runId: string, nodeId: string
 export function initializeSteps(pool: Pool, scope: StepScope, profile: DurableProfile) {
   scope = checkScope(scope);
   return inTransaction(pool, async client => {
+    await requireActiveRun(client, scope);
     const { rows: [run] } = await client.query<{
-      execution_digest: string; adapter_digest: string; input_json: string; steps_initialized: boolean;
-    }>(`SELECT execution_digest, adapter_digest, input_json, steps_initialized FROM nodeflow_durable.workflow_runs
+      execution_digest: string; adapter_digest: string; input_json: string; steps_initialized: boolean; timeout_ms: number | null;
+    }>(`SELECT execution_digest, adapter_digest, input_json, steps_initialized, timeout_ms FROM nodeflow_durable.workflow_runs
       WHERE workspace_id = $1 AND run_id = $2 FOR UPDATE`, [scope.workspaceId, scope.runId]);
     if (!run) throw new FlowError('RUN_NOT_FOUND');
     const definition = checkPin(profile, run.execution_digest, run.adapter_digest);
+    if (run.timeout_ms !== null) validateRunBudget(profile, run.timeout_ms);
     if (run.steps_initialized) return;
     const inputs = JSON.parse(run.input_json) as Record<string, Packet[]>;
     for (const [port, packets] of Object.entries(inputs)) {
@@ -40,6 +44,7 @@ export function initializeSteps(pool: Pool, scope: StepScope, profile: DurablePr
       }
     }
     await client.query('UPDATE nodeflow_durable.workflow_runs SET steps_initialized = true WHERE run_id = $1', [scope.runId]);
+    await finishRunIfDone(client, scope.runId);
   });
 }
 
@@ -50,7 +55,9 @@ export async function sweepReady(pool: Pool, scope: StepScope): Promise<readonly
     FROM nodeflow_durable.steps s
     JOIN nodeflow_durable.workflow_runs r USING (run_id)
     JOIN nodeflow_durable.step_packets p ON (p.run_id, p.packet_id) = (s.run_id, s.input_packet_id)
-    WHERE r.workspace_id = $1 AND s.run_id = $2 AND s.status = 'ready'
+    WHERE r.workspace_id = $1 AND s.run_id = $2 AND s.status = 'ready' AND r.status='queued'
+      AND (r.deadline_at IS NULL OR r.deadline_at > clock_timestamp())
+      AND (r.not_before IS NULL OR r.not_before <= clock_timestamp())
       AND s.not_before <= clock_timestamp() AND s.epoch < s.max_claims
       AND NOT EXISTS (
         SELECT 1 FROM nodeflow_durable.external_step_operations link

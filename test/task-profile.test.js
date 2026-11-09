@@ -67,6 +67,7 @@ test('leased invocation consumes one attempt even when the graph permits retries
   const one = await invokeOnce('node', input, { timeoutMs: 1000 });
   assert.equal(one.status, 'stopped');
   assert.equal(one.attemptIds.length, 1);
+  assert.equal(one.retryCode, 'TEMPORARY');
   const retried = await invoke('node', input, { timeoutMs: 1000 });
   assert.equal(retried.status, 'computed');
   assert.equal(retried.attemptIds.length, 2);

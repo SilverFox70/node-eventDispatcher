@@ -1,7 +1,7 @@
 {
   "all": true,
   "src": ["packages/durable/dist"],
-  "include": ["packages/durable/{dist,src}/postgres/**", "packages/durable/{dist,src}/submission/**", "packages/durable/{dist,src}/steps/**", "packages/durable/{dist,src}/workers/**", "packages/durable/{dist,src}/operations/**", "packages/durable/{dist,src}/reconciliation/**", "packages/durable/{dist,src}/profile/definition.*"],
+  "include": ["packages/durable/{dist,src}/postgres/**", "packages/durable/{dist,src}/submission/**", "packages/durable/{dist,src}/steps/**", "packages/durable/{dist,src}/workers/**", "packages/durable/{dist,src}/operations/**", "packages/durable/{dist,src}/reconciliation/**", "packages/durable/{dist,src}/scheduling/**", "packages/durable/{dist,src}/profile/definition.*"],
   "exclude": ["**/*.d.ts"],
   "exclude-after-remap": true,
   "reports-dir": "coverage/postgres",

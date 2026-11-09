@@ -1,3 +1,4 @@
+import { performance } from 'node:perf_hooks';
 import { setTimeout as delay } from 'node:timers/promises';
 import { FlowError } from 'event-driven-design';
 import type { openPostgresStore } from '../postgres/index.js';
@@ -5,7 +6,7 @@ import type { DurableProfile, StepClaim, StepResult, StepScope } from '../steps/
 import { checkScope } from '../steps/model.js';
 import { validIdentifier } from '../submission/input.js';
 
-type Store = Pick<ReturnType<typeof openPostgresStore>, 'claimSteps' | 'heartbeatStep' | 'commitStep'>;
+type Store = Pick<ReturnType<typeof openPostgresStore>, 'claimSteps' | 'heartbeatStep' | 'commitStep' | 'scheduleStepRetry'>;
 export type StepWorkerOptions = Readonly<{
   store: Store; scope: StepScope; profile: DurableProfile; workerId: string; timeoutMs: number;
   leaseMs?: number; heartbeatMs?: number; pollMs?: number; concurrency?: number;
@@ -41,7 +42,7 @@ export function startStepWorker(options: StepWorkerOptions) {
   }
   const shutdown = new globalThis.AbortController();
 
-  async function execute(claim: StepClaim) {
+  async function execute(claim: StepClaim, claimStarted: number) {
     const stopHeartbeat = new globalThis.AbortController();
     const lost = new globalThis.AbortController();
     const pulseSignal = globalThis.AbortSignal.any([shutdown.signal, stopHeartbeat.signal]);
@@ -55,10 +56,17 @@ export function startStepWorker(options: StepWorkerOptions) {
       }
     })();
     try {
-      const computed = await profile.invokeOnce(claim.nodeId, claim.input, { timeoutMs, signal });
+      const remaining = claim.remainingMs === null ? timeoutMs : Math.floor(claim.remainingMs - (performance.now() - claimStarted));
+      if (remaining <= 0) return;
+      const deadline = claim.remainingMs === null ? signal : globalThis.AbortSignal.timeout(remaining);
+      const computed = await profile.invokeOnce(claim.nodeId, claim.input, {
+        timeoutMs, signal: globalThis.AbortSignal.any([signal, deadline]),
+      });
       stopHeartbeat.abort();
       await pulse;
-      if (signal.aborted) return;
+      if (signal.aborted || (claim.remainingMs !== null && deadline.aborted)) return;
+      if (computed.status === 'stopped' && computed.retryCode &&
+          await store.scheduleStepRetry(scope, profile, claim, computed.retryCode)) return;
       const result: StepResult = computed.status === 'computed'
         ? { kind: 'computed', packet: computed.packet } : failure(computed.terminal.code);
       await store.commitStep(scope, profile, {
@@ -71,8 +79,9 @@ export function startStepWorker(options: StepWorkerOptions) {
   const done = (async () => {
     while (!shutdown.signal.aborted) {
       try {
+        const claimStarted = performance.now();
         const claims = await store.claimSteps(scope, profile, { workerId, leaseMs, limit: concurrency });
-        if (!shutdown.signal.aborted) await Promise.all(claims.map(execute));
+        if (!shutdown.signal.aborted) await Promise.all(claims.map(claim => execute(claim, claimStarted)));
       } catch (error) { onError(error); }
       await pause(pollMs, shutdown.signal);
     }

@@ -1,3 +1,4 @@
+import { finishRunIfDone, lockRun, requireActiveRun } from './run-timing.js';
 import { admitPacket, derivePacket, FlowError } from 'event-driven-design';
 import type { Pool, PoolClient } from 'pg';
 import { readCommand, readEvidence } from '../reconciliation/model.js';
@@ -46,6 +47,7 @@ export async function reconcileExternalOperation(pool: Pool, scope: StepScope, p
   }
 
   const applied = await inTransaction(pool, async client => {
+    await lockRun(client, scope);
     const target = await readTarget(client, scope, stepId, operationId, true);
     const { row } = target;
     const revision = row.resolution_revision;
@@ -71,6 +73,7 @@ export async function reconcileExternalOperation(pool: Pool, scope: StepScope, p
         nextReviewAt: updated!.next_review_at.toISOString() };
     }
 
+    await requireActiveRun(client, scope);
     const definition = checkPin(profile, row.execution_digest, row.adapter_digest);
     const resultJson = serialize(found.value);
     if (!contractAt(definition, row.node_id, 'out').validate(found.value) ||
@@ -83,6 +86,8 @@ export async function reconcileExternalOperation(pool: Pool, scope: StepScope, p
     await client.query(`UPDATE nodeflow_durable.external_operations SET state='succeeded', result_json=$2,
       resolution_revision=resolution_revision+1, hold_reason=NULL, next_review_at=NULL WHERE operation_id=$1`,
     [operationId, resultJson]);
+    await requireActiveRun(client, scope);
+    await finishRunIfDone(client, scope.runId);
     await audit(client, command, revision, 'SUCCEEDED', found.evidenceRef);
     return { status: 'succeeded' as const, revision: revision + 1, receipt };
   });

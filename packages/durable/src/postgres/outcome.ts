@@ -1,3 +1,4 @@
+import { finishRunIfDone, lockRun, requireActiveRun } from './run-timing.js';
 import { randomUUID } from 'node:crypto';
 import { admitPacket, FlowError } from 'event-driven-design';
 import type { Pool, PoolClient } from 'pg';
@@ -19,6 +20,7 @@ export function commitStep(pool: Pool, scope: StepScope, profile: DurableProfile
   const { stepId, epoch, workerId, commitKey, result } = readCommit(command);
   scope = checkScope(scope, stepId);
   return inTransaction(pool, async client => {
+    await lockRun(client, scope, 'STEP_NOT_FOUND');
     const { rows: [step] } = await client.query<{
       node_id: string; epoch: number; lease_owner: string | null; execution_digest: string; adapter_digest: string; envelope: string;
     }>(`SELECT s.node_id, s.epoch, s.lease_owner, r.execution_digest, r.adapter_digest, p.envelope
@@ -39,13 +41,17 @@ export function commitStep(pool: Pool, scope: StepScope, profile: DurableProfile
       return receipt(existing);
     }
 
+    await requireActiveRun(client, scope);
     const linked = await client.query('SELECT 1 FROM nodeflow_durable.external_step_operations WHERE step_id=$1', [stepId]);
     if (linked.rowCount) throw new FlowError('EXTERNAL_OPERATION_HELD');
     const saved = await saveStepOutcome(client, scope.runId, stepId, step.node_id, input.packetId, definition, outcome, commitKey);
     const changed = await client.query(`UPDATE nodeflow_durable.steps SET status = $2
-      WHERE step_id = $1 AND status = 'ready' AND lease_expires_at > clock_timestamp()`,
+      WHERE step_id = $1 AND status = 'ready' AND lease_expires_at > clock_timestamp()
+        AND EXISTS (SELECT 1 FROM nodeflow_durable.workflow_runs r WHERE r.run_id=steps.run_id
+          AND (r.deadline_at IS NULL OR r.deadline_at > clock_timestamp()))`,
     [stepId, outcome.packet ? 'completed' : 'failed']);
     if (changed.rowCount !== 1) throw new FlowError('STALE_CLAIM');
+    await finishRunIfDone(client, scope.runId);
     return saved;
   });
 }

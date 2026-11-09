@@ -29,7 +29,12 @@ before(async () => {
     INSERT INTO nodeflow_durable.schema_version VALUES (true, 1)`);
   const migration = await readFile(new globalThis.URL('../migrations/001-submissions.sql', import.meta.url), 'utf8');
   await observer.query(migration);
-  const stagedOnV1 = await stage('from-v1');
+  const stagedOnV1 = { workspaceId: 'workspace', runId: randomUUID() };
+  await observer.query(`INSERT INTO nodeflow_durable.workflow_runs
+    (run_id,workspace_id,job_id,revision_id,execution_digest,adapter_digest,input_fingerprint,input_json)
+    VALUES ($1,$2,'from-v1','two-step',$3,$4,$5,$6)`,
+  [stagedOnV1.runId, stagedOnV1.workspaceId, profile.pin.executionDigest, profile.pin.adapterDigest,
+    'a'.repeat(64), JSON.stringify({ request: [packet(1, { jobId: 'from-v1' })] })]);
   await store.migrate();
   await store.initializeSteps(stagedOnV1, profile);
   assert.equal((await store.sweepReady(stagedOnV1))[0].nodeId, 'A');
