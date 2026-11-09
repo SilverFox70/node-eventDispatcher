@@ -4,12 +4,40 @@
   "description": "Optional replay eligibility and pinned task invocation for NodeDispatcher",
   "license": "ISC",
   "type": "module",
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md",
+    "migrations"
+  ],
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
-    "./model": { "types": "./dist/model/index.d.ts", "import": "./dist/model/index.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./model": {
+      "types": "./dist/model/index.d.ts",
+      "import": "./dist/model/index.js"
+    },
+    "./postgres": {
+      "types": "./dist/postgres/index.d.ts",
+      "import": "./dist/postgres/index.js"
+    }
   },
-  "scripts": { "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json" },
-  "peerDependencies": { "event-driven-design": "1.0.0" },
-  "peerDependenciesMeta": { "event-driven-design": { "optional": true } }
+  "scripts": {
+    "build": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\" && tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "event-driven-design": "1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "event-driven-design": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "@types/pg": "8.23.1"
+  }
 }

@@ -30,3 +30,27 @@ Only functions reviewed as pure are eligible in v1. The declaration is the appli
 A computed result carries an output packet and the attempt IDs from that invocation. Input contract violations reject the invocation. A failed or cancelled run returns a stopped result with its terminal code. Recomputing may allocate new packet, run, and attempt IDs while preserving the input job and immediate parent. The result is compute evidence. The future SQL host owns claim fencing, attempt budgets across restarts, and committing one outcome.
 
 The passive `event-driven-design-durable/model` entry reads a profile pin without loading runtime or SQL code. From the repository, run `npm run build` and `npm run test:durable` for the coverage gate and installed-package verification.
+
+## Stage a workflow in the business transaction
+
+The server-only `event-driven-design-durable/postgres` entry provides `openPostgresStore(connectionString)`. Run `await store.migrate()` during host setup against PostgreSQL 18. The migration owns the `nodeflow_durable` schema. Use the same database for the application's tables and the obligation. Close the pool when the host shuts down.
+
+```ts
+const staged = await store.withDurableTransaction(authorizedWorkspaceId, async tx => {
+  const run = await tx.stage({ jobId, revisionId, profilePin, inputs: { request: [inputPacket] } });
+  if (run.created) {
+    const { rowCount } = await tx.query(
+      'UPDATE person SET revision = revision + 1 WHERE id = $1 AND revision = $2',
+      [personId, expectedRevision],
+    );
+    if (rowCount !== 1) throw Error('PERSON_REVISION_CONFLICT');
+  }
+  return run;
+});
+```
+
+Supply the workspace ID from host authorization and the revision and pin from the host's trusted revision registry. The callback gets a scoped capability with parameterized data queries and staging. Await all operations inside the callback. Nested transactions, transaction-control statements and calls made using another callback's capability refuse. An operation failure aborts the transaction even if the callback catches it. The outer promise resolves only after PostgreSQL confirms commit.
+
+The uniqueness key is workspace plus job ID. For the same key, replay the original input envelopes, revision and pin. An identical submission returns the existing run ID with `created: false`. A different fingerprint returns `INPUT_CONFLICT`. Retain the original request for retry if the connection is lost while committing. Reusing `created` as shown prevents a replay from applying the domain mutation again.
+
+The adapter stores a queued obligation. S41 adds atomic step continuation and S42 adds worker recovery. The real database suite is `npm run test:postgres`. Set `FBP_POSTGRES_TEST_URL` to a disposable PostgreSQL 18 server with permission to create and drop test databases. Build core first with `npm run build`. The suite tests the source workspace and the installed package.
