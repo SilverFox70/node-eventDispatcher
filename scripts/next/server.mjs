@@ -4,12 +4,13 @@ import { writeFileSync } from 'node:fs';
 import { environment } from './process.mjs';
 
 /** A child production server, owned until finally/stop. Next reports its requested or ephemeral port. */
-export async function startServer(directory, { host = '127.0.0.1', port = 0, mode = 'success', badCatalog = false, shortInspectionLease = false, badInspection = false, pokemonBase, draftDatabase, coverage, log, nextPath = join(directory, 'node_modules/next/dist/bin/next') } = {}) {
+export async function startServer(directory, { host = '127.0.0.1', port = 0, mode = 'success', badCatalog = false, shortInspectionLease = false, badInspection = false, pokemonBase, draftDatabase, durableFixture, coverage, log, nextPath = join(directory, 'node_modules/next/dist/bin/next') } = {}) {
   const child = spawn(process.execPath, [nextPath, 'start', '-H', host, '-p', String(port)], {
     cwd: directory, env: environment({ FBP_DEMO_MODE: mode, FBP_DEMO_BAD_CATALOG: badCatalog ? '1' : '0',
       FBP_INSPECTION_SHORT_LEASE: shortInspectionLease ? '1' : '0',
       FBP_INSPECTION_BAD_GRAPH: badInspection ? '1' : '0',
       FBP_POKEMON_BASE_URL: pokemonBase ?? '',
+      ...(durableFixture ? { FBP_DURABLE_FIXTURE: JSON.stringify(durableFixture) } : {}),
       ...(draftDatabase ? { FBP_DRAFT_DATABASE: draftDatabase } : {}),
       ...(coverage ? { NODE_V8_COVERAGE: coverage } : {}) }), stdio: ['ignore', 'pipe', 'pipe'],
   });

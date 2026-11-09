@@ -122,3 +122,9 @@ The trusted application host correlates the signal to the run, node and persiste
 A signal can arrive after the step exists and before registration. Repeating the identical authorized command returns its current receipt. A conflicting replay or a new command for a consumed or closed wait cannot create a second result. Consumption and the continuation commit together, including when the output must wait for downstream capacity.
 
 An unconsumed signal expires seven days after admission. The worker sweeps expired signals, and a host can call `sweepExpiredSignals(scope)` for a run without an active worker. Expiry clears the payload and keeps an `expired` receipt. It leaves an open wait eligible for a fresh authorized command. Each workspace can hold up to 1,000 live pending signals.
+
+## Read durable run progress
+
+Call `store.queryRun(scope, { actorId, limit, after }, authorize)` from the server. The callback authorizes the authenticated actor for the workspace and run. The snapshot includes pinned revisions, step stages, safe wait and operation metadata, and a bounded cursor. A cursor selects the next page of the current projection. Start with a fresh snapshot after reconnect. The query leaves packet payloads and provider evidence in their owning stores.
+
+Use `store.cancelProgress(scope, { actorId, expectedRevision }, authorize)` with the snapshot's lifecycle revision. Competing or stale cancellations return a conflict. Signal and provider resolution continue through their existing commands and separate authorization policies. For browser use, `DurableRunInspector` from the optional editor package accepts a host endpoint and an optional origin map for the pinned revision. The host owns authentication and command payloads.

@@ -73,7 +73,7 @@ S48 signal correlation uses run/node/wait-generation and caller idempotency key,
 
 ## Observability, retention and proof
 
-S49 queries persisted run/step/operation state with safe codes, pinned revisions and origins; live diagnostics remain optional ephemeral observations. `queryRun` and cursor subscription are read-only. Cancel/resolve/retry commands are separately authorized CAS operations; reconnect/refresh never resubmits mutations. Delivery cursor gaps trigger snapshot reconciliation, not fabricated packet history.
+S49 queries persisted run/step/operation state with safe codes, pinned revisions and origins; live diagnostics remain optional ephemeral observations. `queryRun` and cursor subscription are read-only. Cancel/resolve/retry commands are separately authorized CAS operations; reconnect/refresh never resubmits mutations. An invalid page cursor triggers a fresh snapshot. S49 exposes the existing retry hold and its policy without adding a new retry permission. See the [S49 progress contract](S49-execution.md).
 
 Retain unresolved operation evidence, active runs and required version bindings; archive terminal payloads only under explicit policy. Default no automatic deletion of operation identity/tombstones. Retention must preserve the declared business dedup horizon or refuse future reuse of retired namespaces permanently; deleting data cannot silently permit old effects again. Backups/schema/code pins and provider evidence are part of recoverability. “Recover from any failure” cannot include destroyed databases/backups or unobservable external effects.
 

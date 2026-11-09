@@ -7,6 +7,7 @@
   "dependencies": {
     "event-driven-design": "file:vendor/event-driven-design-1.0.0.tgz",
     "event-driven-design-artifacts": "file:vendor/event-driven-design-artifacts-1.0.0.tgz",
+    "event-driven-design-durable": "file:vendor/event-driven-design-durable-1.0.0.tgz",
     "event-driven-design-editor": "file:vendor/event-driven-design-editor-1.0.0.tgz",
     "next": "16.4.3",
     "react": "19.3.1",

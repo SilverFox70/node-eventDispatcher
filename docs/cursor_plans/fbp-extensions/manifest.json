@@ -967,8 +967,8 @@
         "X48.3"
       ],
       "status": "approved-for-execution",
-      "execution_status": "complete-for-review",
-      "merge_sha": null,
+      "execution_status": "merged",
+      "merge_sha": "5f8d1d046aceb7f81bbddc53f26aac3ed46ca37d",
       "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety",
       "journal": "S48-execution.md",
       "execution_approval": {
@@ -990,10 +990,15 @@
         "X49.2",
         "X49.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
-      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety",
+      "journal": "S49-execution.md",
+      "execution_approval": {
+        "authority": "user approved the S49 snapshot, reconnect and operator-command design",
+        "tasks": ["S49.A", "S49.B", "S49.C"]
+      }
     },
     {
       "id": "S50",

@@ -9,8 +9,8 @@ import { inTransaction } from './transaction.js';
 export async function lockRun(client: PoolClient, scope: StepScope, missingCode = 'RUN_NOT_FOUND') {
   const { rows: [run] } = await client.query<{
     execution_digest: string; adapter_digest: string; timeout_ms: number | null;
-    deadline_at: Date | null; not_before: Date | null; status: RunStatus; join_failure_code: string | null;
-  }>(`SELECT execution_digest, adapter_digest, timeout_ms, deadline_at, not_before, status, join_failure_code
+    deadline_at: Date | null; not_before: Date | null; status: RunStatus; terminal_at: Date | null; join_failure_code: string | null;
+  }>(`SELECT execution_digest, adapter_digest, timeout_ms, deadline_at, not_before, status, terminal_at, join_failure_code
     FROM nodeflow_durable.workflow_runs WHERE workspace_id=$1 AND run_id=$2 FOR UPDATE`, [scope.workspaceId, scope.runId]);
   if (!run) throw new FlowError(missingCode);
   return run;

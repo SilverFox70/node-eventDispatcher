@@ -9,7 +9,7 @@ const draftSourceDigest = createHash('sha256')
 
 export default {
   env: { FBP_DRAFT_SOURCE_DIGEST: draftSourceDigest },
-  serverExternalPackages: ['event-driven-design-artifacts'],
+  serverExternalPackages: ['event-driven-design-artifacts', 'event-driven-design-durable'],
   productionBrowserSourceMaps: true,
   experimental: { serverSourceMaps: true, cpus: 2 },
   webpack(config, { isServer }) {
