@@ -1,6 +1,6 @@
 # EXT1-r2 — shared extension contract
 
-Status: proposed; implementation not approved. User-selected storage: **SQLite for local graph documents; PostgreSQL for durable execution** (2026-10-31). Driver/API/package versions still require evidence. [Readiness](readiness.md) records the remaining decisions. Existing contracts remain authoritative until amendments merge.
+Status: historical EXT1-r2 contract proposal. See the [current extension index](INDEX.md) for the delivered slice status. User-selected storage: **SQLite for local graph documents; PostgreSQL for durable execution** (2026-10-31). Driver/API/package versions still require evidence. [Readiness](readiness.md) records the remaining decisions. Existing contracts remain authoritative until amendments merge.
 
 *every result can be explained, every node can be tested alone, and every change can be traced.*
 

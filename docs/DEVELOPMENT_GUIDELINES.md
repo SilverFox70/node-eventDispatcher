@@ -20,11 +20,11 @@ S01 introduces the following commands (use the exact Node/npm pins in .nvmrc and
 
 The root exports the dispatcher factory, singleton and types, with S03 ownership/publisher inspection. /model exports browser-safe readonly topology types; /testing exports bounded runNode/runGraph helpers using the production compiler/runtime. See [dispatcher migration](architecture/dispatcher.md). The CommonJS compatibility shim remains under server/src; copyable legacy utilities are under examples/legacy. No global runtime change is required; use a version manager or command-local PATH. Exact engine enforcement deliberately refuses an unsupported Node/npm combination. [S01 receipt](cursor_plans/fbp-slices/S01-execution.md) records versions and proof; [baseline](agent-baselines/INDEX.md) records the historical placeholder test and defects.
 
-## Toolchain and future package features
+## Toolchain and package boundaries
 
-S01 pins the verified latest LTS patch and bundled npm, captures the baseline and delivers strict TypeScript, dual ESM/CJS builds, generated declarations and offline gates. No global Node default change. Follow its checked-in exact pins/lock/config once delivered; do not silently substitute a newer Current Node major or a convenient older local binary.
+Use the pinned Node/npm versions from `.nvmrc` and `package.json`. The root, browser-safe model, Node testing helpers and optional packages have separate entry points. Next fixture dependencies stay out of the core package. See the [current architecture](architecture/README.md) and [durable host runbook](runbooks/operate-durable-host.md).
 
-Root/model/testing export separation, source-map/coverage denominator and package structure are proposed in master §§4/11 and detailed in the owning slice. Do not introduce build/type/lint/coverage/Next scripts pointing at future files merely to match the plan. Scripts become authoritative when their implementation and proof merge. Next fixture dependencies remain separate from the framework's runtime dependency surface.
+Use `npm run test:artifacts` and `npm run test:durable` for optional package checks. Build core before running `npm run test:postgres` with `FBP_POSTGRES_TEST_URL`. The durable adoption drill additionally builds artifacts and durable and uses native `pg_dump` and `pg_restore`.
 
 ## Implementing changes
 

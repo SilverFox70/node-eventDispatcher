@@ -1,6 +1,6 @@
 # S20 recovery boundary RC1-r1
 
-Status: selected design proposal for S39–S51, not implemented. Refines [durable plan](../durable-contract.md). PostgreSQL engine accepted by user; exact DDL/operator state adapters remain blocked on their named preflight designs. No Realberry adoption claim.
+Historical S20 recovery design for S39–S51. See the [delivered durable contract](../durable-contract.md), [crash matrix](../S50-execution.md) and [adoption drill](../S51-execution.md) for the current implementation and proof.
 
 ## Eligibility and identity
 
@@ -47,4 +47,4 @@ Persist join partial slots, same-job parents and completion evidence; final-slot
 - S46.A exact bounded fan-out materialization cursor/transaction schema; no ad-hoc unbounded packet materialization.
 - S47.A join tombstone/horizon DDL and S48.A wait/signal inbox schema/authorization.
 
-These must be reviewed as bounded prerequisite artifacts before their B tasks. A named design gate is not a license for an implementation agent to guess. S20 records the exact boundary rules/crash outcomes, not fabricated migration/qualification success. X39–X51 remain future owned runtime/DB/process/provider proofs.
+These must be reviewed as bounded prerequisite artifacts before their B tasks. A named design gate is not a license for an implementation agent to guess. S20 records the exact boundary rules/crash outcomes, not fabricated migration/qualification success. The X39–X51 proof outcomes live in the owning receipts linked by the [extension index](../INDEX.md).

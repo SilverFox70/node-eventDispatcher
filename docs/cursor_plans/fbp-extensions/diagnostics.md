@@ -1,6 +1,6 @@
 # Diagnostic extension overview — EXT1-r2 / SC20-r1
 
-Owners S21–S24. The canonical selected design is now [DG1-r1](contracts/diagnostics-v1.md), from [S20 review checkpoint](S20-decisions.md). It supersedes the earlier illustrative envelope/session/sink signatures. Existing EX1/Snapshot APIs remain unchanged until owning implementation merges.
+Owners S21–S24. The canonical selected design is now [DG1-r1](contracts/diagnostics-v1.md), from [S20 review checkpoint](S20-decisions.md). It supersedes the earlier illustrative envelope/session/sink signatures. For the merged implementation see the [diagnostic architecture](../../architecture/diagnostic-records.md) and owning receipts.
 
 - S21: safe metadata/error/operation/attempt stream, trusted explicit packet input correlation and default bounded retention. No payload capture or sinks yet.
 - S22: per-node/port/job input/output policy and an expiring owned session; host authorization/deny wins, no run restart.

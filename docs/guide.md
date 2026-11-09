@@ -68,4 +68,4 @@ Copy [templates/node](../templates/node/README.md) into an ESM application folde
 
 The installed-consumer checks compile both CommonJS/ESM declarations, run the exact found/missing template tests with a fake service, prove a wrong handler return is a type error, and prove a JavaScript bypass fails OUTPUT_CONTRACT. Fake services test node behavior; real-provider integration remains the application's responsibility.
 
-No automatic retries are enabled. Optional operation retries require explicit bounded policy and safe effect semantics. Durable saved graph definitions, graphical editing and crash-resumable execution are future capabilities, not part of installing this package. See [migration](migration.md) before adopting legacy code. Licensing is [ISC](../LICENSE).
+No automatic retries are enabled. Optional operation retries require explicit bounded policy and safe effect semantics. Use the optional [editor and artifact packages](artifact-storage.md) for saved visual graphs and the [PostgreSQL host](runbooks/operate-durable-host.md) for crash-resumable workflows. See [migration](migration.md) before adopting legacy code. Licensing is [ISC](../LICENSE).

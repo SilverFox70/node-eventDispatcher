@@ -47,7 +47,7 @@ S20 owns the bounded design-review story: produce these explicit decisions/artif
 | G6 commands/coverage | Existing commands resolved; future package/DB commands assigned owners and labeled unavailable; per-file ≥95% and condition proof required | Package-owning slice introduces actual scripts/instrumentation before result claims |
 | G7 integration | Installed/browser/SQL/process/provider acceptance owners assigned, with local tests in owning slices and composed milestones | Actual downstream receipts; helper green never discharges DB/provider guarantee |
 
-**Readiness:** S20 is `ready-for-review` as a bounded design/decision story. S21–S51 remain `blocked-on-decision`, additionally waiting for their sequential predecessors. No task is `approved-for-execution`. These are detailed executable-direction drafts, not a claim that unspecified schemas can safely be implemented today. D3 engine selection is resolved; D3 implementation evidence remains open.
+**Readiness at EXT1-r2 planning time:** S20 was ready for design review and the later slices awaited their own gates. The [current extension manifest](manifest.json) records the delivered sequence through S51. Application-specific pilots require their own readiness evidence.
 
 ## Two-executor and failure walkthrough
 

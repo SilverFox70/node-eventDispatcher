@@ -1,6 +1,6 @@
 # Optional durable host — proposed EXT1-r2
 
-Owners S39–S51. PostgreSQL is **user selected**; SQL driver, exact schema/API and integration adapter still need S20/D4 acceptance. This design is separate from SQLite graph documents. [Shared contract](shared-contract.md), [artifacts](artifacts.md), [condition ledger](conditions.md).
+S39–S51 delivered the optional PostgreSQL host with the `pg` adapter. The [operations runbook](../../runbooks/operate-durable-host.md) describes the verified install and recovery paths. This design is separate from SQLite graph documents. [Shared contract](shared-contract.md), [artifacts](artifacts.md), [condition ledger](conditions.md).
 
 [RC1](contracts/recovery-boundaries.md) is the S20 canonical recovery/effect-boundary refinement; [PK1](contracts/packages-and-storage.md) selects adapters/package identities. Exact SQL/operator schema is still blocked on named future preflight artifacts.
 
@@ -77,4 +77,4 @@ S49 queries persisted run/step/operation state with safe codes, pinned revisions
 
 Retain unresolved operation evidence, active runs and required version bindings; archive terminal payloads only under explicit policy. Migration 010 guards retained run, operation, join and signal identities against DELETE and TRUNCATE. See the [operations runbook](../../runbooks/operate-durable-host.md). Retention must preserve the declared business dedup horizon or refuse future reuse of retired namespaces permanently; deleting data cannot silently permit old effects again. Backups/schema/code pins and provider evidence are part of recoverability. “Recover from any failure” cannot include destroyed databases/backups or unobservable external effects.
 
-Each owning slice has real SQL/process/provider tests, not postponed to S50. S50 composes them into crash qualification; S51 clean installed consumer proves optional packaging and backup/upgrade/refusal paths. X39.1–X51.3 are planned proofs; none is claimed passed. Realberry replacement requires its own current-source integration and independent acceptance later.
+See the [S50 crash matrix](S50-execution.md) and [S51 adoption drill](S51-execution.md) for the composed proofs. The [extension manifest](manifest.json) links the owning receipts for X39–X51. A Realberry replacement needs its own current-source integration and acceptance.

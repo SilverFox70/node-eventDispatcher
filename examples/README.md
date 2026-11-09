@@ -32,7 +32,7 @@ All examples run offline against the built library. They use the real graph comp
 
 The second and third examples' save functions are asynchronous local stand-ins. They do not persist data. Both branches retain job/key correlation while derived packets record immediate lineage. The output shows results as they arrive; cross-branch arrival order is not guaranteed.
 
-S10's merge emits two separate result packets. S11's joinByKey collects matching branch results into one combined payload. The third demo uses distinct result contracts for profile/settings, with one collated output and two immediate parents. A future durable host will address persistence and recovery of running workflows. The timeout values here are demonstration settings, not production recommendations for repository calls.
+S10's merge emits two separate result packets. S11's joinByKey collects matching branch results into one combined payload. The third demo uses distinct result contracts for profile/settings, with one collated output and two immediate parents. Try the separate [PostgreSQL approval example](durable/README.md) to pause and resume a persisted workflow. The timeout values here are demonstration settings, not production recommendations for repository calls.
 
 To adapt these examples to an installed package, use package exports as these scripts do. Use explicit application-owned IDs when defining multiple transformations, as shown in the second demo. See [the runtime overview](../docs/architecture/fbp-runtime.md) for API/ordering details and the [slice index](https://github.com/SilverFox70/node-eventDispatcher/blob/master/docs/cursor_plans/fbp-slices/INDEX.md) for actual review/merge progress.
 

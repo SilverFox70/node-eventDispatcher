@@ -9,7 +9,7 @@ npm ci
 npm run demo:next
 ```
 
-The command builds/packs the library, copies the fixture into a unique temporary application, installs its locked dependencies, builds a production Next server and prints **http://localhost:54545**. Open that URL, submit a number and see the server result.2 becomes4. Ctrl+C stops the child server. This does not deploy anything or change your global Node/browser configuration. The first setup needs network access for dependencies; the app itself uses only local fakes.
+The command builds/packs the library, copies the fixture into a unique temporary application, installs its locked dependencies, builds a production Next server and prints **http://localhost:54545**. Open that URL, submit a number and see the server result.2 becomes4. Ctrl+C stops the child server. This does not deploy anything or change your global Node/browser configuration. The first setup needs network access for dependencies. The default flows use local fixtures. The live Pokémon demo calls the public API when explicitly started.
 
 For automated acceptance:
 
@@ -18,7 +18,7 @@ npm run check
 npm run test:next
 ```
 
-The latter additionally installs task-scoped Chromium, proves a server-only import fails the client build, runs HTTP/browser tests against production builds and checks source-mapped server/browser coverage. Evidence and the exact tarball manifest/integrity remain in the printed temporary directory. Tests use localhost only; dependency/browser installation is preparation. Linux CI prepares browser system libraries as needed.
+The latter requires `FBP_POSTGRES_TEST_URL` for the durable inspector tests and installs task-scoped Chromium. It proves a server-only import fails the client build, runs HTTP/browser tests against production builds and checks source-mapped server/browser coverage. Evidence and the exact tarball manifest/integrity remain in the printed temporary directory. Tests use localhost only; dependency/browser installation is preparation. Linux CI prepares browser system libraries as needed.
 
 ## Server owns execution
 
@@ -42,7 +42,7 @@ Existing core CI tests the library on Linux/macOS/Windows. A separate Ubuntu24.0
 
 V8 data from the actual production server, browser and controlled request-coordinator tests is merged per compiled script before being remapped through emitted source maps to every executable fixture TS/TSX file. Per-file statements/lines/branches must reach95%; unimported modules fail. Type-only modules are identified from their syntax, not an unchanging filename exclusion. Source-map contents must match the tested source. The only currently unexercised route branch is its defensive unexpected-infrastructure catch; accepted payloads/provider modes cannot trigger it under the fixed compiler/runtime contract. It remains measured and inside the same threshold.
 
-This proves package installation, Node server execution and browser isolation. It does not prove a real database/provider, authentication, serverless deployment limits, Edge execution, graphical editing or recovery after process loss. A Next request is not a durable workflow host. See [the slice index](cursor_plans/fbp-slices/INDEX.md) for the separate acceptance and future authoring phases.
+This initial fixture proves package installation, Node server execution and browser isolation. The editor and durable inspector below have separate acceptance paths. Run durable workers outside the lifetime of an HTTP request.
 
 ## Live graph and event inspector
 
@@ -56,7 +56,7 @@ The browser uses one native EventSource, with a1500ms server-specified retry int
 
 Acceptance uses a server-only short-lease mode to prove real stream closure and reconnect without depending on browser offline emulation. Native tests also cover late callbacks, invalid frames, slow-reader coalescing, pre-abort/cancel/lease cleanup and observer failures. A source-map regression test preserves authored empty functions while rejecting the attribution of unmapped generated Webpack CSS stubs to a preceding closing brace. Disposable Next build workers flush V8 execution data before signal exit; both POSIX signals are tested. Coverage is checkpointed before full navigations so Chromium retains earlier same-URL interactions. Raw V8 ranges are merged before source remapping to reconcile partial switch executions across processes. Coverage gates and the never-imported-file negative control remain unchanged.
 
-The UI is read-only. Drag/drop editing, durable graph revisions, readable code export and persistent execution are separate roadmap features. SSE hosting requires a Node deployment that supports streaming requests; a production integration must define authentication, source registration, proxy limits and appropriate lifetimes.
+The topology inspector is read-only. Use the separate graph editor to drag and wire nodes, save graph revisions and export artifacts. The durable inspector reads persisted workflow progress. SSE hosting requires a Node deployment that supports streaming requests; a production integration must define authentication, source registration, proxy limits and appropriate lifetimes.
 
 Coverage source-map alignment uses an in-memory generated padding column to neutralize the converter’s Babel-specific cross-file column-zero heuristic. Runtime assets and authored source mappings remain intact; a regression proves an unexecuted authored function stays uncovered and different-file locations stay distinct. The private invalid-definition startup test proves refusal before streaming, and a server-conditioned fixture test proves cancellation/disposal before run settlement.
 
@@ -133,3 +133,7 @@ The demo imports `GraphEditor` and `event-driven-design-editor/styles.css` throu
 Choose **Open saved draft** in the loopback demo. Changes autosave after a short pause, and **Save draft now** flushes pending edits. The status shows the last committed revision. If a save fails or another tab wins a revision conflict, your current edits stay in the tab. Reopen the saved draft in another tab to compare. Practice and test samples remain session-only.
 
 `npm run demo:next` uses `.nodeflow-drafts.sqlite` in the checkout. Set `FBP_DRAFT_DATABASE` to use a different absolute path. The loopback fixture uses one fixed workspace and one named draft. An application exposing draft storage to users must provide its own workspace authorization.
+
+## Durable workflow inspector
+
+The optional editor exports `DurableRunInspector`. The host supplies an authorized progress endpoint and optional graph origin map. It renders persisted run state separately from connection health and refreshes on reconnect. Cancel, approve and resolve go through separately authorized server commands. The packaged acceptance fixture provides configured runs and a disposable PostgreSQL database. For a standalone workflow to try locally, see the [approval demo](../examples/durable/README.md) and [operations runbook](runbooks/operate-durable-host.md).
