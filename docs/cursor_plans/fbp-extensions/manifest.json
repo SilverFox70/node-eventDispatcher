@@ -943,8 +943,8 @@
         "X47.3"
       ],
       "status": "approved-for-execution",
-      "execution_status": "complete-for-review",
-      "merge_sha": null,
+      "execution_status": "merged",
+      "merge_sha": "37ca8a19d998b22306b6ccf274062068701cd610",
       "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety",
       "journal": "S47-execution.md",
       "execution_approval": {
@@ -966,10 +966,15 @@
         "X48.2",
         "X48.3"
       ],
-      "status": "blocked-on-decision",
-      "execution_status": "not-started",
+      "status": "approved-for-execution",
+      "execution_status": "complete-for-review",
       "merge_sha": null,
-      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety"
+      "gate": "D1 pinned artifacts; D3 PostgreSQL; D4 shared kernel/provider safety",
+      "journal": "S48-execution.md",
+      "execution_approval": {
+        "authority": "user approved S48 wait and signal inbox design with seven-day expiry",
+        "tasks": ["S48.A", "S48.B", "S48.C"]
+      }
     },
     {
       "id": "S49",

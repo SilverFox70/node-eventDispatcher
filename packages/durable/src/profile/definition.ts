@@ -4,7 +4,11 @@ import type { GraphSpec } from 'event-driven-design/model';
 
 import type { joinPolicy } from 'event-driven-design/task-profile';
 
-type Definition = Readonly<{ spec: GraphSpec; registry: Registry; operators: ReadonlyMap<string, string>; joins: ReadonlyMap<string, NonNullable<ReturnType<typeof joinPolicy>>> }>;
+type Definition = Readonly<{
+  spec: GraphSpec; registry: Registry; operators: ReadonlyMap<string, string>;
+  joins: ReadonlyMap<string, NonNullable<ReturnType<typeof joinPolicy>>>;
+  waits: ReadonlyMap<string, string>;
+}>;
 const definitions = new WeakMap<object, Definition>();
 
 export function rememberProfile(profile: object, definition: Definition): void {

@@ -69,7 +69,7 @@ S46 maps existing broadcast/map/filter/merge semantics onto transactional delive
 
 S47 join key remains `(runId,nodeId,jobId,key)` with 2–256 named inputs. Partial slots unique per input, completed group never automatically reused. Filling final slot and writing outcome/completion are one transaction. Duplicate slot/completed group produces explicit refusal, never new output. Capacity/terminal incomplete groups obey the shared approved join policy; tombstones are retained for the lifetime of the run. See the [S47 storage and recovery design](S47-execution.md).
 
-S48 signal correlation uses run/node/wait-generation and caller idempotency key, not arbitrary global event names. Register wait and consume matching inbox signal transactionally; early valid signal may remain in bounded inbox. Strict schema, workspace/actor authorization and expected wait revision precede admission. Duplicate signal has one consumption. Stale/cancelled wait refuses. Proposed inbox retention7days/max1000 pending per workspace; limits and expirations are visible and cannot silently drop an acknowledged business obligation.
+S48 signal correlation uses run/node/wait-generation and caller idempotency key, not arbitrary global event names. Register wait and consume matching inbox signal transactionally; early valid signal may remain in bounded inbox. Strict schema, workspace/actor authorization and expected wait revision precede admission. Duplicate signal has one consumption. Stale/cancelled wait refuses. The inbox retains unconsumed payloads for seven days and admits up to 1,000 live pending signals per workspace. Expiration removes the payload and retains its receipt. See the [S48 design](S48-execution.md).
 
 ## Observability, retention and proof
 

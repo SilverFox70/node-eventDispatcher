@@ -3,9 +3,10 @@ import { compileGraph, executionIdentity, FlowError } from 'event-driven-design'
 import type { ExecutionIdentityInput, Registry } from 'event-driven-design';
 import { canonicalJson } from 'event-driven-design/model';
 import type { ComponentDescriptorV2, GraphSpec } from 'event-driven-design/model';
-import { joinPolicy, prepareBoundedTasks } from 'event-driven-design/task-profile';
+import { joinPolicy, prepareBoundedTasks, waitSignalName } from 'event-driven-design/task-profile';
 import { readDurableProfilePin } from '../model/index.js';
 import type { DurableProfilePin } from '../model/index.js';
+import { signalRetentionHours, pendingSignalsPerWorkspace } from '../signals/model.js';
 import { rememberProfile } from './definition.js';
 
 export type DurableTaskAdapter = Readonly<{
@@ -13,7 +14,7 @@ export type DurableTaskAdapter = Readonly<{
   implementationDigest: string;
   adapterVersion: 1;
   replayPolicy: 'pure';
-  operator?: 'broadcast' | 'filter' | 'merge' | 'join-by-key';
+  operator?: 'broadcast' | 'filter' | 'merge' | 'join-by-key' | 'wait';
 }>;
 
 export type DurableProfileOptions = Readonly<{
@@ -31,7 +32,7 @@ function prepare(options: DurableProfileOptions) {
   if (!Array.isArray(adapters)) throw new FlowError('PROFILE_INELIGIBLE');
   for (const adapter of adapters) {
     if (adapter && Object.hasOwn(adapter, 'operator')) {
-      if (!adapter.operator || !['broadcast', 'filter', 'merge', 'join-by-key'].includes(adapter.operator)) throw new FlowError('PROFILE_INELIGIBLE');
+      if (!adapter.operator || !['broadcast', 'filter', 'merge', 'join-by-key', 'wait'].includes(adapter.operator)) throw new FlowError('PROFILE_INELIGIBLE');
       operators.set(adapter.component, adapter.operator);
     }
   }
@@ -39,6 +40,10 @@ function prepare(options: DurableProfileOptions) {
   const joins = new Map(spec.nodes.flatMap(node => {
     const policy = joinPolicy(registry[node.component]!);
     return policy ? [[node.id, policy] as const] : [];
+  }));
+  const waits = new Map(spec.nodes.flatMap(node => {
+    const name = waitSignalName(registry[node.component]!);
+    return name ? [[node.id, name] as const] : [];
   }));
   if (catalog.components.some(component =>
     (operators.get(component.id + '@' + component.version) !== 'join-by-key' && Object.keys(component.in).length > 32) ||
@@ -64,11 +69,13 @@ function prepare(options: DurableProfileOptions) {
       .sort((a, b) => a.component < b.component ? -1 : 1).map(adapter => {
         const { in: input, out: output, configuration } = byComponent.get(adapter.component)!;
         const join = joinPolicy(registry[adapter.component]!);
-        return { adapter, input, output, configuration: configuration ?? null, ...(join && { join }) };
+        const name = waitSignalName(registry[adapter.component]!);
+        const wait = name && { name, signalRetentionHours, pendingSignalsPerWorkspace };
+        return { adapter, input, output, configuration: configuration ?? null, ...(join && { join }), ...(wait && { wait }) };
       }))).digest('hex'),
   });
   const profile = Object.freeze({ pin, invoke, invokeOnce, invokeDelivery, routed: operators.size > 0 });
-  rememberProfile(profile, { spec, registry, operators, joins });
+  rememberProfile(profile, { spec, registry, operators, joins, waits });
   return profile;
 }
 

@@ -10,12 +10,12 @@ try {
     .replace('../dist/model/index.js', 'event-driven-design-durable/model');
   writeFileSync(join(fixture, 'profile.test.mjs'), tests);
   mkdirSync(join(fixture, 'fixtures'), { recursive: true });
-  for (const file of ['routing-profile.mjs', 'join-profile.mjs']) {
+  for (const file of ['routing-profile.mjs', 'join-profile.mjs', 'wait-profile.mjs']) {
     const profile = readFileSync(join(root, 'packages/durable/test/fixtures', file), 'utf8')
       .replace('../../dist/index.js', 'event-driven-design-durable');
     writeFileSync(join(fixture, 'fixtures', file), profile);
   }
-  assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'profile.test.mjs']), /^# pass 5$/m);
+  assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'profile.test.mjs']), /^# pass 6$/m);
 
   run(process.execPath, ['--input-type=module', '-e', `
     import assert from 'node:assert/strict';
@@ -34,10 +34,12 @@ try {
   writeFileSync(join(fixture, 'durable-types.mts'), `
     import { defineConfiguredFunction, contract, packet } from 'event-driven-design';
     import { z } from 'zod';
-    import { prepareDurableProfile, resumeDurableProfile, type DurableProfileOptions } from 'event-driven-design-durable';
+    import { durableWait, prepareDurableProfile, resumeDurableProfile, type DurableProfileOptions } from 'event-driven-design-durable';
     import { readDurableProfilePin } from 'event-driven-design-durable/model';
-    import { openPostgresStore } from 'event-driven-design-durable/postgres';
+    import { openPostgresStore, type SignalCommand } from 'event-driven-design-durable/postgres';
     const numeric = contract('number@1', z.number());
+    const wait = durableWait(numeric, numeric, 'approved');
+    wait.out.out.validate(1);
     const configuration = contract('settings@1', z.strictObject({ multiplier: z.number() }));
     export const component = defineConfiguredFunction({
       id: 'times', version: 1, title: 'Times', description: '', input: numeric, output: numeric, configuration,
@@ -51,6 +53,10 @@ try {
     declare const url: string;
     const store = openPostgresStore(url);
     const scope = { workspaceId: 'workspace', runId: 'id' };
+    declare const signal: SignalCommand;
+    const receipt = await store.submitSignal(scope, profile, signal, (target, command) =>
+      target.workspaceId === scope.workspaceId && command.actorId === 'reviewer');
+    receipt.state satisfies 'pending' | 'consumed' | 'expired' | 'closed';
     await store.initializeSteps(scope, profile);
     const [step] = await store.claimSteps(scope, profile, { workerId: 'worker', leaseMs: 1000, limit: 1 });
     if (step && outcome.status === 'computed') await store.commitStep(scope, profile, {
@@ -96,19 +102,19 @@ try {
       .replace('../dist/postgres/index.js', 'event-driven-design-durable/postgres')
       .replace('../dist/index.js', 'event-driven-design-durable');
     writeFileSync(join(fixture, 'timing.test.mjs'), timing);
-    for (const file of ['routing', 'joins']) {
+    for (const file of ['routing', 'joins', 'signals']) {
       const routed = readFileSync(join(root, 'packages/durable/test', file + '.test.js'), 'utf8')
         .replace('../dist/postgres/index.js', 'event-driven-design-durable/postgres')
         .replace('../dist/index.js', 'event-driven-design-durable');
       writeFileSync(join(fixture, file + '.test.mjs'), routed);
     }
-    for (const file of ['step-profile.mjs', 'step-worker.mjs', 'lease-worker.mjs', 'external-worker.mjs', 'routing-worker.mjs', 'join-worker.mjs']) {
+    for (const file of ['step-profile.mjs', 'step-worker.mjs', 'lease-worker.mjs', 'external-worker.mjs', 'routing-worker.mjs', 'join-worker.mjs', 'wait-worker.mjs']) {
       const contents = readFileSync(join(root, 'packages/durable/test/fixtures', file), 'utf8')
         .replace('../../dist/index.js', 'event-driven-design-durable')
         .replace('../../dist/postgres/index.js', 'event-driven-design-durable/postgres');
       writeFileSync(join(fixture, 'fixtures', file), contents);
     }
-    assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'postgres.test.mjs', 'steps.test.mjs', 'leases.test.mjs', 'operations.test.mjs', 'reconciliation.test.mjs', 'timing.test.mjs', 'routing.test.mjs', 'joins.test.mjs']), /^# pass 31$/m);
+    assert.match(run(process.execPath, ['--test', '--test-reporter=tap', 'postgres.test.mjs', 'steps.test.mjs', 'leases.test.mjs', 'operations.test.mjs', 'reconciliation.test.mjs', 'timing.test.mjs', 'routing.test.mjs', 'joins.test.mjs', 'signals.test.mjs']), /^# pass 38$/m);
   }
   console.log('Installed durable profile, passive model, and TypeScript declarations passed.');
 } finally { dispose(); }

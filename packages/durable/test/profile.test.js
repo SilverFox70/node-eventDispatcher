@@ -1,3 +1,4 @@
+import { waitOptions } from './fixtures/wait-profile.mjs';
 import { joinProfileOptions } from './fixtures/join-profile.mjs';
 import { routingProfile } from './fixtures/routing-profile.mjs';
 import assert from 'node:assert/strict';
@@ -175,4 +176,14 @@ test('durable keyed joins pin ordered slots and admit 2–256 distinct ports', a
     ...candidate.graph.inputs, duplicate: candidate.graph.inputs['a-stats'],
   } } };
   assert.throws(() => prepareDurableProfile(duplicate), { code: 'PROFILE_INELIGIBLE' });
+});
+
+test('durable waits pin their signal name and refuse an unbranded adapter', async () => {
+  const candidate = waitOptions();
+  const profile = prepareDurableProfile(candidate);
+  assert.equal(profile.routed, true);
+  await assert.rejects(profile.invokeDelivery('review', packet(1), invokeOptions, 'in'), { code: 'UNKNOWN_TASK_NODE' });
+  assert.throws(() => resumeDurableProfile(profile.pin, waitOptions('other')), { code: 'VERSION_UNAVAILABLE' });
+  const adapters = candidate.adapters.map(adapter => adapter.operator ? { ...adapter, operator: 'filter' } : adapter);
+  assert.throws(() => prepareDurableProfile({ ...candidate, adapters }), { code: 'PROFILE_INELIGIBLE' });
 });

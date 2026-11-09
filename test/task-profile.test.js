@@ -106,3 +106,23 @@ test('a keyed join is recognized but cannot run as a single-packet task', async 
   const { invokeDelivery } = prepareBoundedTasks(graph, new Map([[ref, 'join-by-key']]));
   await assert.rejects(invokeDelivery('join', packet(1), { timeoutMs: 1000 }, 'stats'), { code: 'UNKNOWN_TASK_NODE' });
 });
+
+test('durable wait definition is branded, named and reserved for the durable host', async () => {
+  const { durableWait, waitSignalName } = require('../dist/cjs/runtime/task-profile');
+  const { runGraph } = require('../dist/cjs/testing');
+  for (const invalid of [null, 'invalid name']) {
+    assert.throws(() => durableWait(numeric, numeric, invalid), { code: 'INVALID_ARGUMENT' });
+  }
+  const component = durableWait(numeric, numeric, 'approved');
+  const ref = 'durable-wait@1';
+  const result = compileGraph({ version: 1, nodes: [{ id: 'wait', component: ref }], edges: [],
+    inputs: { in: { node: 'wait', port: 'in' } }, outputs: { out: { node: 'wait', port: 'out' } },
+  }, { [ref]: component });
+  assert(result.ok);
+  assert.equal(waitSignalName(component), 'approved');
+  assert.equal(waitSignalName(numeric), undefined);
+  const { invokeDelivery } = prepareBoundedTasks(result.graph, new Map([[ref, 'wait']]));
+  await assert.rejects(invokeDelivery('wait', packet(1), { timeoutMs: 1000 }, 'in'), { code: 'UNKNOWN_TASK_NODE' });
+  const inMemory = await runGraph(result.graph, { timeoutMs: 1000, inputs: { in: [packet(1)] } });
+  assert.equal(inMemory.terminal.status, 'failed');
+});

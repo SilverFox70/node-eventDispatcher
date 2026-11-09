@@ -5,6 +5,7 @@ import type { RoutingCommand, RoutingStatus } from '../delivery/model.js';
 import { validateOutputs } from '../delivery/model.js';
 import { checkPin, checkScope, serialize } from '../steps/model.js';
 import type { DurableProfile, StepScope } from '../steps/model.js';
+import { expireSignals } from '../signals/inbox.js';
 import { acceptJoinSlot } from './join-slots.js';
 import { materializeRoute } from './routing-materialize.js';
 import type { PendingRoute } from './routing-materialize.js';
@@ -41,6 +42,7 @@ export async function commitRoutingStep(pool: Pool, scope: StepScope, profile: D
       WHERE step_id=$1 AND status='ready' AND lease_expires_at > clock_timestamp()
         AND NOT EXISTS (SELECT 1 FROM nodeflow_durable.external_step_operations WHERE step_id=$1)`, [stepId]);
     if (rowCount !== 1) throw new FlowError('STALE_CLAIM');
+    if (definition.waits.has(step.node_id)) throw new FlowError('INVALID_DELIVERY');
     const pending = { ...step, step_id: stepId };
     const join = definition.joins.has(step.node_id);
     if (join && submitted !== '{}') throw new FlowError('INVALID_DELIVERY');
@@ -63,6 +65,7 @@ export function flushRouting(pool: Pool, scope: StepScope, profile: DurableProfi
     const remaining = await remainingBudget(client, scope.runId);
     if (run.status !== 'queued' || (remaining !== null && remaining <= 0)) return 0;
     const definition = checkPin(profile, run.execution_digest, run.adapter_digest);
+    if (definition.waits.size) await expireSignals(client, scope.runId);
     const { rows } = await client.query<PendingRoute>(`
       SELECT c.step_id,s.node_id,s.input_packet_id,c.outputs FROM nodeflow_durable.routing_commits c
       JOIN nodeflow_durable.steps s USING (step_id)

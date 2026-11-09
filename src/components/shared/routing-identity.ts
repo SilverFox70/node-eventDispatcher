@@ -1,6 +1,6 @@
 import type { RegistryComponent } from '../../component.js';
 
-export type RoutingOperator = 'broadcast' | 'filter' | 'merge' | 'join-by-key';
+export type RoutingOperator = 'broadcast' | 'filter' | 'merge' | 'join-by-key' | 'wait';
 const operators = new WeakMap<RegistryComponent, RoutingOperator>();
 
 export function markRoutingOperator<T extends RegistryComponent>(component: T, operator: RoutingOperator): T {
