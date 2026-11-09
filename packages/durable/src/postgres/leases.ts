@@ -25,9 +25,14 @@ export function claimSteps(pool: Pool, scope: StepScope, profile: DurableProfile
     const { rows } = await client.query<{
       step_id: string; node_id: string; epoch: number; lease_expires_at: Date; envelope: string;
     }>(`WITH due AS (
-      SELECT step_id FROM nodeflow_durable.steps
+      SELECT s.step_id FROM nodeflow_durable.steps s
       WHERE run_id = $1 AND status = 'ready' AND not_before <= clock_timestamp() AND epoch < max_claims
-        AND (lease_expires_at IS NULL OR lease_expires_at <= clock_timestamp())
+        AND CASE WHEN $5::boolean THEN EXISTS (
+        SELECT 1 FROM nodeflow_durable.external_step_operations link
+        JOIN nodeflow_durable.external_operations operation USING (operation_id)
+        WHERE link.step_id = s.step_id AND operation.state = 'prepared')
+      ELSE NOT EXISTS (SELECT 1 FROM nodeflow_durable.external_step_operations link WHERE link.step_id = s.step_id) END
+      AND (lease_expires_at IS NULL OR lease_expires_at <= clock_timestamp())
       ORDER BY created_at, step_id LIMIT $2 FOR UPDATE SKIP LOCKED
     ), claimed AS (
       UPDATE nodeflow_durable.steps s SET epoch = s.epoch + 1, lease_owner = $3,
@@ -36,7 +41,7 @@ export function claimSteps(pool: Pool, scope: StepScope, profile: DurableProfile
     )
     SELECT c.step_id, c.node_id, c.epoch, c.lease_expires_at, p.envelope FROM claimed c
       JOIN nodeflow_durable.step_packets p ON (p.run_id, p.packet_id) = (c.run_id, c.input_packet_id)
-      ORDER BY c.created_at, c.step_id`, [scope.runId, limit, workerId, leaseMs]);
+      ORDER BY c.created_at, c.step_id`, [scope.runId, limit, workerId, leaseMs, options.external === true]);
     return rows.map(row => Object.freeze({
       stepId: row.step_id, nodeId: row.node_id, epoch: row.epoch, workerId,
       leaseExpiresAt: row.lease_expires_at.toISOString(), input: admitPacket(JSON.parse(row.envelope)),
