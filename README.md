@@ -27,7 +27,7 @@ The current runtime executes node graphs; these application examples still need 
 
 S21–S24 are merged, including [correlated diagnostics](docs/architecture/diagnostic-records.md), live capture controls and bounded export. S24A added [decision evidence](docs/architecture/decision-evidence.md). S24B adds [causal inspection](docs/architecture/causal-inspection.md) for joined outputs and intentionally dropped inputs. Try **Eligibility and parallel results** in the live diagnostics demo. S24C adds [offline regression fixture export](docs/node-authoring.md#turn-a-reviewed-run-into-a-regression-test) through the testing API. S24D adds [fixed-fixture revision comparison](docs/node-authoring.md#compare-two-revisions-on-one-reviewed-fixture). S24E adds a [product content review demo](docs/nextjs.md#product-content-review). S24F compares it against [plain TypeScript](docs/content-review-comparison.md).
 
-You can now build and run real, typed, asynchronous pipelines locally. The inspector now visualizes registered graphs and event relationships; editing and optional durable execution remain on the roadmap below. You can now try the small Next.js example with `npm run demo:next`; it runs a production build at **http://localhost:54545**. Open **http://localhost:54545/diagnostics** for live capture controls, or follow **Inspect graphs and events** to watch packets and subscriptions change without refreshing. Choose **Run live Pokémon example** for public API responses; `npm run stress:http` exercises192 requests against our owned loopback service through the full production acceptance suite.
+You can now build and run real, typed, asynchronous pipelines locally. The inspector now visualizes registered graphs and event relationships; the editor supports saved graph revisions, and the optional PostgreSQL host supports durable waits and recovery. You can now try the small Next.js example with `npm run demo:next`; it runs a production build at **http://localhost:54545**. Open **http://localhost:54545/diagnostics** for live capture controls, or follow **Inspect graphs and events** to watch packets and subscriptions change without refreshing. Choose **Run live Pokémon example** for public API responses; `npm run stress:http` exercises192 requests against our owned loopback service through the full production acceptance suite.
 
 ## What exists in this revision
 
@@ -115,7 +115,7 @@ To inspect sustained-load behavior after building, run `node benchmark/throughpu
 | S10–S15: useful flows and tests | Transform/branch/merge/join nodes, graph inspection, ordinary-function authoring, public node/graph test helpers and reliability/load proofs |
 | S16–S19: adoption | Package/migration recipes, a real Next.js consumer, read-only graphical inspection and integrated acceptance |
 | Visual authoring extension | Select/connect nodes, run test loads, durably save drafts and locked graph revisions, and export readable TypeScript plus portable graph artifacts for other projects |
-| Optional durable execution extension | Persist eligible running workflows, retain outcomes and recover safely after failures using a separate durable host |
+| Optional durable execution extension | Persist eligible workflows with the PostgreSQL host, inspect progress and rehearse recovery with the approval demo |
 
 The optional [graph artifacts package](packages/artifacts/README.md) gives a document two fingerprints. Moving a node changes the layout fingerprint. Changing its configuration, wiring, or pinned implementation changes the semantic fingerprint. In the Next demo, choose **Open saved draft** to autosave locally and reopen the same graph and layout. Two tabs editing the same revision get a visible conflict if one saves first. The [graph adoption demo](examples/adoption/README.md) shows the tested handoff to a separate runtime project. See the [storage guide](docs/artifact-storage.md) for backup, restore and format versions.
 
@@ -123,7 +123,7 @@ The initial graphical inspector is **read-only**. The interactive editor and cod
 
 Rich/custom payload types, controlled cyclic graphs and more capable agent-authored applications are extension goals. Initial public payloads are JSON-compatible and initial graph topology is acyclic. Most graphs should remain useful without a database.
 
-The runtime refuses repeated delivery of the same packet to the same node within one run, using bounded protection records without live-run eviction. The channel alone does not enforce that policy. Crash-safe execution and exactly-once external side effects are not current guarantees; a durable host still needs application/provider idempotency or reconciliation where effects are uncertain.
+The runtime refuses repeated delivery of the same packet to the same node within one run, using bounded protection records without live-run eviction. The channel alone does not enforce that policy. The optional host can resume supported persisted workflow state after worker failure. External effects require application or provider idempotency or authoritative reconciliation.
 
 The [proposed extension slices](docs/cursor_plans/fbp-extensions/INDEX.md) cover per-node diagnostics, Node-RED-inspired visual authoring, saved/exportable graphs and optional durable execution. They focus on explaining behavior, testing nodes independently and tracing changes; implementation remains gated by the recorded contract reviews. The revised order adds causal inspection, decision records, reviewed regression capture and revision comparison, followed by a useful application and a fair plain-TypeScript comparison before visual authoring.
 
@@ -151,3 +151,5 @@ The planned [local workspace option](docs/cursor_plans/fbp-extensions/local-work
 Retained historical utilities live under `examples/legacy`; their source scanner is a heuristic, not the authoritative graph model. Only the dispatcher compatibility shim remains under `server/src`. The old dispatcher path delegates to the built implementation. The sibling FBP-Presentation repository is reference material, not this library's runtime.
 
 License: ISC.
+
+Try the [durable approval example](examples/durable/README.md) or read the [durable host operations runbook](docs/runbooks/operate-durable-host.md).

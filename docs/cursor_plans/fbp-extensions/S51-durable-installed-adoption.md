@@ -1,6 +1,6 @@
 # S51 — Install and operate an optional durable host with honest recovery guarantees.
 
-Plan revision EXT1-r2. Status **blocked-on-decision**; execution approval **none**.
+Plan revision EXT1-r3. Status **approved-for-execution**. See the [approved design and execution receipt](S51-execution.md).
 Phase: durable. Proposed branch: `codex/fbp-51-durable-installed-adoption`.
 Order: S50 → S51 → future application-specific pilots.
 
@@ -53,4 +53,4 @@ Consumption contract: [local workspace](local-workspace.md). Also prove local np
 
 Implementation destinations above are proposed cohesive ownership roots; create only the modules this feature needs, roughly a couple of hundred lines per handwritten file where reasonable. Keep named responsibilities, selective JSDoc and no miscellaneous utilities bucket. New paths are not claimed to exist. Root package/build edits require D2 agreement; keep optional dependencies optional. Task scope includes the minimal owning package build/test configuration when first introduced, never global machine configuration.
 
-No task is approved for execution. G1–G7 implementation readiness is blocked by the named decisions and predecessor evidence; revalidate at handoff rather than treating future commands as delivered.
+The user approved S51.A–C and authorized a review PR after installed and workspace adoption, native backup and restore, pinned resume and retention refusal pass.

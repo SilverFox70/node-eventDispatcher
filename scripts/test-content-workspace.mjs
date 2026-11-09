@@ -20,6 +20,13 @@ cpSync(join(root, 'packages/editor'), editor, { recursive: true,
   filter: path => !['node_modules', 'dist'].includes(basename(path)) });
 cpSync(join(root, 'packages/artifacts'), artifacts, { recursive: true,
   filter: path => !['node_modules', 'dist'].includes(basename(path)) });
+const durable = join(target, 'packages/durable');
+cpSync(join(root, 'packages/durable'), durable, { recursive: true,
+  filter: path => !['node_modules', 'dist'].includes(basename(path)) });
+const durableManifest = read(join(durable, 'package.json'));
+const durableConfig = read(join(durable, 'tsconfig.json'));
+delete durableConfig.compilerOptions.paths;
+write(join(durable, 'tsconfig.json'), durableConfig);
 const fixture = join(root, 'fixtures/next-consumer');
 cpSync(fixture, web, { recursive: true, filter: path => !['node_modules', '.next', 'vendor', 'package-lock.json'].includes(basename(path)) });
 const frameworkManifest = read(join(framework, 'package.json')), webManifest = read(join(web, 'package.json'));
@@ -33,17 +40,19 @@ write(join(artifacts, 'tsconfig.json'), artifactConfig);
 webManifest.dependencies[frameworkManifest.name] = frameworkManifest.version;
 webManifest.dependencies[editorManifest.name] = editorManifest.version;
 webManifest.dependencies[artifactManifest.name] = artifactManifest.version;
+webManifest.dependencies[durableManifest.name] = durableManifest.version;
 write(join(web, 'package.json'), webManifest);
-const manifest = { name: 'fbp-content-workspace', version: '1.0.0', private: true, workspaces: ['packages/nodeflow', 'packages/editor', 'packages/artifacts', 'apps/web'],
-  scripts: { build: 'npm run build --workspace event-driven-design && npm run build --workspace event-driven-design-editor && npm run build --workspace event-driven-design-artifacts && npm run build --workspace fbp-next-consumer',
+const manifest = { name: 'fbp-content-workspace', version: '1.0.0', private: true, workspaces: ['packages/nodeflow', 'packages/editor', 'packages/artifacts', 'packages/durable', 'apps/web'],
+  scripts: { build: 'npm run build --workspace event-driven-design && npm run build --workspace event-driven-design-editor && npm run build --workspace event-driven-design-artifacts && npm run build --workspace event-driven-design-durable && npm run build --workspace fbp-next-consumer',
     start: 'npm run start --workspace fbp-next-consumer' } };
 write(join(target, 'package.json'), manifest);
 const frameworkLock = read(join(root, 'package-lock.json')), webLock = read(join(fixture, 'package-lock.json'));
 const packages = { ...frameworkLock.packages, ...webLock.packages, '': manifest,
-  'packages/nodeflow': frameworkManifest, 'packages/editor': editorManifest, 'packages/artifacts': artifactManifest, 'apps/web': webManifest,
+  'packages/nodeflow': frameworkManifest, 'packages/editor': editorManifest, 'packages/artifacts': artifactManifest, 'packages/durable': durableManifest, 'apps/web': webManifest,
   'node_modules/event-driven-design': { resolved: 'packages/nodeflow', link: true },
   'node_modules/event-driven-design-editor': { resolved: 'packages/editor', link: true },
   'node_modules/event-driven-design-artifacts': { resolved: 'packages/artifacts', link: true },
+  'node_modules/event-driven-design-durable': { resolved: 'packages/durable', link: true },
   'node_modules/fbp-next-consumer': { resolved: 'apps/web', link: true } };
 write(join(target, 'package-lock.json'), { name: manifest.name, version: manifest.version, lockfileVersion: 3, requires: true, packages });
 
